@@ -33,6 +33,10 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* SpringArm;
 
+private:
+	UPROPERTY()
+	class AKeroroPlayerController* KRPlayerContoller;
+
 protected:
 	UPROPERTY(EditAnywhere, Category =Input)
 	class UInputMappingContext* InputMappingContext;

@@ -3,9 +3,11 @@
 
 #include "KeroroGameMode.h"
 #include "KeroroCharacter.h"
+#include "KeroroPlayerController.h"
 
 AKeroroGameMode::AKeroroGameMode()
 {
 	DefaultPawnClass = AKeroroCharacter::StaticClass();
+	PlayerControllerClass = AKeroroPlayerController::StaticClass();
 
 }
