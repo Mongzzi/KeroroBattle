@@ -19,7 +19,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -27,11 +27,26 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
-	UPROPERTY(VisibleAnywhere,Category=Camera)
+	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class UCameraComponent* Camera;
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* SpringArm;
 
+protected:
+	UPROPERTY(EditAnywhere, Category =Input)
+	class UInputMappingContext* InputMappingContext;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* Moving;
+
+	UPROPERTY(EditAnyWhere, Category = Input)
+	class UInputAction* Jumping;
+
+	UPROPERTY(EditAnyWhere, Category = Input)
+	class UInputAction* Looking;
+
+	void Move(const struct FInputActionValue& Value);
+	void Look(const struct FInputActionValue& Value);
 
 };

@@ -5,6 +5,10 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
+#include "InputAction.h"
 
 // Sets default values
 AKeroroCharacter::AKeroroCharacter()
@@ -22,7 +26,18 @@ AKeroroCharacter::AKeroroCharacter()
 	SpringArm->SetRelativeLocationAndRotation(FVector(0.0f,0.0f,20.0f), FRotator(-15.0f, 0.0f, 0.0f));
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>SK_KERORO(TEXT("/Game/Keroro_Model/keroro/keroro.keroro"));
-	if (SK_KERORO.Succeeded()) GetMesh()->SetSkeletalMesh(SK_KERORO.Object);
+	if (SK_KERORO.Succeeded())GetMesh()->SetSkeletalMesh(SK_KERORO.Object);
+	
+	// ют╥б
+	static ConstructorHelpers::FObjectFinder<UInputMappingContext> IMC_KERORO(TEXT("/Game/Input/IMC_Keroro.IMC_Keroro"));
+	if (IMC_KERORO.Succeeded())InputMappingContext = IMC_KERORO.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_MOVE(TEXT("/Game/Input/IA_Keroro_Move.IA_Keroro_Move"));
+	if (IA_MOVE.Succeeded()) Moving = IA_MOVE.Object;
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_LOOK(TEXT("/Game/Input/IA_Keroro_Look.IA_Keroro_Look"));
+	if (IA_MOVE.Succeeded()) Looking = IA_LOOK.Object;
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_JUMP(TEXT("/Game/Input/IA_Keroro_Jump.IA_Keroro_Jump"));
+	if (IA_MOVE.Succeeded())Jumping = IA_JUMP.Object;
 
 }
 
@@ -45,5 +60,13 @@ void AKeroroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AKeroroCharacter::Move(const FInputActionValue& Value)
+{
+}
+
+void AKeroroCharacter::Look(const FInputActionValue& Value)
+{
 }
 
