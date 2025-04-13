@@ -6,4 +6,5 @@
 *.exe
 *.sln
 *.pdb
+*.dll
 *_BuiltData.uasset

@@ -27,8 +27,24 @@ AKeroroCharacter::AKeroroCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
-	SpringArm->TargetArmLength = 200.0f;
-	SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 20.0f), FRotator(-15.0f, 0.0f, 0.0f));
+	SpringArm->TargetArmLength = 300.0f;
+	SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 50.0f, 60.0f), FRotator(-15.0f, 0.0f, 0.0f));
+	
+
+	// 스프링암 설정
+	SpringArm->bUsePawnControlRotation = true; // 컨트롤러 기준 회전
+	SpringArm->bInheritPitch = false;
+	SpringArm->bInheritRoll = false;
+	SpringArm->bInheritYaw = true; // Yaw만 따라가게
+	SpringArm->bDoCollisionTest = true; // 벽에 가까이 갔을 때 카메라 충돌 보정
+
+	// 카메라 설정
+	Camera->bUsePawnControlRotation = false;
+
+	// 캐릭터 회전 관련 설정
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true; // 입력 방향 따라 몸 회전
+	GetCharacterMovement()->bUseControllerDesiredRotation = false; // 컨트롤러 회전 비활성화
 
 	// 캐릭터 속도
 	WalkSpeed = 600.0f;
