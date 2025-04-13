@@ -25,6 +25,7 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void PostInitializeComponents() override;
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -50,7 +51,22 @@ protected:
 	UPROPERTY(EditAnyWhere, Category = Input)
 	class UInputAction* Looking;
 
+	UPROPERTY(EditAnyWhere, Category = Input)
+	class UInputAction* Running;
+
 	void Move(const struct FInputActionValue& Value);
 	void Look(const struct FInputActionValue& Value);
+	void StartRun();
+	void StopRun();
+
+	UPROPERTY(EditAnywhere, Category = Stat)
+	float RunSpeed;
+
+	UPROPERTY(EditAnywhere, Category = Stat)
+	float WalkSpeed;
+
+private:
+	UPROPERTY()
+	class UKeroroAnimInstance* KRAnim;
 
 };

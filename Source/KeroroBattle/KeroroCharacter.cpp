@@ -10,33 +10,35 @@
 #include "InputMappingContext.h"
 #include "InputAction.h"
 #include "KeroroPlayerController.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "KeroroAnimInstance.h"
 
 // Sets default values
 AKeroroCharacter::AKeroroCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	// 메시 위치 조정
+	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FRotator(0.0f, -90.0f, 0.0f));
+
+	// 카메라 스프링암
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
-
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
-
-	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FRotator(0.0f, -90.0f, 0.0f));
 	SpringArm->TargetArmLength = 200.0f;
-	SpringArm->SetRelativeLocationAndRotation(FVector(0.0f,0.0f,20.0f), FRotator(-15.0f, 0.0f, 0.0f));
+	SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 20.0f), FRotator(-15.0f, 0.0f, 0.0f));
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh>SK_KERORO(TEXT("/Game/Keroro_Model/keroro/keroro.keroro"));
-	if (SK_KERORO.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("good 11111111111"));
-		GetMesh()->SetSkeletalMesh(SK_KERORO.Object);
-	}
+	// 캐릭터 속도
+	WalkSpeed = 600.0f;
+	RunSpeed = 1200.0f;
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 
 	// 입력
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> IMC_KERORO(TEXT("/Game/Input/IMC_Keroro.IMC_Keroro"));
 	if (IMC_KERORO.Succeeded())InputMappingContext = IMC_KERORO.Object;
-	
+
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_MOVE(TEXT("/Game/Input/IA_Keroro_Move.IA_Keroro_Move"));
 	if (IA_MOVE.Succeeded()) Moving = IA_MOVE.Object;
 
@@ -44,7 +46,22 @@ AKeroroCharacter::AKeroroCharacter()
 	if (IA_MOVE.Succeeded()) Looking = IA_LOOK.Object;
 
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_JUMP(TEXT("/Game/Input/IA_Keroro_Jump.IA_Keroro_Jump"));
-	if (IA_MOVE.Succeeded())Jumping = IA_JUMP.Object;
+	if (IA_MOVE.Succeeded()) Jumping = IA_JUMP.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_RUN(TEXT("/Game/Input/IA_Keroro_Run.IA_Keroro_Run"));
+	if (IA_RUN.Succeeded()) Running = IA_RUN.Object;
+
+	// 스켈레탈 메쉬
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh>SK_KERORO(TEXT("/Game/Keroro_Model/keroro/keroro.keroro"));
+	if (SK_KERORO.Succeeded())
+	{
+		GetMesh()->SetSkeletalMesh(SK_KERORO.Object);
+	}
+
+	// 애니메이션
+	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+	static ConstructorHelpers::FClassFinder<UAnimInstance>KERORO_ANIM(TEXT("/Game/Blueprints/Keroro_AnimInstance.Keroro_AnimInstance_C"));
+	if (KERORO_ANIM.Succeeded())GetMesh()->SetAnimInstanceClass(KERORO_ANIM.Class);
 
 }
 
@@ -52,7 +69,7 @@ AKeroroCharacter::AKeroroCharacter()
 void AKeroroCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	KRPlayerContoller = Cast<AKeroroPlayerController>(GetController());
 	if (KRPlayerContoller != nullptr)
 	{
@@ -79,7 +96,20 @@ void AKeroroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		Input->BindAction(Moving, ETriggerEvent::Triggered, this, &AKeroroCharacter::Move);
 		Input->BindAction(Looking, ETriggerEvent::Triggered, this, &AKeroroCharacter::Look);
 		Input->BindAction(Jumping, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+		Input->BindAction(Running, ETriggerEvent::Triggered, this, &AKeroroCharacter::StartRun);
+		Input->BindAction(Running, ETriggerEvent::Completed, this, &AKeroroCharacter::StopRun);
 	}
+}
+
+void AKeroroCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	KRAnim = Cast<UKeroroAnimInstance>(GetMesh()->GetAnimInstance());
+	if (KRAnim != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("good 11111111111"));
+	}
+
 }
 
 void AKeroroCharacter::Move(const FInputActionValue& Value)
@@ -99,6 +129,11 @@ void AKeroroCharacter::Move(const FInputActionValue& Value)
 
 		AddMovementInput(FowardDirection, FowardValue);
 		AddMovementInput(SideDirection, SideValue);
+
+		// 후방이동 체크 
+		if (FowardValue < -0.1f) KRAnim->bIsMovingBackward = true;
+		else KRAnim->bIsMovingBackward = false;
+
 	}
 }
 
@@ -108,6 +143,22 @@ void AKeroroCharacter::Look(const FInputActionValue& Value)
 	{
 		AddControllerYawInput(Value.Get<FVector2D>().X);
 		AddControllerPitchInput(Value.Get<FVector2D>().Y);
+	}
+}
+
+void AKeroroCharacter::StartRun()
+{
+	if (KRAnim != nullptr) {
+		KRAnim->bIsRunning = true;
+		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+	}
+}
+
+void AKeroroCharacter::StopRun()
+{
+	if (KRAnim != nullptr) {
+		KRAnim->bIsRunning = false;
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	}
 }
 
