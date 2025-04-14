@@ -27,6 +27,15 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PostInitializeComponents() override;
 
+
+	void Attack();
+
+protected:
+	void Move(const struct FInputActionValue& Value);
+	void Look(const struct FInputActionValue& Value);
+	void StartRun();
+	void StopRun();
+
 public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class UCameraComponent* Camera;
@@ -38,8 +47,11 @@ private:
 	UPROPERTY()
 	class AKeroroPlayerController* KRPlayerContoller;
 
+	UPROPERTY()
+	class UKeroroAnimInstance* KRAnim;
+
 protected:
-	UPROPERTY(EditAnywhere, Category =Input)
+	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputMappingContext* InputMappingContext;
 
 	UPROPERTY(EditAnywhere, Category = Input)
@@ -54,19 +66,13 @@ protected:
 	UPROPERTY(EditAnyWhere, Category = Input)
 	class UInputAction* Running;
 
-	void Move(const struct FInputActionValue& Value);
-	void Look(const struct FInputActionValue& Value);
-	void StartRun();
-	void StopRun();
+	UPROPERTY(EditAnyWhere, Category = Input)
+	class UInputAction* Attacking;
 
 	UPROPERTY(EditAnywhere, Category = Stat)
 	float RunSpeed;
 
 	UPROPERTY(EditAnywhere, Category = Stat)
 	float WalkSpeed;
-
-private:
-	UPROPERTY()
-	class UKeroroAnimInstance* KRAnim;
 
 };

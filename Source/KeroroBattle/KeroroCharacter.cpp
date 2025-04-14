@@ -67,6 +67,9 @@ AKeroroCharacter::AKeroroCharacter()
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_RUN(TEXT("/Game/Input/IA_Keroro_Run.IA_Keroro_Run"));
 	if (IA_RUN.Succeeded()) Running = IA_RUN.Object;
 
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_ATTACK(TEXT("/Game/Input/IA_Keroro_Attack.IA_Keroro_Attack"));
+	if (IA_ATTACK.Succeeded()) Attacking = IA_ATTACK.Object;
+
 	// 스켈레탈 메쉬
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>SK_KERORO(TEXT("/Game/Keroro_Model/keroro/keroro.keroro"));
 	if (SK_KERORO.Succeeded())
@@ -114,6 +117,7 @@ void AKeroroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		Input->BindAction(Jumping, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		Input->BindAction(Running, ETriggerEvent::Triggered, this, &AKeroroCharacter::StartRun);
 		Input->BindAction(Running, ETriggerEvent::Completed, this, &AKeroroCharacter::StopRun);
+		Input->BindAction(Attacking, ETriggerEvent::Started, this, &AKeroroCharacter::Attack); // 트리거이벤트 - Started 클릭 한번에 바인딩된 함수 한번만호출
 	}
 }
 
@@ -126,6 +130,11 @@ void AKeroroCharacter::PostInitializeComponents()
 		UE_LOG(LogTemp, Warning, TEXT("good 11111111111"));
 	}
 
+}
+
+void AKeroroCharacter::Attack()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Attack succed"));
 }
 
 void AKeroroCharacter::Move(const FInputActionValue& Value)
