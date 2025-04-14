@@ -7,4 +7,6 @@
 *.sln
 *.pdb
 *.dll
+*.uasset
+*.umap
 *_BuiltData.uasset
