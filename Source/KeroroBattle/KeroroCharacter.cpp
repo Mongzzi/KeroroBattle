@@ -56,6 +56,36 @@ AKeroroCharacter::AKeroroCharacter()
 	MaxCombo = 4;
 	AttackEndComboState();
 
+	// 스켈레탈 메쉬
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh>SK_KERORO(TEXT("/Game/Keroro_Model/keroro/keroro.keroro"));
+	if (SK_KERORO.Succeeded())
+	{
+		GetMesh()->SetSkeletalMesh(SK_KERORO.Object);
+	}
+
+	// 애니메이션
+	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+	static ConstructorHelpers::FClassFinder<UAnimInstance>KERORO_ANIM(TEXT("/Game/Blueprints/Keroro_AnimInstance.Keroro_AnimInstance_C"));
+	if (KERORO_ANIM.Succeeded())GetMesh()->SetAnimInstanceClass(KERORO_ANIM.Class);
+
+	// 소켓
+	FName WeaponSocket(TEXT("kkkk"));	// 케로로 스켈레탈메쉬에 소켓 직접 추가함 다른캐릭도 같은 이름으로 필요
+	if (GetMesh()->DoesSocketExist(WeaponSocket))
+	{
+		Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WEAPON"));
+		static ConstructorHelpers::FObjectFinder<USkeletalMesh>WEAPON(TEXT("/Game/InfinityBladeWeapons/Weapons/Blade/Swords/Blade_BlackKnight/SK_Blade_BlackKnight.SK_Blade_BlackKnight"));
+		if (WEAPON.Succeeded())
+		{
+			Weapon->SetRelativeScale3D(FVector(10.0f, 10.0f, 10.0f));
+			Weapon->SetSkeletalMesh(WEAPON.Object);
+		}
+		UE_LOG(LogTemp, Warning, TEXT("ok weapon"));
+		Weapon->SetupAttachment(GetMesh(), WeaponSocket);
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("failed weapon"));
+	}
+
 	// 입력
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> IMC_KERORO(TEXT("/Game/Input/IMC_Keroro.IMC_Keroro"));
 	if (IMC_KERORO.Succeeded())InputMappingContext = IMC_KERORO.Object;
@@ -74,18 +104,6 @@ AKeroroCharacter::AKeroroCharacter()
 
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_ATTACK(TEXT("/Game/Input/IA_Keroro_Attack.IA_Keroro_Attack"));
 	if (IA_ATTACK.Succeeded()) Attacking = IA_ATTACK.Object;
-
-	// 스켈레탈 메쉬
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh>SK_KERORO(TEXT("/Game/Keroro_Model/keroro/keroro.keroro"));
-	if (SK_KERORO.Succeeded())
-	{
-		GetMesh()->SetSkeletalMesh(SK_KERORO.Object);
-	}
-
-	// 애니메이션
-	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	static ConstructorHelpers::FClassFinder<UAnimInstance>KERORO_ANIM(TEXT("/Game/Blueprints/Keroro_AnimInstance.Keroro_AnimInstance_C"));
-	if (KERORO_ANIM.Succeeded())GetMesh()->SetAnimInstanceClass(KERORO_ANIM.Class);
 
 }
 
@@ -198,7 +216,7 @@ void AKeroroCharacter::AttackEndComboState()
 
 void AKeroroCharacter::Move(const FInputActionValue& Value)
 {
-	if (KRPlayerContoller)
+	if (KRPlayerContoller && !IsAttacking)
 	{
 		// 크기
 		float FowardValue = Value.Get<FVector2D>().Y;

@@ -45,7 +45,6 @@ void UKeroroAnimInstance::PlayAttackMontage()
 
 void UKeroroAnimInstance::AnimNotify_AttackHitCheck()
 {
-	UE_LOG(LogTemp, Error, TEXT("notifyyyyyyyyyy attack check"));
 	OnAttackHitCheck.Broadcast();
 }
 
