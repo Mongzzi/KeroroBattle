@@ -29,7 +29,7 @@ AKeroroCharacter::AKeroroCharacter()
 	Camera->SetupAttachment(SpringArm);
 	SpringArm->TargetArmLength = 300.0f;
 	SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 50.0f, 60.0f), FRotator(-15.0f, 0.0f, 0.0f));
-	
+
 
 	// 스프링암 설정
 	SpringArm->bUsePawnControlRotation = true; // 컨트롤러 기준 회전
@@ -51,6 +51,11 @@ AKeroroCharacter::AKeroroCharacter()
 	RunSpeed = 1200.0f;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 
+	// 공격 체크 - 추후 수정필요 상속받을 클래스에 넣어야함 // 무기마다 다르게
+	IsAttacking = false;
+	MaxCombo = 4;
+	AttackEndComboState();
+
 	// 입력
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> IMC_KERORO(TEXT("/Game/Input/IMC_Keroro.IMC_Keroro"));
 	if (IMC_KERORO.Succeeded())InputMappingContext = IMC_KERORO.Object;
@@ -59,10 +64,10 @@ AKeroroCharacter::AKeroroCharacter()
 	if (IA_MOVE.Succeeded()) Moving = IA_MOVE.Object;
 
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_LOOK(TEXT("/Game/Input/IA_Keroro_Look.IA_Keroro_Look"));
-	if (IA_MOVE.Succeeded()) Looking = IA_LOOK.Object;
+	if (IA_LOOK.Succeeded()) Looking = IA_LOOK.Object;
 
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_JUMP(TEXT("/Game/Input/IA_Keroro_Jump.IA_Keroro_Jump"));
-	if (IA_MOVE.Succeeded()) Jumping = IA_JUMP.Object;
+	if (IA_JUMP.Succeeded()) Jumping = IA_JUMP.Object;
 
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_RUN(TEXT("/Game/Input/IA_Keroro_Run.IA_Keroro_Run"));
 	if (IA_RUN.Succeeded()) Running = IA_RUN.Object;
@@ -125,16 +130,70 @@ void AKeroroCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	KRAnim = Cast<UKeroroAnimInstance>(GetMesh()->GetAnimInstance());
-	if (KRAnim != nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("good 11111111111"));
-	}
+	if (KRAnim == nullptr) return;
 
+	KRAnim->OnMontageEnded.AddDynamic(this, &AKeroroCharacter::OnAttackMontageEnded);
+	KRAnim->OnNextAttackCheck.AddLambda([this]()->void {
+		CanNextCombo = false;
+		if (IsComboInputOn)
+		{
+			AttackStartComboState();
+			KRAnim->JumptoAttackMontageSection(CurrentCombo);
+			IsAttacking = true;
+		}
+		});
 }
 
 void AKeroroCharacter::Attack()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Attack succed"));
+
+	if (IsAttacking) // 애니메이션(몽타주) 재생중인가
+	{
+		HandleComboInput();
+	}
+	else
+	{
+		StartNewAttack();
+	}
+}
+
+void AKeroroCharacter::HandleComboInput()
+{
+	if (!FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo)) return;
+	if (CanNextCombo)IsComboInputOn = true;
+}
+
+void AKeroroCharacter::StartNewAttack()
+{
+	if (CurrentCombo != 0) return;
+	AttackStartComboState();
+	KRAnim->PlayAttackMontage();
+	KRAnim->JumptoAttackMontageSection(CurrentCombo);
+	IsAttacking = true;
+}
+
+void AKeroroCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (!IsAttacking || CurrentCombo == 0) return;
+	IsAttacking = false;
+	AttackEndComboState();
+}
+
+void AKeroroCharacter::AttackStartComboState()
+{
+	CanNextCombo = true;
+	IsComboInputOn = false;
+	if (FMath::IsWithinInclusive<int32>(CurrentCombo, 0, MaxCombo - 1)) {
+		CurrentCombo = FMath::Clamp<int32>(CurrentCombo + 1, 1, MaxCombo);
+	}
+}
+
+void AKeroroCharacter::AttackEndComboState()
+{
+	IsComboInputOn = false;
+	CanNextCombo = false;
+	CurrentCombo = 0;
 }
 
 void AKeroroCharacter::Move(const FInputActionValue& Value)
@@ -154,10 +213,6 @@ void AKeroroCharacter::Move(const FInputActionValue& Value)
 
 		AddMovementInput(FowardDirection, FowardValue);
 		AddMovementInput(SideDirection, SideValue);
-
-		// 후방이동 체크 
-		if (FowardValue < -0.1f) KRAnim->bIsMovingBackward = true;
-		else KRAnim->bIsMovingBackward = false;
 
 	}
 }

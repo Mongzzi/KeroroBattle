@@ -4,13 +4,18 @@
 #include "KeroroAnimInstance.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "Animation/AnimMontage.h"
+#include "Animation/AnimNotifies/AnimNotify.h"
 
 UKeroroAnimInstance::UKeroroAnimInstance()
 {
 	CurrentPawnSpeed = 0.0f;
 	IsInAir = false;
-	bIsMovingBackward = false;
 	bIsRunning = false;
+
+	// ¸ùÅ¸ÁÖ ·Îµå
+	static ConstructorHelpers::FObjectFinder<UAnimMontage>SWORD_ATTACK_MONTAGE(TEXT("/Game/Animations/KR_Sword_Montage.KR_Sword_Montage"));
+	if (SWORD_ATTACK_MONTAGE.Succeeded())SwordAttackMontage = SWORD_ATTACK_MONTAGE.Object;
 }
 
 void UKeroroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -28,4 +33,36 @@ void UKeroroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		IsInAir = Character->GetMovementComponent()->IsFalling();
 	}
 
+}
+
+void UKeroroAnimInstance::PlayAttackMontage()
+{
+	if (!Montage_IsPlaying(SwordAttackMontage))
+	{
+		Montage_Play(SwordAttackMontage, 1.0f);
+	}
+}
+
+void UKeroroAnimInstance::AnimNotify_AttackHitCheck()
+{
+	UE_LOG(LogTemp, Error, TEXT("notifyyyyyyyyyy attack check"));
+	OnAttackHitCheck.Broadcast();
+}
+
+void UKeroroAnimInstance::AnimNotify_NextAttackCheck()
+{
+	UE_LOG(LogTemp, Error, TEXT("notifyy   NNNNEEEEEXT ATTACK "));
+	OnNextAttackCheck.Broadcast();
+}
+
+FName UKeroroAnimInstance::GetAttackMontageSectionName(int32 Section)
+{
+	if (FMath::IsWithinInclusive<int32>(Section, 1, 4)) return FName(*FString::Printf(TEXT("Attack%d"), Section));
+	else return NAME_None;
+}
+
+void UKeroroAnimInstance::JumptoAttackMontageSection(int32 NewSection)
+{
+	if (!Montage_IsPlaying(SwordAttackMontage)) return;
+	Montage_JumpToSection(GetAttackMontageSectionName(NewSection), SwordAttackMontage);
 }

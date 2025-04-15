@@ -29,6 +29,31 @@ public:
 
 
 	void Attack();
+	
+public:
+	UFUNCTION()
+	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	
+	void AttackStartComboState();
+	void AttackEndComboState();
+	void HandleComboInput();
+	void StartNewAttack();
+
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool IsAttacking;
+
+	UPROPERTY(VisibleInstanceOnly,BlueprintReadOnly,Category=Attack,Meta = (AllowPrivateAccess = true))
+	bool CanNextCombo;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool IsComboInputOn;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	int32 CurrentCombo;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	int32 MaxCombo;
 
 protected:
 	void Move(const struct FInputActionValue& Value);
@@ -44,9 +69,11 @@ public:
 	class USpringArmComponent* SpringArm;
 
 private:
+	// 플레이어 컨트롤러
 	UPROPERTY()
 	class AKeroroPlayerController* KRPlayerContoller;
 
+	// 애님인스턴스
 	UPROPERTY()
 	class UKeroroAnimInstance* KRAnim;
 
