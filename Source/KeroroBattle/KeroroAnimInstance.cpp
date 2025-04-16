@@ -50,8 +50,13 @@ void UKeroroAnimInstance::AnimNotify_AttackHitCheck()
 
 void UKeroroAnimInstance::AnimNotify_NextAttackCheck()
 {
-	UE_LOG(LogTemp, Error, TEXT("notifyy   NNNNEEEEEXT ATTACK "));
 	OnNextAttackCheck.Broadcast();
+}
+
+void UKeroroAnimInstance::AnimNotify_EffectCreateCheck()
+{
+	UE_LOG(LogTemp, Error, TEXT("Effect Create timing!"));
+	OnEffectCreateCheck.Broadcast();
 }
 
 FName UKeroroAnimInstance::GetAttackMontageSectionName(int32 Section)

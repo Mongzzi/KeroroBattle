@@ -26,9 +26,16 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PostInitializeComponents() override;
-
-
 	void Attack();
+
+public:
+	// 나이아가라 시스템
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
+	class UNiagaraSystem* NSAttackEffect;
+
+	// 이펙트 생성
+	UFUNCTION()
+	void PlaySwordEffect();
 	
 public:
 	UFUNCTION()

@@ -8,6 +8,7 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnEffectCreateCheckDelegate);
 
 /**
  *
@@ -27,13 +28,16 @@ public:
 public:
 	FOnNextAttackCheckDelegate OnNextAttackCheck;
 	FOnAttackHitCheckDelegate OnAttackHitCheck;
-
+	FOnEffectCreateCheckDelegate OnEffectCreateCheck;
 private:
 	UFUNCTION()
 	void AnimNotify_AttackHitCheck();
 
 	UFUNCTION()
 	void AnimNotify_NextAttackCheck();
+
+	UFUNCTION()
+	void AnimNotify_EffectCreateCheck();
 
 	FName GetAttackMontageSectionName(int32 Section);
 
