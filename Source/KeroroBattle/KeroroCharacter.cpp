@@ -14,7 +14,7 @@
 #include "KeroroAnimInstance.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
-
+#include "KeroroWeapon.h"
 
 // Sets default values
 AKeroroCharacter::AKeroroCharacter()
@@ -77,23 +77,6 @@ AKeroroCharacter::AKeroroCharacter()
 	static ConstructorHelpers::FClassFinder<UAnimInstance>KERORO_ANIM(TEXT("/Game/Blueprints/Keroro_AnimInstance.Keroro_AnimInstance_C"));
 	if (KERORO_ANIM.Succeeded())GetMesh()->SetAnimInstanceClass(KERORO_ANIM.Class);
 
-	// 소켓
-	FName WeaponSocket(TEXT("kkkk"));	// 케로로 스켈레탈메쉬에 소켓 직접 추가함 다른캐릭도 같은 이름으로 필요
-	if (GetMesh()->DoesSocketExist(WeaponSocket))
-	{
-		Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WEAPON"));
-		static ConstructorHelpers::FObjectFinder<USkeletalMesh>WEAPON(TEXT("/Game/InfinityBladeWeapons/Weapons/Blade/Swords/Blade_BlackKnight/SK_Blade_BlackKnight.SK_Blade_BlackKnight"));
-		if (WEAPON.Succeeded())
-		{
-			Weapon->SetRelativeScale3D(FVector(10.0f, 10.0f, 10.0f));
-			Weapon->SetSkeletalMesh(WEAPON.Object);
-		}
-		UE_LOG(LogTemp, Warning, TEXT("ok weapon"));
-		Weapon->SetupAttachment(GetMesh(), WeaponSocket);
-	}
-	else {
-		UE_LOG(LogTemp, Warning, TEXT("failed weapon"));
-	}
 
 	// 입력
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> IMC_KERORO(TEXT("/Game/Input/IMC_Keroro.IMC_Keroro"));
@@ -128,6 +111,14 @@ void AKeroroCharacter::BeginPlay()
 		if (Subsystem != nullptr) {
 			Subsystem->AddMappingContext(InputMappingContext, 0);
 		}
+	}
+
+	// 소켓에 무기 부착
+	FName WeaponSocket(TEXT("hand_rSocket"));	// 케로로 스켈레탈메쉬에 소켓 직접 추가함 다른캐릭도 같은 이름으로 필요
+	auto CurWeapon = GetWorld()->SpawnActor<AKeroroWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+	if (nullptr != CurWeapon)
+	{
+		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
 	}
 }
 
