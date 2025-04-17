@@ -14,7 +14,7 @@ UKeroroAnimInstance::UKeroroAnimInstance()
 	bIsRunning = false;
 
 	// 몽타주 로드
-	static ConstructorHelpers::FObjectFinder<UAnimMontage>SWORD_ATTACK_MONTAGE(TEXT("/Game/Animations/KR_Sword_Montage.KR_Sword_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage>SWORD_ATTACK_MONTAGE(TEXT("/Game/Animation/KR_Montage_Sword.KR_Montage_Sword"));
 	if (SWORD_ATTACK_MONTAGE.Succeeded())SwordAttackMontage = SWORD_ATTACK_MONTAGE.Object;
 }
 

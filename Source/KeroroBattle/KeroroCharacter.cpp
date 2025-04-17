@@ -66,7 +66,7 @@ AKeroroCharacter::AKeroroCharacter()
 	AttackEndComboState();
 
 	// 스켈레탈 메쉬
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh>SK_KERORO(TEXT("/Game/Keroro_Model/keroro/keroro.keroro"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh>SK_KERORO(TEXT("/Game/Keroro_Model/kururu/kururu.kururu"));
 	if (SK_KERORO.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(SK_KERORO.Object);
@@ -74,7 +74,7 @@ AKeroroCharacter::AKeroroCharacter()
 
 	// 애니메이션
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	static ConstructorHelpers::FClassFinder<UAnimInstance>KERORO_ANIM(TEXT("/Game/Blueprints/Keroro_AnimInstance.Keroro_AnimInstance_C"));
+	static ConstructorHelpers::FClassFinder<UAnimInstance>KERORO_ANIM(TEXT("/Game/Blueprints/KR_AnimInstance.KR_AnimInstance_C"));
 	if (KERORO_ANIM.Succeeded())GetMesh()->SetAnimInstanceClass(KERORO_ANIM.Class);
 
 
@@ -113,11 +113,15 @@ void AKeroroCharacter::BeginPlay()
 		}
 	}
 
-	// 소켓에 무기 부착
-	FName WeaponSocket(TEXT("hand_rSocket"));	// 케로로 스켈레탈메쉬에 소켓 직접 추가함 다른캐릭도 같은 이름으로 필요
+	FName WeaponSocket(TEXT("hand_rSocket"));
 	auto CurWeapon = GetWorld()->SpawnActor<AKeroroWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
-	if (nullptr != CurWeapon)
+	if (CurWeapon)
 	{
+		// 오프셋 적용 ( 무기마다 자연스러운 포지션 - 추후 데이터테이블 생성 후 꺼내올 예정)
+		CurWeapon->SetActorRelativeLocation(CurWeapon->AttachLocationOffset);
+		CurWeapon->SetActorRelativeRotation(CurWeapon->AttachRotationOffset);
+		CurWeapon->SetActorRelativeScale3D(CurWeapon->AttachScale);
+
 		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
 	}
 }
