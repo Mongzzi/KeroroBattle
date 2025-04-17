@@ -33,6 +33,9 @@ AKeroroCharacter::AKeroroCharacter()
 	SpringArm->TargetArmLength = 300.0f;
 	SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 50.0f, 60.0f), FRotator(-15.0f, 0.0f, 0.0f));
 
+	// 캡슐컴포넌트 콜리전프로파일 설정 
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("KeroroCharacter"));
+
 	// 나이아가라 이펙트 추가
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NE(TEXT("/Game/Knife_light/VFX/NE_attack02.NE_attack02"));
 	if (NE.Succeeded())
@@ -202,7 +205,8 @@ void AKeroroCharacter::PlaySwordEffect()
 		GetWorld(),
 		NSAttackEffect,
 		GetActorLocation() + GetActorForwardVector() * 100.0f, // 캐릭터 앞 방향으로 100 유닛 이동
-		GetActorRotation()
+		GetActorRotation(),
+		FVector(2.0f)
 	);
 }
 

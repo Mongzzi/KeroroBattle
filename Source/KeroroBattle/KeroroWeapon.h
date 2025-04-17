@@ -27,12 +27,7 @@ public:
 	UPROPERTY(VisibleAnywhere,Category= Weapon)
 	USkeletalMeshComponent* Weapon;
 
-	UPROPERTY(VisibleAnywhere, Category = Attachment)
-	FVector AttachLocationOffset;
-
-	UPROPERTY(VisibleAnywhere, Category = Attachment)
-	FRotator AttachRotationOffset;
-
-	UPROPERTY(VisibleAnywhere, Category = Attachment)
+	FVector AttachLocationOffset;	// 상대적 위치( hand_rSocket )
+	FRotator AttachRotationOffset; // 상대적 회전 ( hand_rSocket )
 	FVector AttachScale;
 };
