@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "KeroroBattle.h"
 #include "GameFramework/PlayerController.h"
 #include "KeroroPlayerController.generated.h"
 
@@ -16,5 +16,42 @@ class KEROROBATTLE_API AKeroroPlayerController : public APlayerController
 
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
-	
+
+public:
+	AKeroroPlayerController();
+
+protected:
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputMappingContext* InputMappingContext;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputMappingContext* DefaultMappingContext;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* Moving;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* Looking;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* Jumping;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* Running;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* Attacking;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* Tag;
+
+private:
+	void Move(const struct FInputActionValue& Value);
+	void Look(const struct FInputActionValue& Value);
+	void Jump();
+	void StartRun();
+	void StopRun();
+	void Attack();
+	void TagCharacter();
 };

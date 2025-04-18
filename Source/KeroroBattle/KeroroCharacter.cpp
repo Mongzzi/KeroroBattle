@@ -5,16 +5,12 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
-#include "InputMappingContext.h"
-#include "InputAction.h"
 #include "KeroroPlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "KeroroAnimInstance.h"
+#include "KeroroWeapon.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
-#include "KeroroWeapon.h"
 
 // Sets default values
 AKeroroCharacter::AKeroroCharacter()
@@ -80,41 +76,12 @@ AKeroroCharacter::AKeroroCharacter()
 	static ConstructorHelpers::FClassFinder<UAnimInstance>KERORO_ANIM(TEXT("/Game/Blueprints/KR_AnimInstance.KR_AnimInstance_C"));
 	if (KERORO_ANIM.Succeeded())GetMesh()->SetAnimInstanceClass(KERORO_ANIM.Class);
 
-
-	// 입력
-	static ConstructorHelpers::FObjectFinder<UInputMappingContext> IMC_KERORO(TEXT("/Game/Input/IMC_Keroro.IMC_Keroro"));
-	if (IMC_KERORO.Succeeded())InputMappingContext = IMC_KERORO.Object;
-
-	static ConstructorHelpers::FObjectFinder<UInputAction>IA_MOVE(TEXT("/Game/Input/IA_Keroro_Move.IA_Keroro_Move"));
-	if (IA_MOVE.Succeeded()) Moving = IA_MOVE.Object;
-
-	static ConstructorHelpers::FObjectFinder<UInputAction>IA_LOOK(TEXT("/Game/Input/IA_Keroro_Look.IA_Keroro_Look"));
-	if (IA_LOOK.Succeeded()) Looking = IA_LOOK.Object;
-
-	static ConstructorHelpers::FObjectFinder<UInputAction>IA_JUMP(TEXT("/Game/Input/IA_Keroro_Jump.IA_Keroro_Jump"));
-	if (IA_JUMP.Succeeded()) Jumping = IA_JUMP.Object;
-
-	static ConstructorHelpers::FObjectFinder<UInputAction>IA_RUN(TEXT("/Game/Input/IA_Keroro_Run.IA_Keroro_Run"));
-	if (IA_RUN.Succeeded()) Running = IA_RUN.Object;
-
-	static ConstructorHelpers::FObjectFinder<UInputAction>IA_ATTACK(TEXT("/Game/Input/IA_Keroro_Attack.IA_Keroro_Attack"));
-	if (IA_ATTACK.Succeeded()) Attacking = IA_ATTACK.Object;
-
 }
 
 // Called when the game starts or when spawned
 void AKeroroCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	KRPlayerContoller = Cast<AKeroroPlayerController>(GetController());
-	if (KRPlayerContoller != nullptr)
-	{
-		UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(KRPlayerContoller->GetLocalPlayer());
-		if (Subsystem != nullptr) {
-			Subsystem->AddMappingContext(InputMappingContext, 0);
-		}
-	}
 
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	auto CurWeapon = GetWorld()->SpawnActor<AKeroroWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
@@ -140,15 +107,16 @@ void AKeroroCharacter::Tick(float DeltaTime)
 void AKeroroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		Input->BindAction(Moving, ETriggerEvent::Triggered, this, &AKeroroCharacter::Move);
-		Input->BindAction(Looking, ETriggerEvent::Triggered, this, &AKeroroCharacter::Look);
-		Input->BindAction(Jumping, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		Input->BindAction(Running, ETriggerEvent::Triggered, this, &AKeroroCharacter::StartRun);
-		Input->BindAction(Running, ETriggerEvent::Completed, this, &AKeroroCharacter::StopRun);
-		Input->BindAction(Attacking, ETriggerEvent::Started, this, &AKeroroCharacter::Attack); // 트리거이벤트 - Started 클릭 한번에 바인딩된 함수 한번만호출
-	}
+	//if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	//{
+	//	Input->BindAction(Moving, ETriggerEvent::Triggered, this, &AKeroroCharacter::Move);
+	//	Input->BindAction(Looking, ETriggerEvent::Triggered, this, &AKeroroCharacter::Look);
+	//	Input->BindAction(Jumping, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+	//	Input->BindAction(Running, ETriggerEvent::Triggered, this, &AKeroroCharacter::StartRun);
+	//	Input->BindAction(Running, ETriggerEvent::Completed, this, &AKeroroCharacter::StopRun);
+	//	Input->BindAction(Attacking, ETriggerEvent::Started, this, &AKeroroCharacter::Attack); // 트리거이벤트 - Started 클릭 한번에 바인딩된 함수 한번만호출
+	//	Input->BindAction(Tag, ETriggerEvent::Started, this, &AKeroroCharacter::TagCharacter);
+	//}
 }
 
 void AKeroroCharacter::PostInitializeComponents()
@@ -233,35 +201,6 @@ void AKeroroCharacter::AttackEndComboState()
 	CurrentCombo = 0;
 }
 
-void AKeroroCharacter::Move(const FInputActionValue& Value)
-{
-	if (KRPlayerContoller && !IsAttacking)
-	{
-		// 크기
-		float FowardValue = Value.Get<FVector2D>().Y;
-		float SideValue = Value.Get<FVector2D>().X;
-
-		// 방향
-		const FRotator Rotation = KRPlayerContoller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		FVector FowardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		FVector SideDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-		AddMovementInput(FowardDirection, FowardValue);
-		AddMovementInput(SideDirection, SideValue);
-	}
-}
-
-void AKeroroCharacter::Look(const FInputActionValue& Value)
-{
-	if (KRPlayerContoller)
-	{
-		AddControllerYawInput(Value.Get<FVector2D>().X);
-		AddControllerPitchInput(Value.Get<FVector2D>().Y);
-	}
-}
-
 void AKeroroCharacter::StartRun()
 {
 	if (KRAnim != nullptr) {
@@ -278,3 +217,41 @@ void AKeroroCharacter::StopRun()
 	}
 }
 
+void AKeroroCharacter::TagCharacter()
+{
+	//if (!KRPlayerContoller) return;
+
+	//// 현재 월드에 존재하는 KeroroCharacter 캐릭터들 가져오기
+	//TArray<AKeroroCharacter*> FoundCharacters;
+	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AKeroroCharacter::StaticClass(), FoundCharacters);
+
+	//if (FoundCharacters.Num() <= 1) return;
+
+	//// 현재 컨트롤 중인 캐릭터 인덱스 찾기
+	//int32 CurrentIndex = FoundCharacters.IndexOfByPredicate([this](AActor* Actor)
+	//	{
+	//		return Actor == this;
+	//	});
+
+	//// 다음 캐릭터 인덱스로 이동 (반복되도록)
+	//int32 NextIndex = (CurrentIndex + 1) % FoundCharacters.Num();
+	//ACharacter* NextCharacter = Cast<ACharacter>(FoundCharacters[NextIndex]);
+
+	//if (NextCharacter && KRPlayerContoller)
+	//{
+	//	// 현재 캐릭터에서 컨트롤 해제하고 다음 캐릭터로 컨트롤 이동
+	//	KRPlayerContoller->UnPossess();
+	//	KRPlayerContoller->Possess(NextCharacter);
+	//}
+}
+
+void AKeroroCharacter::OnMeshLoaded()
+{
+	//UE_LOG(LogTemp, Warning, TEXT("Mesh load complete!"));
+
+	//USkeletalMesh* AssetLoaded = Cast<USkeletalMesh>(AssetStreamingHandle->GetLoadedAsset());
+	//AssetStreamingHandle.Reset();
+	//if (AssetLoaded != nullptr){
+	//	GetMesh()->SetSkeletalMesh(AssetLoaded);
+	//}
+}

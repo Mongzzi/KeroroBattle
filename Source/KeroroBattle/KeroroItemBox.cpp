@@ -18,12 +18,12 @@ AKeroroItemBox::AKeroroItemBox()
 	Box = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BOX"));
 
 	RootComponent = Trigger;
+	
 	Box->SetupAttachment(RootComponent);
+	Box->SetCollisionProfileName(TEXT("NoCollision"));
 
 	Trigger->SetBoxExtent(FVector(52.0f, 34.5f, 33.5f));
 	Trigger->SetCollisionProfileName(TEXT("ItemBox"));
-
-	Box->SetCollisionProfileName(TEXT("NoCollision"));
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>SM_BOX(TEXT("/Game/SciFiCrates/Crates/Mesh/SM_Small_Crate_V1.SM_Small_Crate_V1"));
 	if (SM_BOX.Succeeded())
@@ -44,6 +44,9 @@ AKeroroItemBox::AKeroroItemBox()
 void AKeroroItemBox::BeginPlay()
 {
 	Super::BeginPlay();
+
+	int32 RandIndex = FMath::RandRange(0, static_cast<int32>(EItemType::NUM) - 1);
+	ItemType = static_cast<EItemType>(RandIndex);
 
 }
 
@@ -79,4 +82,5 @@ void AKeroroItemBox::OnCharacterBeginOverlap(UPrimitiveComponent* OverlappedComp
 				}
 			}, 1.0f, false);
 	}
+	Destroy();
 }

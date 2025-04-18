@@ -2,9 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "KeroroBattle.h"
 #include "GameFramework/Actor.h"
 #include "KeroroItemBox.generated.h"
+
 
 UCLASS()
 class KEROROBATTLE_API AKeroroItemBox : public AActor
@@ -19,6 +20,16 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;
+	
+	enum class EItemType
+	{
+		HP,
+		MP,
+		GOLD,
+		SKILL,
+		WEAPON_GUN,
+		NUM,
+	};
 
 public:	
 	// Called every frame
@@ -39,6 +50,8 @@ public:
 	UPROPERTY()
 	class UNiagaraComponent* NCOpenEffect;
 
+public:
+	EItemType ItemType;
 
 private:
 	UFUNCTION()

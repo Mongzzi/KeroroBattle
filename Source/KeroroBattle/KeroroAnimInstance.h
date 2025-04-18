@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "KeroroBattle.h"
 #include "Animation/AnimInstance.h"
 #include "KeroroAnimInstance.generated.h"
 
