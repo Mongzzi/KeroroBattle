@@ -62,7 +62,21 @@ void AKeroroItemBox::Tick(float DeltaTime)
 
 void AKeroroItemBox::OnCharacterBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("item box ovelpped"));
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSOpenEffect, GetActorLocation()+FVector(0.0f,0.0f,100.0f), FRotator::ZeroRotator, FVector(3.0f));
-	Destroy();
+	UE_LOG(LogTemp, Warning, TEXT("item box overlapped"));
+
+	NCOpenEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSOpenEffect, GetActorLocation() + FVector(0.0f, 0.0f, 100.0f), FRotator::ZeroRotator, FVector(3.0f));
+
+	if (NCOpenEffect)
+	{
+		NCOpenEffect->Activate();
+
+		FTimerHandle EffectTimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(EffectTimerHandle, [this]()
+			{
+				if (NCOpenEffect)
+				{
+					NCOpenEffect->Deactivate();
+				}
+			}, 1.0f, false);
+	}
 }

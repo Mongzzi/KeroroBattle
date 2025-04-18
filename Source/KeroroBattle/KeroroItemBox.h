@@ -36,6 +36,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Effect)
 	class UNiagaraSystem* NSOpenEffect;
 
+	UPROPERTY()
+	class UNiagaraComponent* NCOpenEffect;
+
+
 private:
 	UFUNCTION()
 	void OnCharacterBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
