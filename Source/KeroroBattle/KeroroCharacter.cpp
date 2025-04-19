@@ -2,13 +2,14 @@
 
 
 #include "KeroroCharacter.h"
-#include "Camera/CameraComponent.h"
-#include "GameFramework/SpringArmComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "KeroroPlayerController.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "KeroroAnimInstance.h"
 #include "KeroroWeapon.h"
+#include "KeroroPlayerState.h"
+#include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 
@@ -64,17 +65,17 @@ AKeroroCharacter::AKeroroCharacter()
 	MaxCombo = 4;
 	AttackEndComboState();
 
-	// 스켈레탈 메쉬
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh>SK_KERORO(TEXT("/Game/Keroro_Model/kururu/kururu.kururu"));
-	if (SK_KERORO.Succeeded())
-	{
-		GetMesh()->SetSkeletalMesh(SK_KERORO.Object);
-	}
+	//// 스켈레탈 메쉬
+	//USkeletalMesh* NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/keroro/keroro.keroro"));
+	//if (NewMesh)
+	//{
+	//	GetMesh()->SetSkeletalMesh(NewMesh);
+	//}
 
-	// 애니메이션
-	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	static ConstructorHelpers::FClassFinder<UAnimInstance>KERORO_ANIM(TEXT("/Game/Blueprints/KR_AnimInstance.KR_AnimInstance_C"));
-	if (KERORO_ANIM.Succeeded())GetMesh()->SetAnimInstanceClass(KERORO_ANIM.Class);
+	//// 애니메이션
+	//GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+	//static ConstructorHelpers::FClassFinder<UAnimInstance>KERORO_ANIM(TEXT("/Game/Blueprints/KR_AnimInstance.KR_AnimInstance_C"));
+	//if (KERORO_ANIM.Succeeded())GetMesh()->SetAnimInstanceClass(KERORO_ANIM.Class);
 
 }
 
@@ -82,6 +83,8 @@ AKeroroCharacter::AKeroroCharacter()
 void AKeroroCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	LoadAssetandSetSkeletalMesh(CurrentKeroroType);
 
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	auto CurWeapon = GetWorld()->SpawnActor<AKeroroWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
@@ -100,31 +103,21 @@ void AKeroroCharacter::BeginPlay()
 void AKeroroCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
 void AKeroroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	//if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-	//{
-	//	Input->BindAction(Moving, ETriggerEvent::Triggered, this, &AKeroroCharacter::Move);
-	//	Input->BindAction(Looking, ETriggerEvent::Triggered, this, &AKeroroCharacter::Look);
-	//	Input->BindAction(Jumping, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-	//	Input->BindAction(Running, ETriggerEvent::Triggered, this, &AKeroroCharacter::StartRun);
-	//	Input->BindAction(Running, ETriggerEvent::Completed, this, &AKeroroCharacter::StopRun);
-	//	Input->BindAction(Attacking, ETriggerEvent::Started, this, &AKeroroCharacter::Attack); // 트리거이벤트 - Started 클릭 한번에 바인딩된 함수 한번만호출
-	//	Input->BindAction(Tag, ETriggerEvent::Started, this, &AKeroroCharacter::TagCharacter);
-	//}
 }
 
 void AKeroroCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	// 애님인스턴스
 	KRAnim = Cast<UKeroroAnimInstance>(GetMesh()->GetAnimInstance());
 	if (KRAnim == nullptr) return;
-
 	KRAnim->OnMontageEnded.AddDynamic(this, &AKeroroCharacter::OnAttackMontageEnded);
 	KRAnim->OnNextAttackCheck.AddLambda([this]()->void {
 		CanNextCombo = false;
@@ -136,6 +129,7 @@ void AKeroroCharacter::PostInitializeComponents()
 		}
 		});
 	KRAnim->OnEffectCreateCheck.AddUObject(this, &AKeroroCharacter::PlaySwordEffect);
+
 }
 
 void AKeroroCharacter::Attack()
@@ -165,6 +159,67 @@ void AKeroroCharacter::StartNewAttack()
 	KRAnim->PlayAttackMontage();
 	KRAnim->JumptoAttackMontageSection(CurrentCombo);
 	IsAttacking = true;
+}
+
+void AKeroroCharacter::LoadAssetandSetSkeletalMesh(EKeroroType type)
+{
+	USkeletalMesh* NewMesh = nullptr;
+
+	switch (type)
+	{
+	case EKeroroType::Keroro:
+		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/keroro/keroro.keroro"));
+		break;
+	case EKeroroType::Tamama:
+		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/tamama/tamama.tamama"));
+		break;
+	case EKeroroType::Giroro:
+		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/giroro/giroro.giroro"));
+		break;
+	case EKeroroType::Kururu:
+		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/kururu/kururu.kururu"));
+		break;
+	case EKeroroType::Dororo:
+		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/dororo/dororo.dororo"));
+		break;
+	}
+
+	if (NewMesh)
+	{
+		GetMesh()->SetSkeletalMesh(NewMesh);
+
+		// 애님 인스턴스 다시 세팅 (필수!!)
+		UClass* AnimBPClass = LoadClass<UAnimInstance>(nullptr, TEXT("/Game/Blueprints/KR_AnimInstance.KR_AnimInstance_C"));
+		if (AnimBPClass)
+		{
+			GetMesh()->SetAnimInstanceClass(AnimBPClass);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("animintance nulll"));
+		}
+
+		// 애님 인스턴스 새로 얻기 및 델리게이트 재바인딩 - 추후 따로 함수로 다시 뺼 예정
+		KRAnim = Cast<UKeroroAnimInstance>(GetMesh()->GetAnimInstance());
+		if (KRAnim)
+		{
+			KRAnim->OnMontageEnded.AddDynamic(this, &AKeroroCharacter::OnAttackMontageEnded);
+			KRAnim->OnNextAttackCheck.AddLambda([this]()->void {
+				CanNextCombo = false;
+				if (IsComboInputOn)
+				{
+					AttackStartComboState();
+					KRAnim->JumptoAttackMontageSection(CurrentCombo);
+					IsAttacking = true;
+				}
+				});
+			KRAnim->OnEffectCreateCheck.AddUObject(this, &AKeroroCharacter::PlaySwordEffect);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("KRAnim null"));
+		}
+	}
 }
 
 void AKeroroCharacter::PlaySwordEffect()
@@ -217,41 +272,3 @@ void AKeroroCharacter::StopRun()
 	}
 }
 
-void AKeroroCharacter::TagCharacter()
-{
-	//if (!KRPlayerContoller) return;
-
-	//// 현재 월드에 존재하는 KeroroCharacter 캐릭터들 가져오기
-	//TArray<AKeroroCharacter*> FoundCharacters;
-	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AKeroroCharacter::StaticClass(), FoundCharacters);
-
-	//if (FoundCharacters.Num() <= 1) return;
-
-	//// 현재 컨트롤 중인 캐릭터 인덱스 찾기
-	//int32 CurrentIndex = FoundCharacters.IndexOfByPredicate([this](AActor* Actor)
-	//	{
-	//		return Actor == this;
-	//	});
-
-	//// 다음 캐릭터 인덱스로 이동 (반복되도록)
-	//int32 NextIndex = (CurrentIndex + 1) % FoundCharacters.Num();
-	//ACharacter* NextCharacter = Cast<ACharacter>(FoundCharacters[NextIndex]);
-
-	//if (NextCharacter && KRPlayerContoller)
-	//{
-	//	// 현재 캐릭터에서 컨트롤 해제하고 다음 캐릭터로 컨트롤 이동
-	//	KRPlayerContoller->UnPossess();
-	//	KRPlayerContoller->Possess(NextCharacter);
-	//}
-}
-
-void AKeroroCharacter::OnMeshLoaded()
-{
-	//UE_LOG(LogTemp, Warning, TEXT("Mesh load complete!"));
-
-	//USkeletalMesh* AssetLoaded = Cast<USkeletalMesh>(AssetStreamingHandle->GetLoadedAsset());
-	//AssetStreamingHandle.Reset();
-	//if (AssetLoaded != nullptr){
-	//	GetMesh()->SetSkeletalMesh(AssetLoaded);
-	//}
-}

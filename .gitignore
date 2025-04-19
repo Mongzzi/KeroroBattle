@@ -9,4 +9,5 @@
 *.dll
 *.uasset
 *.umap
+*.dll
 *_BuiltData.uasset

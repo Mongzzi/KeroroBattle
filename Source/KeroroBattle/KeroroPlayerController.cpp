@@ -9,11 +9,23 @@
 #include "InputAction.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
+#include "KeroroPlayerState.h"
+#include "EngineUtils.h"
 
 AKeroroPlayerController::AKeroroPlayerController()
 {
 	// 입력
+	LoadInputActionAndMappingContext();
+}
+
+void AKeroroPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+	KRPlayerState = Cast<AKeroroPlayerState>(PlayerState);
+}
+
+void AKeroroPlayerController::LoadInputActionAndMappingContext()
+{
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> IMC_KERORO(TEXT("/Game/Input/IMC_Keroro.IMC_Keroro"));
 	if (IMC_KERORO.Succeeded())InputMappingContext = IMC_KERORO.Object;
 
@@ -36,18 +48,10 @@ AKeroroPlayerController::AKeroroPlayerController()
 	if (IA_TAG.Succeeded()) Tag = IA_TAG.Object;
 }
 
-void AKeroroPlayerController::BeginPlay()
-{
-	Super::BeginPlay();
-
-
-}
 
 void AKeroroPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
-
-
 
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
@@ -70,7 +74,6 @@ void AKeroroPlayerController::SetupInputComponent()
 
 void AKeroroPlayerController::Move(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Error, TEXT("mmm"));
 	if (AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter()))
 	{
 		const FVector2D InputVector = Value.Get<FVector2D>();
@@ -126,8 +129,10 @@ void AKeroroPlayerController::Attack()
 
 void AKeroroPlayerController::TagCharacter()
 {
-	if (AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter()))
-	{
-		kero->TagCharacter(); // 교체 로직은 캐릭터 내부에서 처리
-	}
+	UE_LOG(LogTemp, Warning, TEXT("ananananana"));
+	auto NewCharacter = GetWorld()->SpawnActor<AKeroroCharacter>(AKeroroCharacter::StaticClass(), GetCharacter()->GetActorLocation()+FVector(0.0f,0.0f,300.0f), GetCharacter()->GetActorRotation());
+	
+	NewCharacter->LoadAssetandSetSkeletalMesh(KRPlayerState->SetNextCharacterType());
+	Possess(NewCharacter);
 }
+

@@ -20,6 +20,8 @@ class KEROROBATTLE_API AKeroroPlayerController : public APlayerController
 public:
 	AKeroroPlayerController();
 
+	class AKeroroPlayerState* KRPlayerState;
+
 protected:
 
 	UPROPERTY(EditAnywhere, Category = Input)
@@ -54,4 +56,10 @@ private:
 	void StopRun();
 	void Attack();
 	void TagCharacter();
+	void LoadInputActionAndMappingContext();
+
+public:
+
+	UPROPERTY()
+	TArray<class AKeroroCharacter*> SpawnedCharacters;
 };

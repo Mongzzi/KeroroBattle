@@ -39,17 +39,20 @@ public:
 public:
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
-	void OnMeshLoaded();
 	
 public:
 	void StartRun();
 	void StopRun();
-	void TagCharacter();
 	void Attack();
 	void AttackStartComboState();
 	void AttackEndComboState();
 	void HandleComboInput();
 	void StartNewAttack();
+	void LoadAssetandSetSkeletalMesh(EKeroroType type);
+
+public:
+	EKeroroType GetKeroroCharacterType() { return CurrentKeroroType; }
+	void SetKeroroCharacterType(EKeroroType type) { CurrentKeroroType = type; }
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
@@ -90,27 +93,10 @@ private:
 	// 스트림핸들 저장하기위해선 꼭 TSharedPtr 타입으로 해줘야함 
 	TSharedPtr<struct FStreamableHandle> AssetStreamingHandle;
 
+
 protected:
-	//UPROPERTY(EditAnywhere, Category = Input)
-	//class UInputMappingContext* InputMappingContext;
-
-	//UPROPERTY(EditAnywhere, Category = Input)
-	//class UInputAction* Moving;
-
-	//UPROPERTY(EditAnyWhere, Category = Input)
-	//class UInputAction* Jumping;
-
-	//UPROPERTY(EditAnyWhere, Category = Input)
-	//class UInputAction* Looking;
-
-	//UPROPERTY(EditAnyWhere, Category = Input)
-	//class UInputAction* Running;
-
-	//UPROPERTY(EditAnyWhere, Category = Input)
-	//class UInputAction* Attacking;
-
-	//UPROPERTY(EditAnywhere,Category = Input)
-	//class UInputAction* Tag;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	EKeroroType CurrentKeroroType = EKeroroType::Keroro;
 
 	UPROPERTY(EditAnywhere, Category = Stat)
 	float RunSpeed;
