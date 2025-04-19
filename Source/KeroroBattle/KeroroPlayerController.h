@@ -59,7 +59,8 @@ private:
 	void LoadInputActionAndMappingContext();
 
 public:
-
+	class UNiagaraSystem* NSTagEffect;
+	class UNiagaraComponent* NCTagEffect;
 	UPROPERTY()
-	TArray<class AKeroroCharacter*> SpawnedCharacters;
+	TMap<EKeroroType, class AKeroroCharacter*> CharacterMap;
 };

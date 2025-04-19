@@ -37,6 +37,9 @@ public:
 	void PlaySwordEffect();
 	
 public:
+	// 애님 인스턴스 새로 얻기 및 델리게이트 재바인딩
+	void BindAnimInstanceEvents();
+
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	
@@ -48,7 +51,7 @@ public:
 	void AttackEndComboState();
 	void HandleComboInput();
 	void StartNewAttack();
-	void LoadAssetandSetSkeletalMesh(EKeroroType type);
+	void LoadAssetandSetting(EKeroroType type);
 
 public:
 	EKeroroType GetKeroroCharacterType() { return CurrentKeroroType; }

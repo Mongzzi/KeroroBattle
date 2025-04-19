@@ -3,25 +3,38 @@
 
 #include "KeroroPlayerController.h"
 #include "KeroroCharacter.h"
+#include "KeroroPlayerState.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "InputAction.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "KeroroPlayerState.h"
-#include "EngineUtils.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 AKeroroPlayerController::AKeroroPlayerController()
 {
 	// 입력
 	LoadInputActionAndMappingContext();
+
+	// 이펙트
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NS(TEXT("/Game/Knife_light/VFX/NE_attack05.NE_attack05"));
+	if (NS.Succeeded())
+	{
+		NSTagEffect = NS.Object;
+	}
 }
 
 void AKeroroPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	KRPlayerState = Cast<AKeroroPlayerState>(PlayerState);
+	if (AKeroroCharacter* MyCharacter = Cast<AKeroroCharacter>(GetCharacter()))
+	{
+		EKeroroType MyType = MyCharacter->GetKeroroCharacterType(); // 캐릭터가 자신의 타입 알려주는 함수
+		CharacterMap.Add(MyType, MyCharacter); // TMap에 미리 등록
+	}
 }
 
 void AKeroroPlayerController::LoadInputActionAndMappingContext()
@@ -129,10 +142,38 @@ void AKeroroPlayerController::Attack()
 
 void AKeroroPlayerController::TagCharacter()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ananananana"));
-	auto NewCharacter = GetWorld()->SpawnActor<AKeroroCharacter>(AKeroroCharacter::StaticClass(), GetCharacter()->GetActorLocation()+FVector(0.0f,0.0f,300.0f), GetCharacter()->GetActorRotation());
-	
-	NewCharacter->LoadAssetandSetSkeletalMesh(KRPlayerState->SetNextCharacterType());
-	Possess(NewCharacter);
+	if (!KRPlayerState) return;
+
+	// 다음 캐릭터 타입
+	EKeroroType NextType = KRPlayerState->SetNextCharacterType();
+
+	// 이미 존재하는 캐릭터가 있는지 확인
+	if (CharacterMap.Contains(NextType) && IsValid(CharacterMap[NextType]))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("character is in world"));
+		Possess(CharacterMap[NextType]);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("spawn new character"));
+		FVector SpawnLoc = GetCharacter()->GetActorLocation() + FVector(0, 0, 300);
+		FRotator SpawnRot = GetCharacter()->GetActorRotation();
+		AKeroroCharacter* NewCharacter = GetWorld()->SpawnActor<AKeroroCharacter>(AKeroroCharacter::StaticClass(), SpawnLoc, SpawnRot);
+		if (NewCharacter)
+		{
+			NewCharacter->LoadAssetandSetting(NextType);
+			CharacterMap.Add(NextType, NewCharacter);
+			Possess(NewCharacter);
+		}
+	}
+	// 태그 이펙트
+	if (NSTagEffect)
+	{
+		FVector EffectLoc = GetCharacter()->GetActorLocation() + GetCharacter()->GetActorForwardVector() * 100.0f;
+		FRotator EffecRot = GetCharacter()->GetActorRotation();
+
+		NCTagEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSTagEffect, EffectLoc, EffecRot, FVector(1.0f));
+	}
+
 }
 

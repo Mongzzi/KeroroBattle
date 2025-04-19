@@ -64,19 +64,6 @@ AKeroroCharacter::AKeroroCharacter()
 	IsAttacking = false;
 	MaxCombo = 4;
 	AttackEndComboState();
-
-	//// 스켈레탈 메쉬
-	//USkeletalMesh* NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/keroro/keroro.keroro"));
-	//if (NewMesh)
-	//{
-	//	GetMesh()->SetSkeletalMesh(NewMesh);
-	//}
-
-	//// 애니메이션
-	//GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	//static ConstructorHelpers::FClassFinder<UAnimInstance>KERORO_ANIM(TEXT("/Game/Blueprints/KR_AnimInstance.KR_AnimInstance_C"));
-	//if (KERORO_ANIM.Succeeded())GetMesh()->SetAnimInstanceClass(KERORO_ANIM.Class);
-
 }
 
 // Called when the game starts or when spawned
@@ -84,7 +71,8 @@ void AKeroroCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	LoadAssetandSetSkeletalMesh(CurrentKeroroType);
+	// (스켈레탈메시,애님인스턴스 로드 후 설정),(몽타주 델리게이트 바인딩)
+	LoadAssetandSetting(CurrentKeroroType);
 
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	auto CurWeapon = GetWorld()->SpawnActor<AKeroroWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
@@ -115,21 +103,7 @@ void AKeroroCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	// 애님인스턴스
-	KRAnim = Cast<UKeroroAnimInstance>(GetMesh()->GetAnimInstance());
-	if (KRAnim == nullptr) return;
-	KRAnim->OnMontageEnded.AddDynamic(this, &AKeroroCharacter::OnAttackMontageEnded);
-	KRAnim->OnNextAttackCheck.AddLambda([this]()->void {
-		CanNextCombo = false;
-		if (IsComboInputOn)
-		{
-			AttackStartComboState();
-			KRAnim->JumptoAttackMontageSection(CurrentCombo);
-			IsAttacking = true;
-		}
-		});
-	KRAnim->OnEffectCreateCheck.AddUObject(this, &AKeroroCharacter::PlaySwordEffect);
-
+	//BindAnimInstanceEvents();
 }
 
 void AKeroroCharacter::Attack()
@@ -161,67 +135,6 @@ void AKeroroCharacter::StartNewAttack()
 	IsAttacking = true;
 }
 
-void AKeroroCharacter::LoadAssetandSetSkeletalMesh(EKeroroType type)
-{
-	USkeletalMesh* NewMesh = nullptr;
-
-	switch (type)
-	{
-	case EKeroroType::Keroro:
-		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/keroro/keroro.keroro"));
-		break;
-	case EKeroroType::Tamama:
-		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/tamama/tamama.tamama"));
-		break;
-	case EKeroroType::Giroro:
-		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/giroro/giroro.giroro"));
-		break;
-	case EKeroroType::Kururu:
-		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/kururu/kururu.kururu"));
-		break;
-	case EKeroroType::Dororo:
-		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/dororo/dororo.dororo"));
-		break;
-	}
-
-	if (NewMesh)
-	{
-		GetMesh()->SetSkeletalMesh(NewMesh);
-
-		// 애님 인스턴스 다시 세팅 (필수!!)
-		UClass* AnimBPClass = LoadClass<UAnimInstance>(nullptr, TEXT("/Game/Blueprints/KR_AnimInstance.KR_AnimInstance_C"));
-		if (AnimBPClass)
-		{
-			GetMesh()->SetAnimInstanceClass(AnimBPClass);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("animintance nulll"));
-		}
-
-		// 애님 인스턴스 새로 얻기 및 델리게이트 재바인딩 - 추후 따로 함수로 다시 뺼 예정
-		KRAnim = Cast<UKeroroAnimInstance>(GetMesh()->GetAnimInstance());
-		if (KRAnim)
-		{
-			KRAnim->OnMontageEnded.AddDynamic(this, &AKeroroCharacter::OnAttackMontageEnded);
-			KRAnim->OnNextAttackCheck.AddLambda([this]()->void {
-				CanNextCombo = false;
-				if (IsComboInputOn)
-				{
-					AttackStartComboState();
-					KRAnim->JumptoAttackMontageSection(CurrentCombo);
-					IsAttacking = true;
-				}
-				});
-			KRAnim->OnEffectCreateCheck.AddUObject(this, &AKeroroCharacter::PlaySwordEffect);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("KRAnim null"));
-		}
-	}
-}
-
 void AKeroroCharacter::PlaySwordEffect()
 {
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
@@ -231,6 +144,30 @@ void AKeroroCharacter::PlaySwordEffect()
 		GetActorRotation(),
 		FVector(2.0f)
 	);
+}
+
+void AKeroroCharacter::BindAnimInstanceEvents()
+{	
+
+	KRAnim = Cast<UKeroroAnimInstance>(GetMesh()->GetAnimInstance());
+	if (KRAnim == nullptr) return;
+
+	// 몽타주 끝났을 시 공격콤보 초기화
+	KRAnim->OnMontageEnded.AddDynamic(this, &AKeroroCharacter::OnAttackMontageEnded);
+	
+	// 다음 공격
+	KRAnim->OnNextAttackCheck.AddLambda([this]()->void {
+		CanNextCombo = false;
+		if (IsComboInputOn)
+		{
+			AttackStartComboState();
+			KRAnim->JumptoAttackMontageSection(CurrentCombo);
+			IsAttacking = true;
+		}
+		});
+
+	// 공격 이펙트
+	KRAnim->OnEffectCreateCheck.AddUObject(this, &AKeroroCharacter::PlaySwordEffect);
 }
 
 void AKeroroCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
@@ -272,3 +209,41 @@ void AKeroroCharacter::StopRun()
 	}
 }
 
+void AKeroroCharacter::LoadAssetandSetting(EKeroroType type)
+{
+	USkeletalMesh* NewMesh = nullptr;
+
+	switch (type)
+	{
+	case EKeroroType::Keroro:
+		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/keroro/keroro.keroro"));
+		break;
+	case EKeroroType::Tamama:
+		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/tamama/tamama.tamama"));
+		break;
+	case EKeroroType::Giroro:
+		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/giroro/giroro.giroro"));
+		break;
+	case EKeroroType::Kururu:
+		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/kururu/kururu.kururu"));
+		break;
+	case EKeroroType::Dororo:
+		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/dororo/dororo.dororo"));
+		break;
+	}
+
+	if (NewMesh)
+	{
+		GetMesh()->SetSkeletalMesh(NewMesh);
+
+		// 애님 인스턴스 세팅
+		UClass* AnimBPClass = LoadClass<UAnimInstance>(nullptr, TEXT("/Game/Blueprints/KR_AnimInstance.KR_AnimInstance_C"));
+		if (AnimBPClass)
+		{
+			GetMesh()->SetAnimInstanceClass(AnimBPClass);
+		}
+
+		// 애님인스턴스 설정 및 델리게이트 바인딩
+		BindAnimInstanceEvents();
+	}
+}
