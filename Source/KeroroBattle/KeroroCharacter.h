@@ -84,6 +84,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	USkeletalMeshComponent* Weapon;
 
+	UPROPERTY(VisibleAnywhere,Category= UI)
+	class UWidgetComponent* HPBar;
+
 private:
 	// 플레이어 컨트롤러
 	UPROPERTY()

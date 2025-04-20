@@ -8,6 +8,7 @@
 #include "KeroroPlayerState.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "NiagaraFunctionLibrary.h"
@@ -39,6 +40,15 @@ AKeroroCharacter::AKeroroCharacter()
 	{
 		NSAttackEffect = NE.Object;
 	}
+
+	// HP바 추가
+	HPBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
+	HPBar->SetupAttachment(GetMesh());
+	HPBar->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
+	HPBar->SetWidgetSpace(EWidgetSpace::Screen);
+	HPBar->SetDrawSize(FVector2D(300.0f, 50.0f));
+	static ConstructorHelpers::FClassFinder<UUserWidget>HUD(TEXT("/Game/Blueprints/KR_HPBar.KR_HPBar_C"));
+	if (HUD.Succeeded()) HPBar->SetWidgetClass(HUD.Class);
 
 	// 스프링암 설정
 	SpringArm->bUsePawnControlRotation = true; // 컨트롤러 기준 회전
