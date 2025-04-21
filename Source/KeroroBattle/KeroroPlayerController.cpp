@@ -12,6 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Blueprint/UserWidget.h"
 
 AKeroroPlayerController::AKeroroPlayerController()
 {
@@ -24,6 +25,11 @@ AKeroroPlayerController::AKeroroPlayerController()
 	{
 		NSTagEffect = NS.Object;
 	}
+	static ConstructorHelpers::FClassFinder<UUserWidget> WidgetClassFinder(TEXT("/Game/Blueprints/KR_HUD_Widget.KR_HUD_Widget_C"));
+	if (WidgetClassFinder.Succeeded())
+	{
+		KeroroStatusWidgetClass = WidgetClassFinder.Class;
+	}
 }
 
 void AKeroroPlayerController::BeginPlay()
@@ -34,6 +40,15 @@ void AKeroroPlayerController::BeginPlay()
 	{
 		EKeroroType MyType = MyCharacter->GetKeroroCharacterType(); // 캐릭터가 자신의 타입 알려주는 함수
 		CharacterMap.Add(MyType, MyCharacter); // TMap에 미리 등록
+	}
+
+	if (KeroroStatusWidgetClass)
+	{
+		KeroroStatusWidget = CreateWidget<UUserWidget>(this, KeroroStatusWidgetClass);
+		if (KeroroStatusWidget)
+		{
+			KeroroStatusWidget->AddToViewport();
+		}
 	}
 }
 

@@ -63,4 +63,12 @@ public:
 	class UNiagaraComponent* NCTagEffect;
 	UPROPERTY()
 	TMap<EKeroroType, class AKeroroCharacter*> CharacterMap;
+
+
+	// test
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<class UUserWidget> KeroroStatusWidgetClass;
+
+	UPROPERTY()
+	class UUserWidget* KeroroStatusWidget;
 };

@@ -5,9 +5,9 @@
 /Plugins
 *.exe
 *.sln
+*.uasset
 *.pdb
 *.dll
-*.uasset
 *.umap
 *.dll
 *_BuiltData.uasset
