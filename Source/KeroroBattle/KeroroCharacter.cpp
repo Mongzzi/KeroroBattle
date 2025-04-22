@@ -6,6 +6,7 @@
 #include "KeroroAnimInstance.h"
 #include "KeroroWeapon.h"
 #include "KeroroPlayerState.h"
+#include "KeroroStatComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
@@ -33,6 +34,9 @@ AKeroroCharacter::AKeroroCharacter()
 
 	// 캡슐컴포넌트 콜리전프로파일 설정 
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("KeroroCharacter"));
+
+	// 캐릭터 스탯 컴포넌트
+	KRStat = CreateDefaultSubobject<UKeroroStatComponent>(TEXT("KRSTAT"));
 
 	// 나이아가라 이펙트 추가
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NE(TEXT("/Game/Knife_light/VFX/NE_attack02.NE_attack02"));

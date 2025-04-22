@@ -87,6 +87,9 @@ public:
 	UPROPERTY(VisibleAnywhere,Category= UI)
 	class UWidgetComponent* HPBar;
 
+	UPROPERTY(VisibleAnywhere,Category= Stat)
+	class UKeroroStatComponent* KRStat;
+
 private:
 	// 플레이어 컨트롤러
 	UPROPERTY()
