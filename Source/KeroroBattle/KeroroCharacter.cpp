@@ -14,6 +14,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "DrawDebugHelpers.h"	// 디버그 드로잉 기능 사용하기위한 헤더
+
 
 // Sets default values
 AKeroroCharacter::AKeroroCharacter()
@@ -78,16 +80,16 @@ AKeroroCharacter::AKeroroCharacter()
 	IsAttacking = false;
 	MaxCombo = 4;
 	AttackEndComboState();
+
+	// 공격 범위
+	AttackRange = 200.0f;
+	AttackRadius = 50.0f;
 }
 
 // Called when the game starts or when spawned
 void AKeroroCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// (스켈레탈메시,애님인스턴스 로드 후 설정),(몽타주 델리게이트 바인딩)
-	LoadAssetandSetting(CurrentKeroroType);
-
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	auto CurWeapon = GetWorld()->SpawnActor<AKeroroWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
 	if (CurWeapon)
@@ -96,7 +98,6 @@ void AKeroroCharacter::BeginPlay()
 		CurWeapon->SetActorRelativeLocation(CurWeapon->AttachLocationOffset);
 		CurWeapon->SetActorRelativeRotation(CurWeapon->AttachRotationOffset);
 		CurWeapon->SetActorRelativeScale3D(CurWeapon->AttachScale);
-
 		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
 	}
 }
@@ -117,12 +118,13 @@ void AKeroroCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	//BindAnimInstanceEvents();
+	// (스켈레탈메시,애님인스턴스 로드 후 설정),(몽타주 델리게이트 바인딩)
+	LoadAssetandSetting(CurrentKeroroType);
 }
 
 void AKeroroCharacter::Attack()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Attack succed"));
+	//UE_LOG(LogTemp, Warning, TEXT("Attack succed"));
 
 	if (IsAttacking) // 애니메이션(몽타주) 재생중인가
 	{
@@ -161,15 +163,15 @@ void AKeroroCharacter::PlaySwordEffect()
 }
 
 void AKeroroCharacter::BindAnimInstanceEvents()
-{	
+{
 
 	KRAnim = Cast<UKeroroAnimInstance>(GetMesh()->GetAnimInstance());
 	if (KRAnim == nullptr) return;
 
 	// 몽타주 끝났을 시 공격콤보 초기화
 	KRAnim->OnMontageEnded.AddDynamic(this, &AKeroroCharacter::OnAttackMontageEnded);
-	
-	// 다음 공격
+
+	// 다음 공격 바인딩
 	KRAnim->OnNextAttackCheck.AddLambda([this]()->void {
 		CanNextCombo = false;
 		if (IsComboInputOn)
@@ -180,8 +182,11 @@ void AKeroroCharacter::BindAnimInstanceEvents()
 		}
 		});
 
-	// 공격 이펙트
+	// 공격 이펙트 바인딩
 	KRAnim->OnEffectCreateCheck.AddUObject(this, &AKeroroCharacter::PlaySwordEffect);
+
+	// 공격 충돌 체크 바인딩
+	KRAnim->OnAttackHitCheck.AddUObject(this, &AKeroroCharacter::AttackCheck);
 }
 
 void AKeroroCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
@@ -205,6 +210,49 @@ void AKeroroCharacter::AttackEndComboState()
 	IsComboInputOn = false;
 	CanNextCombo = false;
 	CurrentCombo = 0;
+}
+
+void AKeroroCharacter::AttackCheck()
+{
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this); // 자기 자신은 무시
+
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		GetActorLocation(),	// 시작위치
+		GetActorLocation() + GetActorForwardVector() * AttackRange,	// 끝위치
+		FQuat::Identity, // 회전 없음
+		ECC_GameTraceChannel3, // Attack채널 ( DefaultEngine 파일에 내가만든 채널 몇번쨰인지 나와있음 )
+		FCollisionShape::MakeSphere(AttackRadius),
+		Params
+	);
+
+#if ENABLE_DRAW_DEBUG
+	FVector TraceVec = GetActorForwardVector() * AttackRange;
+	FVector Center = GetActorLocation() + TraceVec * 0.5f;
+	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
+	FColor DrawColor = bHit ? FColor::Green : FColor::Red;
+	float DebugLifeTime = 5.0f;
+
+	DrawDebugCapsule(
+		GetWorld(),
+		Center,
+		HalfHeight,
+		AttackRadius,
+		CapsuleRot,
+		DrawColor,
+		false,
+		DebugLifeTime
+	);
+
+#endif
+
+	if (bHit)
+	{
+		UE_LOG(LogTemp, Warning, TEXT(" hitted : %s"), *HitResult.GetActor()->GetName());
+	}
 }
 
 void AKeroroCharacter::StartRun()

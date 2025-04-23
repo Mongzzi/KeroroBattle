@@ -5,7 +5,7 @@
 
 UKeroroGameInstance::UKeroroGameInstance()
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable>KRDT(TEXT("/Game/GameData/CharacterData.CharacterData"));
+	static ConstructorHelpers::FObjectFinder<UDataTable>KRDT(TEXT("/Game/GameData/StatData.StatData"));
 	if (KRDT.Succeeded())KRStatTable = KRDT.Object;
 }
 

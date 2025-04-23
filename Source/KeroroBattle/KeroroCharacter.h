@@ -49,6 +49,7 @@ public:
 	void Attack();
 	void AttackStartComboState();
 	void AttackEndComboState();
+	void AttackCheck();
 	void HandleComboInput();
 	void StartNewAttack();
 	void LoadAssetandSetting(EKeroroType type);
@@ -61,7 +62,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	bool IsAttacking;
 
-	UPROPERTY(VisibleInstanceOnly,BlueprintReadOnly,Category=Attack,Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly,BlueprintReadOnly,Category = Attack,Meta = (AllowPrivateAccess = true))
 	bool CanNextCombo;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
@@ -72,6 +73,12 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	int32 MaxCombo;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	float AttackRange;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	float AttackRadius;
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -103,8 +110,8 @@ private:
 	TSharedPtr<struct FStreamableHandle> AssetStreamingHandle;
 
 
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=KeroroType)
 	EKeroroType CurrentKeroroType = EKeroroType::Keroro;
 
 	UPROPERTY(EditAnywhere, Category = Stat)
