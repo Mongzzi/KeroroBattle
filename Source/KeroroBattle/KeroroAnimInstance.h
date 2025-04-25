@@ -29,6 +29,8 @@ public:
 	FOnNextAttackCheckDelegate OnNextAttackCheck;
 	FOnAttackHitCheckDelegate OnAttackHitCheck;
 	FOnEffectCreateCheckDelegate OnEffectCreateCheck;
+	
+	void SetDeadAnim();
 private:
 	UFUNCTION()
 	void AnimNotify_AttackHitCheck();
@@ -52,8 +54,10 @@ public:
 	bool bIsRunning;
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true));
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	class UAnimMontage* SwordAttackMontage;
 
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=Pawn,meta=(AllowPrivateAccess=true))
+	bool IsDead;
 };
 

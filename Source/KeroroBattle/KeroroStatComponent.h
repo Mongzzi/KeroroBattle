@@ -7,6 +7,7 @@
 #include "KeroroStatComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnHPIsZeroDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnHPIsChangedDeleGate);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class KEROROBATTLE_API UKeroroStatComponent : public UActorComponent
@@ -34,8 +35,11 @@ public:
 public:
 	void SetLevel(int32 lv);
 	void SetDamage(float dm);
+	void SetHP(float hp);
+	float GetHpRatio();
 
 	FOnHPIsZeroDelegate OnHpIsZero;
+	FOnHPIsChangedDeleGate OnHpIsChanged;
 
 private:
 	struct FKRStatData* StatData;

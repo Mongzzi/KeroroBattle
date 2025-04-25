@@ -26,11 +26,18 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Keroro")
     EKeroroType CurrentKeroro;
 
-    //누적 점수
+    // 누적 점수
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Keroro")
     int32 TotalScore;
 
-    //
+    // 경험치
+
+    // 골드
+
+    // 적 처치 수
+
+
+    // 현재 태그중인 캐릭터
     EKeroroType GetCurrentCharacterType() const { return CurrentKeroro; }
     void SetCurrentCharacterType(EKeroroType type) { CurrentKeroro = type; }
     EKeroroType SetNextCharacterType();

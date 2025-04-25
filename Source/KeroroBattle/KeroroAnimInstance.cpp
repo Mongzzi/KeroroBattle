@@ -11,6 +11,7 @@ UKeroroAnimInstance::UKeroroAnimInstance()
 {
 	CurrentPawnSpeed = 0.0f;
 	IsInAir = false;
+	IsDead = false;
 	bIsRunning = false;
 
 	// ¸ùÅ¸ÁÖ ·Îµå
@@ -22,25 +23,34 @@ void UKeroroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	auto Pawn = TryGetPawnOwner();
-	if (IsValid(Pawn))
+	if (!IsDead)
 	{
-		CurrentPawnSpeed = Pawn->GetVelocity().Size();
-	}
-	auto Character = Cast<ACharacter>(Pawn);
-	if (Character)
-	{
-		IsInAir = Character->GetMovementComponent()->IsFalling();
+		auto Pawn = TryGetPawnOwner();
+		if (IsValid(Pawn))
+		{
+			CurrentPawnSpeed = Pawn->GetVelocity().Size();
+		}
+		auto Character = Cast<ACharacter>(Pawn);
+		if (Character)
+		{
+			IsInAir = Character->GetMovementComponent()->IsFalling();
+		}
 	}
 
 }
 
 void UKeroroAnimInstance::PlayAttackMontage()
 {
+	if (IsDead) return;
 	if (!Montage_IsPlaying(SwordAttackMontage))
 	{
 		Montage_Play(SwordAttackMontage, 1.0f);
 	}
+}
+
+void UKeroroAnimInstance::SetDeadAnim()
+{
+	IsDead = true;
 }
 
 void UKeroroAnimInstance::AnimNotify_AttackHitCheck()
@@ -55,7 +65,7 @@ void UKeroroAnimInstance::AnimNotify_NextAttackCheck()
 
 void UKeroroAnimInstance::AnimNotify_EffectCreateCheck()
 {
-	UE_LOG(LogTemp, Error, TEXT("Effect Create timing!"));
+	//UE_LOG(LogTemp, Error, TEXT("Effect Create timing!"));
 	OnEffectCreateCheck.Broadcast();
 }
 
@@ -67,6 +77,8 @@ FName UKeroroAnimInstance::GetAttackMontageSectionName(int32 Section)
 
 void UKeroroAnimInstance::JumptoAttackMontageSection(int32 NewSection)
 {
+	if (IsDead) return;
+
 	if (!Montage_IsPlaying(SwordAttackMontage)) return;
 	Montage_JumpToSection(GetAttackMontageSectionName(NewSection), SwordAttackMontage);
 }

@@ -4,6 +4,8 @@
 #include "KeroroPlayerController.h"
 #include "KeroroCharacter.h"
 #include "KeroroPlayerState.h"
+#include "KeroroStatComponent.h"
+#include "KeroroHUDWidget.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
@@ -12,7 +14,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
-#include "Blueprint/UserWidget.h"
 
 AKeroroPlayerController::AKeroroPlayerController()
 {
@@ -25,30 +26,105 @@ AKeroroPlayerController::AKeroroPlayerController()
 	{
 		NSTagEffect = NS.Object;
 	}
-	static ConstructorHelpers::FClassFinder<UUserWidget> WidgetClassFinder(TEXT("/Game/Blueprints/KR_HUD_Widget.KR_HUD_Widget_C"));
+	static ConstructorHelpers::FClassFinder<UKeroroHUDWidget> WidgetClassFinder(TEXT("/Game/Blueprints/KR_HUD_Widget.KR_HUD_Widget_C"));
 	if (WidgetClassFinder.Succeeded())
 	{
-		KeroroStatusWidgetClass = WidgetClassFinder.Class;
+		KRHUDWidgetClass = WidgetClassFinder.Class;
 	}
+
+}
+
+void AKeroroPlayerController::OnPossess(APawn* PawnToPossess)
+{
+	Super::OnPossess(PawnToPossess);
+	//AKeroroCharacter* KRCharacter = Cast<AKeroroCharacter>(GetCharacter());
+	//if (KRCharacter && KRHUDWidget)
+	//{
+	//	Cast<UKeroroHUDWidget>(KRHUDWidget)->BindKRStat(KRCharacter->KRStat);
+	//}
+}
+
+void AKeroroPlayerController::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
 }
 
 void AKeroroPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	KRPlayerState = Cast<AKeroroPlayerState>(PlayerState);
-	if (AKeroroCharacter* MyCharacter = Cast<AKeroroCharacter>(GetCharacter()))
+	AKeroroCharacter* KRCharacter = Cast<AKeroroCharacter>(GetCharacter());
+	if (KRCharacter)
 	{
-		EKeroroType MyType = MyCharacter->GetKeroroCharacterType(); // 캐릭터가 자신의 타입 알려주는 함수
-		CharacterMap.Add(MyType, MyCharacter); // TMap에 미리 등록
+		EKeroroType MyType = KRCharacter->GetKeroroCharacterType(); // 캐릭터가 자신의 타입 알려주는 함수
+		CharacterMap.Add(MyType, KRCharacter); // TMap에 미리 등록
 	}
 
-	if (KeroroStatusWidgetClass)
+	if (KRHUDWidgetClass)
 	{
-		KeroroStatusWidget = CreateWidget<UUserWidget>(this, KeroroStatusWidgetClass);
-		if (KeroroStatusWidget)
+		KRHUDWidget = CreateWidget<UKeroroHUDWidget>(this, KRHUDWidgetClass);
+		KRHUDWidget->BindKRStat(KRCharacter->KRStat);
+		KRHUDWidget->AddToViewport();
+	}
+
+	if (KRHUDWidget)
+	{
+		if (KRCharacter)
 		{
-			KeroroStatusWidget->AddToViewport();
+			KRCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
 		}
+	}
+}
+
+void AKeroroPlayerController::UpdateHPWidget()
+{
+	KRHUDWidget->UpdateHPWidget();
+}
+
+
+void AKeroroPlayerController::TagCharacter()
+{
+	if (!KRPlayerState) return;
+
+	// 다음 캐릭터 타입
+	EKeroroType NextType = KRPlayerState->SetNextCharacterType();
+	
+	AKeroroCharacter* NewCharacter = nullptr;
+
+	// 이미 존재하는 캐릭터가 있는지 확인
+	if (CharacterMap.Contains(NextType) && IsValid(CharacterMap[NextType]))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("character is in world"));
+		NewCharacter = CharacterMap[NextType];
+		Possess(CharacterMap[NextType]);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("spawn new character"));
+		FVector SpawnLoc = GetCharacter()->GetActorLocation() + FVector(0, 0, 300);
+		FRotator SpawnRot = GetCharacter()->GetActorRotation();
+		NewCharacter = GetWorld()->SpawnActor<AKeroroCharacter>(AKeroroCharacter::StaticClass(), SpawnLoc, SpawnRot);
+		if (NewCharacter)
+		{
+			NewCharacter->LoadAssetandSetting(NextType);
+			CharacterMap.Add(NextType, NewCharacter);
+			Possess(NewCharacter);
+		}
+	}
+	// 캐릭터 스탯컴포넌트 hud에 바인딩, hp위젯 바뀐캐릭터로 초기화
+	if (KRHUDWidget && NewCharacter)
+	{
+		KRHUDWidget->BindKRStat(NewCharacter->KRStat);
+		UpdateHPWidget();
+	}
+
+	// 태그 이펙트
+	if (NSTagEffect)
+	{
+		FVector EffectLoc = GetCharacter()->GetActorLocation() + GetCharacter()->GetActorForwardVector() * 100.0f;
+		FRotator EffecRot = GetCharacter()->GetActorRotation();
+
+		NCTagEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSTagEffect, EffectLoc, EffecRot, FVector(1.0f));
 	}
 }
 
@@ -75,6 +151,7 @@ void AKeroroPlayerController::LoadInputActionAndMappingContext()
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_TAG(TEXT("/Game/Input/IA_Keroro_Tag.IA_Keroro_Tag"));
 	if (IA_TAG.Succeeded()) Tag = IA_TAG.Object;
 }
+
 
 
 void AKeroroPlayerController::SetupInputComponent()
@@ -155,40 +232,4 @@ void AKeroroPlayerController::Attack()
 	}
 }
 
-void AKeroroPlayerController::TagCharacter()
-{
-	if (!KRPlayerState) return;
-
-	// 다음 캐릭터 타입
-	EKeroroType NextType = KRPlayerState->SetNextCharacterType();
-
-	// 이미 존재하는 캐릭터가 있는지 확인
-	if (CharacterMap.Contains(NextType) && IsValid(CharacterMap[NextType]))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("character is in world"));
-		Possess(CharacterMap[NextType]);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("spawn new character"));
-		FVector SpawnLoc = GetCharacter()->GetActorLocation() + FVector(0, 0, 300);
-		FRotator SpawnRot = GetCharacter()->GetActorRotation();
-		AKeroroCharacter* NewCharacter = GetWorld()->SpawnActor<AKeroroCharacter>(AKeroroCharacter::StaticClass(), SpawnLoc, SpawnRot);
-		if (NewCharacter)
-		{
-			NewCharacter->LoadAssetandSetting(NextType);
-			CharacterMap.Add(NextType, NewCharacter);
-			Possess(NewCharacter);
-		}
-	}
-	// 태그 이펙트
-	if (NSTagEffect)
-	{
-		FVector EffectLoc = GetCharacter()->GetActorLocation() + GetCharacter()->GetActorForwardVector() * 100.0f;
-		FRotator EffecRot = GetCharacter()->GetActorRotation();
-
-		NCTagEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSTagEffect, EffectLoc, EffecRot, FVector(1.0f));
-	}
-
-}
 

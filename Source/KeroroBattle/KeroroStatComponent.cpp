@@ -12,7 +12,7 @@ UKeroroStatComponent::UKeroroStatComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
-	Level = 5;
+	Level = 1;
 
 }
 
@@ -33,18 +33,18 @@ void UKeroroStatComponent::SetLevel(int32 lv)
 	{
 		// 레벨에따른 스탯정보 가져옴
 		StatData = KRGameInstance->GetKRStatData(lv);
-		UE_LOG(LogTemp, Warning, TEXT("set level success"));
+		UE_LOG(LogTemp, Warning, TEXT("Get StatData from GameInstance is Success"));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("set level error"));
+		UE_LOG(LogTemp, Warning, TEXT("Get StatData from GameInstance is failed"));
 		return;
 	}
 
 	if (StatData != nullptr)
 	{
 		Level = lv;
-		CurrentHP = StatData->MaxHp;
+		SetHP(StatData->MaxHp);
 		AttackPower = StatData->AttackPower;
 		UE_LOG(LogTemp, Warning, TEXT("set level success"));
 	}
@@ -52,10 +52,27 @@ void UKeroroStatComponent::SetLevel(int32 lv)
 
 void UKeroroStatComponent::SetDamage(float dm)
 {
-	if (StatData == nullptr) return;
-	CurrentHP = FMath::Clamp<float>(CurrentHP - dm, 0.0f, StatData->MaxHp);
-	if (CurrentHP <= 0.0f) OnHpIsZero.Broadcast(); // 체력 0이하가되면 바인딩된 객체들 함수 호출
+	if (StatData == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Stat Damage is nullptr - in setdamage"));
+		return;
+	}
+	SetHP(FMath::Clamp<float>(CurrentHP - dm, 0.0f, StatData->MaxHp));
+}
 
+void UKeroroStatComponent::SetHP(float hp)
+{
+	CurrentHP = hp;
+	OnHpIsChanged.Broadcast();
+	if (CurrentHP <= 0.0f)
+	{
+		OnHpIsZero.Broadcast();
+	}
+}
+
+float UKeroroStatComponent::GetHpRatio()
+{
+	return (CurrentHP / StatData->MaxHp);
 }
 
 

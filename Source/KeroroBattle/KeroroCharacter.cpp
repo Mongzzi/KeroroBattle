@@ -7,6 +7,7 @@
 #include "KeroroWeapon.h"
 #include "KeroroPlayerState.h"
 #include "KeroroStatComponent.h"
+#include "KeroroHPBarWidget.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
@@ -15,6 +16,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "DrawDebugHelpers.h"	// 디버그 드로잉 기능 사용하기위한 헤더
+#include "Engine/DamageEvents.h"
 
 
 // Sets default values
@@ -86,6 +88,20 @@ AKeroroCharacter::AKeroroCharacter()
 	AttackRadius = 50.0f;
 }
 
+void AKeroroCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	// (스켈레탈메시,애님인스턴스 로드 후 설정),(몽타주 델리게이트 바인딩)
+	LoadAssetandSetting(CurrentKeroroType);
+
+	// 스탯컴포넌트 체력0 델리게이트 바인딩
+	KRStat->OnHpIsZero.AddLambda([this]()->void {
+		KRAnim->SetDeadAnim();
+		SetActorEnableCollision(false);
+		});
+}
+
 // Called when the game starts or when spawned
 void AKeroroCharacter::BeginPlay()
 {
@@ -99,6 +115,13 @@ void AKeroroCharacter::BeginPlay()
 		CurWeapon->SetActorRelativeRotation(CurWeapon->AttachRotationOffset);
 		CurWeapon->SetActorRelativeScale3D(CurWeapon->AttachScale);
 		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
+	}
+
+	// HP바 위젯
+	auto HpBarWidget = Cast<UKeroroHPBarWidget>(HPBar->GetUserWidgetObject());
+	if (HpBarWidget != nullptr)
+	{
+		HpBarWidget->BindKRStat(KRStat);
 	}
 }
 
@@ -114,12 +137,12 @@ void AKeroroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-void AKeroroCharacter::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
 
-	// (스켈레탈메시,애님인스턴스 로드 후 설정),(몽타주 델리게이트 바인딩)
-	LoadAssetandSetting(CurrentKeroroType);
+float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float FinalDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	KRStat->SetDamage(FinalDamage);
+	return FinalDamage;
 }
 
 void AKeroroCharacter::Attack()
@@ -251,7 +274,13 @@ void AKeroroCharacter::AttackCheck()
 
 	if (bHit)
 	{
-		UE_LOG(LogTemp, Warning, TEXT(" hitted : %s"), *HitResult.GetActor()->GetName());
+		if (IsValid(HitResult.GetActor()))
+		{
+			FDamageEvent DamageEvent;
+			HitResult.GetActor()->TakeDamage(KRStat->AttackPower*2, DamageEvent, GetController(), this);
+			UE_LOG(LogTemp, Warning, TEXT(" hitted : %s"), *HitResult.GetActor()->GetName());
+
+		}
 	}
 }
 

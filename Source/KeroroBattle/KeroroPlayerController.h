@@ -22,6 +22,9 @@ public:
 
 	class AKeroroPlayerState* KRPlayerState;
 
+	virtual void OnPossess(APawn* PawnToPossess) override;
+
+	virtual void PostInitializeComponents() override;
 protected:
 
 	UPROPERTY(EditAnywhere, Category = Input)
@@ -67,8 +70,10 @@ public:
 
 	// test
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<class UUserWidget> KeroroStatusWidgetClass;
+	TSubclassOf<class UKeroroHUDWidget> KRHUDWidgetClass;
 
 	UPROPERTY()
-	class UUserWidget* KeroroStatusWidget;
+	class UKeroroHUDWidget* KRHUDWidget;
+
+	void UpdateHPWidget();
 };
