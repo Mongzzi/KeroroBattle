@@ -5,10 +5,12 @@
 #include "KeroroCharacter.h"
 #include "KeroroPlayerController.h"
 #include "KeroroPlayerState.h"
+#include "KeroroGameState.h"
 
 AKeroroGameMode::AKeroroGameMode()
 {
 	DefaultPawnClass = AKeroroCharacter::StaticClass();
 	PlayerControllerClass = AKeroroPlayerController::StaticClass();
 	PlayerStateClass = AKeroroPlayerState::StaticClass();
+	GameStateClass = AKeroroGameState::StaticClass();
 }

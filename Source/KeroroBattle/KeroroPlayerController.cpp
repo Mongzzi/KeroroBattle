@@ -6,6 +6,7 @@
 #include "KeroroPlayerState.h"
 #include "KeroroStatComponent.h"
 #include "KeroroHUDWidget.h"
+#include "KeroroGameState.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
@@ -79,6 +80,36 @@ void AKeroroPlayerController::BeginPlay()
 void AKeroroPlayerController::UpdateHPWidget()
 {
 	KRHUDWidget->UpdateHPWidget();
+}
+
+void AKeroroPlayerController::UpdateGoldWidget()
+{
+}
+
+void AKeroroPlayerController::UpdateTimeWidget(float RemainTime)
+{
+	KRHUDWidget->UpdateTimeWidget(GetGameStateRemainingTime());
+}
+
+void AKeroroPlayerController::UpdateEXPWidget()
+{
+}
+
+void AKeroroPlayerController::UpdateKillWidget()
+{
+}
+
+float AKeroroPlayerController::GetGameStateRemainingTime()
+{
+	if (GetWorld())
+	{
+		AKeroroGameState* GameState = GetWorld()->GetGameState<AKeroroGameState>();
+		if (GameState)
+		{
+			return GameState->GetRemainingTime();
+		}
+	}
+	return 0.0f;
 }
 
 

@@ -21,9 +21,9 @@ protected:
 public:
 	void BindKRStat(class UKeroroStatComponent* NewKRStat);
 	void UpdateWidget();
-	void UpdateHPWidget();
+	void UpdateHPWidget();	// ¿Ï
 	void UpdateGoldWidget();
-	void UpdateTimeWidget();
+	void UpdateTimeWidget(float RemainTime);
 	void UpdateEXPWidget();
 	void UpdateKillWidget();
 
@@ -37,10 +37,6 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* EXPBar;
-
-	UPROPERTY(meta = (BindWidget))
-	class UImage* CharacterImage;
-
 	UPROPERTY(meta = (BindWidget))
 	class UImage* KillImage;
 

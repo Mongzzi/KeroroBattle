@@ -25,31 +25,6 @@ public:
 	virtual void OnPossess(APawn* PawnToPossess) override;
 
 	virtual void PostInitializeComponents() override;
-protected:
-
-	UPROPERTY(EditAnywhere, Category = Input)
-	class UInputMappingContext* InputMappingContext;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	class UInputMappingContext* DefaultMappingContext;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	class UInputAction* Moving;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	class UInputAction* Looking;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	class UInputAction* Jumping;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	class UInputAction* Running;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	class UInputAction* Attacking;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	class UInputAction* Tag;
 
 private:
 	void Move(const struct FInputActionValue& Value);
@@ -76,4 +51,36 @@ public:
 	class UKeroroHUDWidget* KRHUDWidget;
 
 	void UpdateHPWidget();
+	void UpdateGoldWidget();
+	void UpdateTimeWidget(float RemainTime);
+	void UpdateEXPWidget();
+	void UpdateKillWidget();
+	
+	float GetGameStateRemainingTime();
+
+protected:
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputMappingContext* InputMappingContext;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputMappingContext* DefaultMappingContext;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* Moving;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* Looking;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* Jumping;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* Running;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* Attacking;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* Tag;
 };

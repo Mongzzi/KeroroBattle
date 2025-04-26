@@ -23,10 +23,7 @@ void UKeroroHUDWidget::NativeConstruct()
 		GoldText->SetText(FText::FromString(TEXT("999")));
 	}
 
-	if (TimeText)
-	{
-		TimeText->SetText(FText::FromString(TEXT("10:00")));
-	}
+
 }
 
 void UKeroroHUDWidget::UpdateHPWidget()
@@ -34,6 +31,26 @@ void UKeroroHUDWidget::UpdateHPWidget()
 	// 프로그레스바 이미지 min 0.266 max 0.866이 0~100%처럼보임 그래서 보간해주고 SetPercent해줌
 	float a = 0.266f + (CurrentKRStat->GetHpRatio())*0.6f;
 	HPBar->SetPercent(a);
+}
+
+void UKeroroHUDWidget::UpdateGoldWidget()
+{
+}
+
+void UKeroroHUDWidget::UpdateTimeWidget(float RemainTime)
+{
+	if (TimeText)
+	{
+		TimeText->SetText(FText::FromString(FString::FromInt(RemainTime)));
+	}
+}
+
+void UKeroroHUDWidget::UpdateEXPWidget()
+{
+}
+
+void UKeroroHUDWidget::UpdateKillWidget()
+{
 }
 
 void UKeroroHUDWidget::BindKRStat(UKeroroStatComponent* NewKRStat)
@@ -45,6 +62,10 @@ void UKeroroHUDWidget::BindKRStat(UKeroroStatComponent* NewKRStat)
 	}
 
 	CurrentKRStat = NewKRStat;
+}
+
+void UKeroroHUDWidget::UpdateWidget()
+{
 }
 
 void UKeroroHUDWidget::NativeOnInitialized()
