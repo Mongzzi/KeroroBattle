@@ -8,6 +8,7 @@
 #include "KeroroPlayerState.h"
 #include "KeroroStatComponent.h"
 #include "KeroroHPBarWidget.h"
+#include "KeroroAIController.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
@@ -86,6 +87,10 @@ AKeroroCharacter::AKeroroCharacter()
 	// 공격 범위
 	AttackRange = 200.0f;
 	AttackRadius = 50.0f;
+
+	// AI설정
+	AIControllerClass = AKeroroAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void AKeroroCharacter::PostInitializeComponents()

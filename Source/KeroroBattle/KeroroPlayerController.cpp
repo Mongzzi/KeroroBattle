@@ -7,6 +7,7 @@
 #include "KeroroStatComponent.h"
 #include "KeroroHUDWidget.h"
 #include "KeroroGameState.h"
+#include "KeroroAIController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
@@ -119,7 +120,6 @@ void AKeroroPlayerController::TagCharacter()
 
 	// 다음 캐릭터 타입
 	EKeroroType NextType = KRPlayerState->SetNextCharacterType();
-	
 	AKeroroCharacter* NewCharacter = nullptr;
 
 	// 이미 존재하는 캐릭터가 있는지 확인
@@ -127,7 +127,6 @@ void AKeroroPlayerController::TagCharacter()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("character is in world"));
 		NewCharacter = CharacterMap[NextType];
-		Possess(CharacterMap[NextType]);
 	}
 	else
 	{
@@ -139,9 +138,23 @@ void AKeroroPlayerController::TagCharacter()
 		{
 			NewCharacter->LoadAssetandSetting(NextType);
 			CharacterMap.Add(NextType, NewCharacter);
-			Possess(NewCharacter);
 		}
 	}
+
+	// 기존 캐릭터에 AIController 할당
+	if (GetCharacter())
+	{
+		AKeroroCharacter* PreCharacter = Cast<AKeroroCharacter>(GetCharacter());
+		AKeroroAIController* AIController = GetWorld()->SpawnActor<AKeroroAIController>(AKeroroAIController::StaticClass());
+
+		if (AIController)
+		{
+			AIController->Possess(PreCharacter);  // AI 컨트롤러로 캐릭터 소유
+		}
+	}
+	Possess(NewCharacter);
+
+
 	// 캐릭터 스탯컴포넌트 hud에 바인딩, hp위젯 바뀐캐릭터로 초기화
 	if (KRHUDWidget && NewCharacter)
 	{
