@@ -53,6 +53,7 @@ public:
 	void HandleComboInput();
 	void StartNewAttack();
 	void LoadAssetandSetting(EKeroroType type);
+	bool GetIsAttacking() { return IsAttacking; };
 
 public:
 	EKeroroType GetKeroroCharacterType() { return CurrentKeroroType; }
