@@ -31,7 +31,7 @@ void AKeroroAIController::OnRepeatTimer()
 	if (NavSystem == nullptr) return;
 
 	FNavLocation NextLocation;
-	if (NavSystem->GetRandomPointInNavigableRadius(FVector(1530.0f, 1981.0f,90.0f), 500.0f, NextLocation))
+	if (NavSystem->GetRandomPointInNavigableRadius(FVector(1530.0f, 1981.0f,90.0f), 1000.0f, NextLocation))
 	{
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, NextLocation.Location);
 	}
