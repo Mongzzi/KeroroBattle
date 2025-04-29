@@ -3,7 +3,7 @@
 
 #include "KeroroEnemyCharacter.h"
 #include "KeroroStatComponent.h"
-#include "KeroroAIController.h"
+#include "EnemyAIController.h"
 #include "KeroroAnimInstance.h"
 #include "KeroroHPBarWidget.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -23,8 +23,12 @@ AKeroroEnemyCharacter::AKeroroEnemyCharacter()
 	}
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FRotator(0.0f, -90.0f, 0.0f));
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("KeroroCharacter"));
+	
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 600.0f, 0.0f);
 	GetCharacterMovement()->bOrientRotationToMovement = true;	// 이동 방향으로 자동 회전
-	AIControllerClass = AKeroroAIController::StaticClass();
+	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+	
+	AIControllerClass = AEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 
@@ -102,7 +106,11 @@ void AKeroroEnemyCharacter::Die()
 	bIsDead = true;
 
 	// AI 컨트롤러가 있으면 언포제스
-
+	AEnemyAIController* AC = Cast<AEnemyAIController>(GetController());
+	if (AC)
+	{
+		AC->UnPossess();
+	}
 
 	// 콜리전 끄기
 	SetActorEnableCollision(false);

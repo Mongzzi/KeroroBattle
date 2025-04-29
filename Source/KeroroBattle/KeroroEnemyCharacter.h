@@ -40,7 +40,7 @@ public:
     // 사망 처리 여부
     bool bIsDead = false;
 
-private:
+public:
     class UKeroroAnimInstance* EnemyAnim;
 
 };
