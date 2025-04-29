@@ -115,10 +115,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=KeroroType)
 	EKeroroType CurrentKeroroType = EKeroroType::Keroro;
 
-	UPROPERTY(EditAnywhere, Category = Stat)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat)
 	float RunSpeed;
 
-	UPROPERTY(EditAnywhere, Category = Stat)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category = Stat)
 	float WalkSpeed;
 
 };
