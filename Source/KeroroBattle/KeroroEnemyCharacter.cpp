@@ -31,8 +31,6 @@ AKeroroEnemyCharacter::AKeroroEnemyCharacter()
 	AIControllerClass = AEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
-
-
 	static ConstructorHelpers::FClassFinder<UAnimInstance>ANIM(TEXT("/Game/Blueprints/KR_AnimInstance.KR_AnimInstance_C"));
 	if (ANIM.Succeeded())
 	{
@@ -48,8 +46,57 @@ AKeroroEnemyCharacter::AKeroroEnemyCharacter()
 	static ConstructorHelpers::FClassFinder<UUserWidget>HUD(TEXT("/Game/Blueprints/KR_HPBar.KR_HPBar_C"));
 	if (HUD.Succeeded()) HPBar->SetWidgetClass(HUD.Class);
 
+	bIsDead = false;
+	CurrentComboIndex = 0;
+	MaxCombo = 3;
+	CanComboAttackTime = 6.0f;
+	CanComboAttackDist = 200.0f;
+	bIsAttacking = false;
+	bCanNextCombo = false;
 }
 
+void AKeroroEnemyCharacter::Attack()
+{
+	if (bIsAttacking) return;
+
+	bIsAttacking = true;
+	bCanNextCombo = false;
+	CurrentComboIndex = FMath::Clamp<int32>(CurrentComboIndex + 1, 1, MaxCombo);
+
+
+	if (!EnemyAnim)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EnemyAnim is null"));
+		return;
+	}
+
+	EnemyAnim->PlayAttackMontage();
+	EnemyAnim->JumptoAttackMontageSection(CurrentComboIndex);
+
+
+	// 콤보 입력 가능 시간 타이머 설정
+	GetWorldTimerManager().SetTimer(ComboResetTimerHandle, this, &AKeroroEnemyCharacter::ResetCombo, CanComboAttackTime, false);
+}
+
+void AKeroroEnemyCharacter::ResetCombo()
+{
+	CurrentComboIndex = 0;
+	bIsAttacking = false;
+	bCanNextCombo = false;
+}
+
+void AKeroroEnemyCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	ResetCombo(); // 여기서부터 다시시작
+}
+
+void AKeroroEnemyCharacter::EnableNextCombo()
+{
+	if (CurrentComboIndex + 1 < MaxCombo)
+	{
+		bCanNextCombo = true;
+	}
+}
 
 // Called when the game starts or when spawned
 void AKeroroEnemyCharacter::BeginPlay()
@@ -75,11 +122,17 @@ void AKeroroEnemyCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 	
 	EnemyAnim = Cast<UKeroroAnimInstance>(GetMesh()->GetAnimInstance());
+
+	// 몽타주엔드 델리게이트 바인딩함수 필수 파라미터 UAnimMontage* Montage, bool bInterrupted
+	EnemyAnim->OnMontageEnded.AddDynamic(this, &AKeroroEnemyCharacter::OnAttackMontageEnded);
+	EnemyAnim->OnNextAttackCheck.AddUObject(this, &AKeroroEnemyCharacter::EnableNextCombo);
+	
 	// 스탯컴포넌트 체력0 델리게이트 바인딩
 	EnemyStat->OnHpIsZero.AddLambda([this]()->void {
 		EnemyAnim->SetDeadAnim();
 		SetActorEnableCollision(false);
 		});
+
 }
 
 float AKeroroEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

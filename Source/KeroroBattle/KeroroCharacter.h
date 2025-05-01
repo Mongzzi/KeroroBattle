@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "KeroroCharacter.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
+
 UCLASS()
 class KEROROBATTLE_API AKeroroCharacter : public ACharacter
 {
@@ -58,6 +60,9 @@ public:
 public:
 	EKeroroType GetKeroroCharacterType() { return CurrentKeroroType; }
 	void SetKeroroCharacterType(EKeroroType type) { CurrentKeroroType = type; }
+
+public:
+	FOnAttackEndDelegate OnAttaackEnd;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))

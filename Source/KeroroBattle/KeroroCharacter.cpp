@@ -222,6 +222,7 @@ void AKeroroCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterru
 	if (!IsAttacking || CurrentCombo == 0) return;
 	IsAttacking = false;
 	AttackEndComboState();
+	OnAttaackEnd.Broadcast();
 }
 
 void AKeroroCharacter::AttackStartComboState()
