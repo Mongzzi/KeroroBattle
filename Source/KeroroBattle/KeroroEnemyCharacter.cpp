@@ -48,8 +48,8 @@ AKeroroEnemyCharacter::AKeroroEnemyCharacter()
 
 	bIsDead = false;
 	CurrentComboIndex = 0;
-	MaxCombo = 3;
-	CanComboAttackTime = 6.0f;
+	MaxCombo = 4;
+	CanComboAttackTime = 2.0f;
 	CanComboAttackDist = 200.0f;
 	bIsAttacking = false;
 	bCanNextCombo = false;
@@ -59,23 +59,25 @@ void AKeroroEnemyCharacter::Attack()
 {
 	if (bIsAttacking) return;
 
-	bIsAttacking = true;
-	bCanNextCombo = false;
-	CurrentComboIndex = FMath::Clamp<int32>(CurrentComboIndex + 1, 1, MaxCombo);
-
-
 	if (!EnemyAnim)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("EnemyAnim is null"));
 		return;
+	}
+
+	bIsAttacking = true;
+	bCanNextCombo = false;
+
+	if (FMath::IsWithinInclusive<int32>(CurrentComboIndex, 0, MaxCombo - 1)) {
+		CurrentComboIndex = FMath::Clamp<int32>(CurrentComboIndex + 1, 1, MaxCombo);
 	}
 
 	EnemyAnim->PlayAttackMontage();
 	EnemyAnim->JumptoAttackMontageSection(CurrentComboIndex);
 
+	UE_LOG(LogTemp, Warning, TEXT("CurrentComboIndex = %d "), CurrentComboIndex);
 
 	// 콤보 입력 가능 시간 타이머 설정
-	GetWorldTimerManager().SetTimer(ComboResetTimerHandle, this, &AKeroroEnemyCharacter::ResetCombo, CanComboAttackTime, false);
+	//GetWorldTimerManager().SetTimer(ComboResetTimerHandle, this, &AKeroroEnemyCharacter::ResetCombo, CanComboAttackTime, false);
 }
 
 void AKeroroEnemyCharacter::ResetCombo()
@@ -87,12 +89,21 @@ void AKeroroEnemyCharacter::ResetCombo()
 
 void AKeroroEnemyCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
-	ResetCombo(); // 여기서부터 다시시작
+	if (bCanNextCombo && CurrentComboIndex < MaxCombo)
+	{
+		// 콤보 진행
+		bIsAttacking = false;
+	}
+	else
+	{
+		// 마지막 공격이면 콤보 초기화
+		ResetCombo();
+	}
 }
 
 void AKeroroEnemyCharacter::EnableNextCombo()
 {
-	if (CurrentComboIndex + 1 < MaxCombo)
+	if (CurrentComboIndex + 1 <= MaxCombo)
 	{
 		bCanNextCombo = true;
 	}

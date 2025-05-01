@@ -43,7 +43,7 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	if (!EnemyCharacter) return;
 
 	// 애니메이션 끝나고 다음 콤보 가능한 경우 자동 콤보 연결
-	if (EnemyCharacter->bCanNextCombo && EnemyCharacter->CurrentComboIndex + 1 < EnemyCharacter->MaxCombo)
+	if (EnemyCharacter->bCanNextCombo)
 	{
 		EnemyCharacter->Attack(); // 다음 콤보로 연결
 	}
