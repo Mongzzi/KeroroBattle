@@ -147,8 +147,33 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 {
 	float FinalDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 	KRStat->SetDamage(FinalDamage);
+
+	// 체력이 0이하가 되면 die함수 호출
+	if (KRStat->GetHpRatio() <= 0.0f)
+	{
+		SetActorEnableCollision(false);
+		SetLifeSpan(5.0f);
+
+		Die();
+	}
 	return FinalDamage;
 }
+
+void AKeroroCharacter::Die()
+{
+	
+	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetController());
+	if (PC)
+	{
+		// 플레이어 컨트롤러에서 다음 캐릭으로 포제스하고  캐릭터 맵 목록 업데이트
+		PC->Die();
+	}
+	// 콜리전 끄기
+	SetActorEnableCollision(false);
+	// 일정 시간 후 소멸
+	SetLifeSpan(5.0f);
+}
+
 
 void AKeroroCharacter::Attack()
 {

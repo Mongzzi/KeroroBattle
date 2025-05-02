@@ -48,6 +48,7 @@ public:
 public:
 	void StartRun();
 	void StopRun();
+	void Die();
 	void Attack();
 	void AttackStartComboState();
 	void AttackEndComboState();

@@ -55,8 +55,8 @@ public:
 	void UpdateTimeWidget(float RemainTime);
 	void UpdateEXPWidget();
 	void UpdateKillWidget();
-	
 	float GetGameStateRemainingTime();
+	void Die();
 
 protected:
 

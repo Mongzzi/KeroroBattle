@@ -131,8 +131,20 @@ void AKeroroPlayerController::TagCharacter()
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("spawn new character"));
-		FVector SpawnLoc = GetCharacter()->GetActorLocation() + FVector(0, 0, 300);
-		FRotator SpawnRot = GetCharacter()->GetActorRotation();
+		FVector SpawnLoc;
+		FRotator SpawnRot;
+		// 캐릭터 전혀없을때
+		if (GetCharacter() == nullptr)
+		{
+			SpawnLoc = FVector(0.0f, 0.0f, 0.0f);
+			SpawnRot = FRotator::ZeroRotator;
+		}
+		else
+		{
+			SpawnLoc = GetCharacter()->GetActorLocation() + FVector(0, 0, 300);
+			SpawnRot = GetCharacter()->GetActorRotation();
+		}
+
 		NewCharacter = GetWorld()->SpawnActor<AKeroroCharacter>(AKeroroCharacter::StaticClass(), SpawnLoc, SpawnRot);
 		if (NewCharacter)
 		{
@@ -155,7 +167,7 @@ void AKeroroPlayerController::TagCharacter()
 	Possess(NewCharacter);
 
 
-	// 캐릭터 스탯컴포넌트 hud에 바인딩, hp위젯 바뀐캐릭터로 초기화
+	// 캐릭터 스탯컴포넌트 hud에 바인딩, hud안 hp위젯(머리위x) 바뀐캐릭터로 초기화
 	if (KRHUDWidget && NewCharacter)
 	{
 		KRHUDWidget->BindKRStat(NewCharacter->KRStat);
@@ -171,6 +183,39 @@ void AKeroroPlayerController::TagCharacter()
 		NCTagEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSTagEffect, EffectLoc, EffecRot, FVector(1.0f));
 	}
 }
+
+void AKeroroPlayerController::Die()
+{
+	EKeroroType CurrentKeroroType = KRPlayerState->GetCurrentCharacterType();
+
+	UnPossess();
+	if (CharacterMap.Contains(CurrentKeroroType))
+	{
+		CharacterMap.Remove(CurrentKeroroType);
+	}
+
+	// 다음 캐릭터 탐색 (순환)
+	int Max = static_cast<int32>(EKeroroType::MAX); // enum 마지막 값
+	for (int i = 1; i < Max; ++i)
+	{
+		EKeroroType NextType = static_cast<EKeroroType>((static_cast<int>(CurrentKeroroType) + i) % Max);
+
+		if (CharacterMap.Contains(NextType))
+		{
+			AKeroroCharacter* NextCharacter = CharacterMap[NextType];
+			if (NextCharacter != nullptr)
+			{
+				Possess(NextCharacter);
+				KRPlayerState->SetCurrentCharacterType(NextType); 
+				KRHUDWidget->BindKRStat(NextCharacter->KRStat);
+				UpdateHPWidget();
+				return;
+			}
+		}
+	}
+
+}
+
 
 void AKeroroPlayerController::LoadInputActionAndMappingContext()
 {

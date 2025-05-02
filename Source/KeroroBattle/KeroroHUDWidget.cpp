@@ -62,6 +62,10 @@ void UKeroroHUDWidget::BindKRStat(UKeroroStatComponent* NewKRStat)
 	}
 
 	CurrentKRStat = NewKRStat;
+
+	//// 추후 작업 예정
+	//NewKRStat->OnHpIsChanged.AddUObject(this, &UKeroroHUDWidget::UpdateHPWidget);
+	//UpdateHPWidget();
 }
 
 void UKeroroHUDWidget::UpdateWidget()
