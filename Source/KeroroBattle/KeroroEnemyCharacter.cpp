@@ -51,13 +51,11 @@ AKeroroEnemyCharacter::AKeroroEnemyCharacter()
 	bIsDead = false;
 	AttackRange = 200.0f;
 	AttackRadius = 50.0f;
-	bIsAttacking = false;
-
 }
 
 void AKeroroEnemyCharacter::Attack()
 {
-	if (bIsAttacking||!EnemyAnim) return;
+	if (!EnemyAnim) return;
 	EnemyAnim->PlayAttackMontage();
 }
 
@@ -155,16 +153,16 @@ void AKeroroEnemyCharacter::AttackCheck()
 	FColor DrawColor = bHit ? FColor::Green : FColor::Red;
 	float DebugLifeTime = 5.0f;
 
-	DrawDebugCapsule(
-		GetWorld(),
-		Center,
-		HalfHeight,
-		AttackRadius,
-		CapsuleRot,
-		DrawColor,
-		false,
-		DebugLifeTime
-	);
+	//DrawDebugCapsule(
+	//	GetWorld(),
+	//	Center,
+	//	HalfHeight,
+	//	AttackRadius,
+	//	CapsuleRot,
+	//	DrawColor,
+	//	false,
+	//	DebugLifeTime
+	//);
 
 #endif
 

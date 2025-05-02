@@ -80,6 +80,7 @@ void AKeroroPlayerController::BeginPlay()
 
 void AKeroroPlayerController::UpdateHPWidget()
 {
+	if (KRHUDWidget == nullptr) return;
 	KRHUDWidget->UpdateHPWidget();
 }
 
@@ -153,7 +154,7 @@ void AKeroroPlayerController::TagCharacter()
 		}
 	}
 
-	// 기존 캐릭터에 AIController 할당
+	// AIController 할당
 	if (GetCharacter())
 	{
 		AKeroroCharacter* PreCharacter = Cast<AKeroroCharacter>(GetCharacter());
@@ -161,21 +162,26 @@ void AKeroroPlayerController::TagCharacter()
 
 		if (AIController)
 		{
-			AIController->Possess(PreCharacter);  // AI 컨트롤러로 캐릭터 소유
+			AIController->Possess(PreCharacter);
 		}
 	}
 	Possess(NewCharacter);
 
-
-	// 캐릭터 스탯컴포넌트 hud에 바인딩, hud안 hp위젯(머리위x) 바뀐캐릭터로 초기화
+	// 캐릭터 스탯컴포넌트 HUD에 바인딩 및 체력 업데이트
 	if (KRHUDWidget && NewCharacter)
 	{
+		// 새로운 캐릭터가 태그되었을 때, 해당 캐릭터의 HP 델리게이트를 바인딩
+		NewCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
+
+		// 새로운 캐릭터에 대한 스탯 바인딩
 		KRHUDWidget->BindKRStat(NewCharacter->KRStat);
+
+		// 초기 HP 값 갱신
 		UpdateHPWidget();
 	}
 
 	// 태그 이펙트
-	if (NSTagEffect)
+	if (NSTagEffect && GetCharacter() != nullptr)
 	{
 		FVector EffectLoc = GetCharacter()->GetActorLocation() + GetCharacter()->GetActorForwardVector() * 100.0f;
 		FRotator EffecRot = GetCharacter()->GetActorRotation();
@@ -203,10 +209,10 @@ void AKeroroPlayerController::Die()
 		if (CharacterMap.Contains(NextType))
 		{
 			AKeroroCharacter* NextCharacter = CharacterMap[NextType];
-			if (NextCharacter != nullptr)
+			if (IsValid(NextCharacter))
 			{
 				Possess(NextCharacter);
-				KRPlayerState->SetCurrentCharacterType(NextType); 
+				KRPlayerState->SetCurrentCharacterType(NextType);
 				KRHUDWidget->BindKRStat(NextCharacter->KRStat);
 				UpdateHPWidget();
 				return;

@@ -46,8 +46,6 @@ public:
     // 적 몬스터 콤보 공격용
     float AttackRange; // 적 캐릭터와 거리
     float AttackRadius;
-    bool bIsAttacking; // 애니메이션 중인지
-
 
     void Attack();  // 태스크에서 사용
     void AttackCheck();
