@@ -99,12 +99,6 @@ void AKeroroCharacter::PostInitializeComponents()
 
 	// (스켈레탈메시,애님인스턴스 로드 후 설정),(몽타주 델리게이트 바인딩)
 	LoadAssetandSetting(CurrentKeroroType);
-
-	// 스탯컴포넌트 체력0 델리게이트 바인딩
-	KRStat->OnHpIsZero.AddLambda([this]()->void {
-		KRAnim->SetDeadAnim();
-		SetActorEnableCollision(false);
-		});
 }
 
 // Called when the game starts or when spawned
@@ -136,6 +130,12 @@ void AKeroroCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void AKeroroCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	UnbindCharacterEvents();
+}
+
 // Called to bind functionality to input
 void AKeroroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -153,7 +153,6 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 	{
 		SetActorEnableCollision(false);
 		SetLifeSpan(5.0f);
-
 		Die();
 	}
 	return FinalDamage;
@@ -161,13 +160,16 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 
 void AKeroroCharacter::Die()
 {
-	
+	KRAnim->SetDeadAnim();
+
 	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetController());
 	if (PC)
 	{
 		// 플레이어 컨트롤러에서 다음 캐릭으로 포제스하고  캐릭터 맵 목록 업데이트
 		PC->Die();
 	}
+	// 바인딩된 함수들 다 해제
+	UnbindCharacterEvents();
 	// 콜리전 끄기
 	SetActorEnableCollision(false);
 	// 일정 시간 후 소멸
@@ -215,32 +217,56 @@ void AKeroroCharacter::PlaySwordEffect()
 	);
 }
 
-void AKeroroCharacter::BindAnimInstanceEvents()
+void AKeroroCharacter::BindCharacterEvents()
 {
+	UnbindCharacterEvents();
+	if (KRAnim)
+	{
+		// 몽타주 끝났을 시 공격콤보 초기화
+		KRAnim->OnMontageEnded.AddDynamic(this, &AKeroroCharacter::OnAttackMontageEnded);
+		// 다음 공격 바인딩
+		KRAnim->OnNextAttackCheck.AddLambda([this]()->void {
+			CanNextCombo = false;
+			if (IsComboInputOn)
+			{
+				AttackStartComboState();
+				KRAnim->JumptoAttackMontageSection(CurrentCombo);
+				IsAttacking = true;
+			}
+			});
+		// 공격 이펙트 바인딩
+		KRAnim->OnEffectCreateCheck.AddUObject(this, &AKeroroCharacter::PlaySwordEffect);
+		// 공격 충돌 체크 바인딩
+		KRAnim->OnAttackHitCheck.AddUObject(this, &AKeroroCharacter::AttackCheck);
+	}
 
-	KRAnim = Cast<UKeroroAnimInstance>(GetMesh()->GetAnimInstance());
-	if (KRAnim == nullptr) return;
-
-	// 몽타주 끝났을 시 공격콤보 초기화
-	KRAnim->OnMontageEnded.AddDynamic(this, &AKeroroCharacter::OnAttackMontageEnded);
-
-	// 다음 공격 바인딩
-	KRAnim->OnNextAttackCheck.AddLambda([this]()->void {
-		CanNextCombo = false;
-		if (IsComboInputOn)
-		{
-			AttackStartComboState();
-			KRAnim->JumptoAttackMontageSection(CurrentCombo);
-			IsAttacking = true;
-		}
-		});
-
-	// 공격 이펙트 바인딩
-	KRAnim->OnEffectCreateCheck.AddUObject(this, &AKeroroCharacter::PlaySwordEffect);
-
-	// 공격 충돌 체크 바인딩
-	KRAnim->OnAttackHitCheck.AddUObject(this, &AKeroroCharacter::AttackCheck);
+	if (KRStat)
+	{
+		// 스탯컴포넌트 체력0 델리게이트 바인딩
+		KRStat->OnHpIsZero.AddUObject(this, &AKeroroCharacter::Die);
+	}
 }
+
+void AKeroroCharacter::UnbindCharacterEvents()
+{
+	if (KRAnim)
+	{
+		// 몽타주 끝났을 시 공격콤보 초기화 해제
+		KRAnim->OnMontageEnded.RemoveDynamic(this, &AKeroroCharacter::OnAttackMontageEnded);
+		// 다음 공격 바인딩 해제
+		KRAnim->OnNextAttackCheck.RemoveAll(this);
+		// 공격 이펙트 바인딩 해제
+		KRAnim->OnEffectCreateCheck.RemoveAll(this);
+		// 공격 충돌 체크 바인딩 해제
+		KRAnim->OnAttackHitCheck.RemoveAll(this);
+	}
+
+	if (KRStat)
+	{
+		KRStat->OnHpIsChanged.RemoveAll(this);
+	}
+}
+
 
 void AKeroroCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
@@ -290,16 +316,16 @@ void AKeroroCharacter::AttackCheck()
 	FColor DrawColor = bHit ? FColor::Green : FColor::Red;
 	float DebugLifeTime = 5.0f;
 
-	DrawDebugCapsule(
-		GetWorld(),
-		Center,
-		HalfHeight,
-		AttackRadius,
-		CapsuleRot,
-		DrawColor,
-		false,
-		DebugLifeTime
-	);
+	//DrawDebugCapsule(
+	//	GetWorld(),
+	//	Center,
+	//	HalfHeight,
+	//	AttackRadius,
+	//	CapsuleRot,
+	//	DrawColor,
+	//	false,
+	//	DebugLifeTime
+	//);
 
 #endif
 
@@ -308,7 +334,7 @@ void AKeroroCharacter::AttackCheck()
 		if (IsValid(HitResult.GetActor()))
 		{
 			FDamageEvent DamageEvent;
-			HitResult.GetActor()->TakeDamage(KRStat->AttackPower*2, DamageEvent, GetController(), this);
+			HitResult.GetActor()->TakeDamage(KRStat->AttackPower * 2, DamageEvent, GetController(), this);
 			UE_LOG(LogTemp, Warning, TEXT(" hitted : %s"), *HitResult.GetActor()->GetName());
 
 		}
@@ -365,7 +391,9 @@ void AKeroroCharacter::LoadAssetandSetting(EKeroroType type)
 			GetMesh()->SetAnimInstanceClass(AnimBPClass);
 		}
 
+		KRAnim = Cast<UKeroroAnimInstance>(GetMesh()->GetAnimInstance());
+
 		// 애님인스턴스 설정 및 델리게이트 바인딩
-		BindAnimInstanceEvents();
+		BindCharacterEvents();
 	}
 }

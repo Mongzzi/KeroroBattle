@@ -29,11 +29,8 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	if (dist <= EnemyCharacter->AttackRange)
 	{
 		IsAttacking = true;
-		// 태스크 실행마다 바인딩하려해서 오류생김 이미 바인딩되어있는지 확인
-		if (!EnemyCharacter->EnemyAnim->OnMontageEnded.IsAlreadyBound(this, &UBTTask_Attack::OnAttackMontageEnded))
-		{
-			EnemyCharacter->EnemyAnim->OnMontageEnded.AddDynamic(this, &UBTTask_Attack::OnAttackMontageEnded);
-		}
+		EnemyCharacter->EnemyAnim->OnMontageEnded.RemoveDynamic(this, &UBTTask_Attack::OnAttackMontageEnded);
+		EnemyCharacter->EnemyAnim->OnMontageEnded.AddDynamic(this, &UBTTask_Attack::OnAttackMontageEnded);
 		EnemyCharacter->Attack();
 		return EBTNodeResult::InProgress;
 	}
@@ -44,10 +41,8 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
-	auto EnemyCharacter = Cast<AKeroroEnemyCharacter>(OwnerComp.GetAIOwner()->GetCharacter());
-	if (!EnemyCharacter) return;
 
-	if (!EnemyCharacter->bIsAttacking)
+	if (!IsAttacking)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}

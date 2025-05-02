@@ -24,6 +24,7 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -37,10 +38,15 @@ public:
 	// 이펙트 생성
 	UFUNCTION()
 	void PlaySwordEffect();
-	
+
+	UFUNCTION()
+	void Die();
+
 public:
 	// 애님 인스턴스 새로 얻기 및 델리게이트 재바인딩
-	void BindAnimInstanceEvents();
+	void BindCharacterEvents();
+	void UnbindCharacterEvents();
+	void LoadAssetandSetting(EKeroroType type);
 
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
@@ -48,14 +54,12 @@ public:
 public:
 	void StartRun();
 	void StopRun();
-	void Die();
 	void Attack();
 	void AttackStartComboState();
 	void AttackEndComboState();
 	void AttackCheck();
 	void HandleComboInput();
 	void StartNewAttack();
-	void LoadAssetandSetting(EKeroroType type);
 	bool GetIsAttacking() { return IsAttacking; };
 
 public:

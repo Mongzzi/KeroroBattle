@@ -62,6 +62,6 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 			EnemyCharacter->GetCharacterMovement()->MaxWalkSpeed = 700.0f;
 		}
 	}
-	DrawDebugSphere(World, AIPawn->GetActorLocation(), DetectRadius, 16, FColor::Red, false, 0.2f);
-	DrawDebugSphere(World, AIPawn->GetActorLocation(), NoDetectRadius, 16, FColor::Green, false, 0.2f);
+	//DrawDebugSphere(World, AIPawn->GetActorLocation(), DetectRadius, 16, FColor::Red, false, 0.2f);
+	//DrawDebugSphere(World, AIPawn->GetActorLocation(), NoDetectRadius, 16, FColor::Green, false, 0.2f);
 }
