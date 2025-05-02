@@ -5,6 +5,7 @@
 #include "EnemyAIController.h"
 #include "KeroroEnemyCharacter.h"
 #include "KeroroCharacter.h"
+#include "KeroroAnimInstance.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 UBTTask_Attack::UBTTask_Attack()
@@ -21,14 +22,18 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	if (EnemyCharacter == nullptr) return EBTNodeResult::Failed;
 
 	auto Target = Cast<AKeroroCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(AEnemyAIController::TargetKey));
-	if (Target == nullptr)
-	{
-		return EBTNodeResult::Failed;
-	}
+	if (Target == nullptr) return EBTNodeResult::Failed;
+
+
 	float dist = FVector::Dist(Target->GetActorLocation(), EnemyCharacter->GetActorLocation());
-	
-	if (dist <= EnemyCharacter->CanComboAttackDist)
+	if (dist <= EnemyCharacter->AttackRange)
 	{
+		IsAttacking = true;
+		// 태스크 실행마다 바인딩하려해서 오류생김 이미 바인딩되어있는지 확인
+		if (!EnemyCharacter->EnemyAnim->OnMontageEnded.IsAlreadyBound(this, &UBTTask_Attack::OnAttackMontageEnded))
+		{
+			EnemyCharacter->EnemyAnim->OnMontageEnded.AddDynamic(this, &UBTTask_Attack::OnAttackMontageEnded);
+		}
 		EnemyCharacter->Attack();
 		return EBTNodeResult::InProgress;
 	}
@@ -42,15 +47,14 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	auto EnemyCharacter = Cast<AKeroroEnemyCharacter>(OwnerComp.GetAIOwner()->GetCharacter());
 	if (!EnemyCharacter) return;
 
-	// 애니메이션 끝나고 다음 콤보 가능한 경우 자동 콤보 연결
-	if (EnemyCharacter->bCanNextCombo)
-	{
-		EnemyCharacter->Attack(); // 다음 콤보로 연결
-	}
-
-	// 콤보 끝났다면 태스크 종료
 	if (!EnemyCharacter->bIsAttacking)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
+}
+
+
+void UBTTask_Attack::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	IsAttacking = false;
 }

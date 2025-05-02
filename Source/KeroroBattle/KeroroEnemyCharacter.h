@@ -44,25 +44,13 @@ public:
 
 public:
     // 적 몬스터 콤보 공격용
-    int32 CurrentComboIndex;
-    int32 MaxCombo;        
-    float CanComboAttackTime; // 공격 후 다음 콩보공격까지 가능 시간
-    float CanComboAttackDist; // 적 캐릭터와 거리
+    float AttackRange; // 적 캐릭터와 거리
+    float AttackRadius;
     bool bIsAttacking; // 애니메이션 중인지
-    bool bCanNextCombo; // 다음공격 가능한지
 
-    FTimerHandle ComboResetTimerHandle; // CanComboAttackTime을 위한 핸들 
 
     void Attack();  // 태스크에서 사용
-    void ResetCombo();
-    
-    UFUNCTION()
-    void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
-
-    UFUNCTION()
-    void EnableNextCombo(); // 노티파이를 통해 다음공격
-
-
+    void AttackCheck();
 public:
     class UKeroroAnimInstance* EnemyAnim;
 };

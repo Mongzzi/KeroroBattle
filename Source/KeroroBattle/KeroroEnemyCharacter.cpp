@@ -9,6 +9,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Engine/DamageEvents.h"
+
 
 // Sets default values
 AKeroroEnemyCharacter::AKeroroEnemyCharacter()
@@ -47,66 +49,16 @@ AKeroroEnemyCharacter::AKeroroEnemyCharacter()
 	if (HUD.Succeeded()) HPBar->SetWidgetClass(HUD.Class);
 
 	bIsDead = false;
-	CurrentComboIndex = 0;
-	MaxCombo = 4;
-	CanComboAttackTime = 2.0f;
-	CanComboAttackDist = 200.0f;
+	AttackRange = 200.0f;
+	AttackRadius = 50.0f;
 	bIsAttacking = false;
-	bCanNextCombo = false;
+
 }
 
 void AKeroroEnemyCharacter::Attack()
 {
-	if (bIsAttacking) return;
-
-	if (!EnemyAnim)
-	{
-		return;
-	}
-
-	bIsAttacking = true;
-	bCanNextCombo = false;
-
-	if (FMath::IsWithinInclusive<int32>(CurrentComboIndex, 0, MaxCombo - 1)) {
-		CurrentComboIndex = FMath::Clamp<int32>(CurrentComboIndex + 1, 1, MaxCombo);
-	}
-
+	if (bIsAttacking||!EnemyAnim) return;
 	EnemyAnim->PlayAttackMontage();
-	EnemyAnim->JumptoAttackMontageSection(CurrentComboIndex);
-
-	UE_LOG(LogTemp, Warning, TEXT("CurrentComboIndex = %d "), CurrentComboIndex);
-
-	// 콤보 입력 가능 시간 타이머 설정
-	//GetWorldTimerManager().SetTimer(ComboResetTimerHandle, this, &AKeroroEnemyCharacter::ResetCombo, CanComboAttackTime, false);
-}
-
-void AKeroroEnemyCharacter::ResetCombo()
-{
-	CurrentComboIndex = 0;
-	bIsAttacking = false;
-	bCanNextCombo = false;
-}
-
-void AKeroroEnemyCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
-{
-	if (bCanNextCombo && CurrentComboIndex < MaxCombo)
-	{
-		// 콤보 진행
-		bIsAttacking = false;
-	}
-	else
-	{
-		// 마지막 공격이면 콤보 초기화
-		ResetCombo();
-	}
-}
-
-void AKeroroEnemyCharacter::EnableNextCombo()
-{
-	if (CurrentComboIndex + 1 <= MaxCombo)
-	{
-		bCanNextCombo = true;
-	}
 }
 
 // Called when the game starts or when spawned
@@ -133,17 +85,14 @@ void AKeroroEnemyCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 	
 	EnemyAnim = Cast<UKeroroAnimInstance>(GetMesh()->GetAnimInstance());
-
-	// 몽타주엔드 델리게이트 바인딩함수 필수 파라미터 UAnimMontage* Montage, bool bInterrupted
-	EnemyAnim->OnMontageEnded.AddDynamic(this, &AKeroroEnemyCharacter::OnAttackMontageEnded);
-	EnemyAnim->OnNextAttackCheck.AddUObject(this, &AKeroroEnemyCharacter::EnableNextCombo);
+	EnemyAnim->OnAttackHitCheck.AddUObject(this, &AKeroroEnemyCharacter::AttackCheck);
 	
+
 	// 스탯컴포넌트 체력0 델리게이트 바인딩
 	EnemyStat->OnHpIsZero.AddLambda([this]()->void {
 		EnemyAnim->SetDeadAnim();
 		SetActorEnableCollision(false);
 		});
-
 }
 
 float AKeroroEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -159,7 +108,6 @@ float AKeroroEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& 
 	{
 		Die();
 	}
-
 	return DamageAmount;
 }
 
@@ -183,3 +131,51 @@ void AKeroroEnemyCharacter::Die()
 	SetLifeSpan(5.0f);
 }
 
+void AKeroroEnemyCharacter::AttackCheck()
+{
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this); // 자기 자신은 무시
+
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		GetActorLocation(),	// 시작위치
+		GetActorLocation() + GetActorForwardVector() * AttackRange,	// 끝위치
+		FQuat::Identity, // 회전 없음
+		ECC_GameTraceChannel3, // Attack채널 ( DefaultEngine 파일에 내가만든 채널 몇번쨰인지 나와있음 )
+		FCollisionShape::MakeSphere(AttackRadius),
+		Params
+	);
+
+#if ENABLE_DRAW_DEBUG
+	FVector TraceVec = GetActorForwardVector() * AttackRange;
+	FVector Center = GetActorLocation() + TraceVec * 0.5f;
+	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
+	FColor DrawColor = bHit ? FColor::Green : FColor::Red;
+	float DebugLifeTime = 5.0f;
+
+	DrawDebugCapsule(
+		GetWorld(),
+		Center,
+		HalfHeight,
+		AttackRadius,
+		CapsuleRot,
+		DrawColor,
+		false,
+		DebugLifeTime
+	);
+
+#endif
+
+	if (bHit)
+	{
+		if (IsValid(HitResult.GetActor()))
+		{
+			FDamageEvent DamageEvent;
+			HitResult.GetActor()->TakeDamage(EnemyStat->AttackPower * 2, DamageEvent, GetController(), this);
+			UE_LOG(LogTemp, Warning, TEXT(" hitted : %s"), *HitResult.GetActor()->GetName());
+
+		}
+	}
+}
