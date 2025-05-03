@@ -2,38 +2,45 @@
 
 
 #include "KeroroAIController.h"
-#include "NavigationSystem.h"
-#include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardData.h"
+#include "BehaviorTree/BlackboardComponent.h"
+
+const FName AKeroroAIController::HomePosKey(TEXT("HomePos"));
+const FName AKeroroAIController::PatrolPosKey(TEXT("PatrolPos"));
+const FName AKeroroAIController::TargetKey(TEXT("TargetEnemy"));
 
 AKeroroAIController::AKeroroAIController()
 {
-	RepeatInterval = 2.0f;
+		BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("KRBBCOMP"));
+	
+		static ConstructorHelpers::FObjectFinder<UBlackboardData>BLACKBOARD(TEXT("/Game/AI/BB_Keroro.BB_Keroro"));
+		if (BLACKBOARD.Succeeded())
+		{
+			BBAsset = BLACKBOARD.Object;
+		}
+	
+		static ConstructorHelpers::FObjectFinder<UBehaviorTree>BEHAVIORTREE(TEXT("/Game/AI/BT_Keroro.BT_Keroro"));
+		if (BEHAVIORTREE.Succeeded())
+		{
+			BTAsset = BEHAVIORTREE.Object;
+		}
 }
 
 void AKeroroAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-	GetWorld()->GetTimerManager().SetTimer(RepeatTimerHandle, this, &AKeroroAIController::OnRepeatTimer, RepeatInterval, true);
+	BlackboardComponent = GetBlackboardComponent();
+	if (UseBlackboard(BBAsset, BlackboardComponent))
+	{
+		Blackboard->SetValueAsVector(AKeroroAIController::HomePosKey, InPawn->GetActorLocation());
+		RunBehaviorTree(BTAsset);
+	}
 }
 
 void AKeroroAIController::OnUnPossess()
 {
 	Super::OnUnPossess();
-	GetWorld()->GetTimerManager().ClearTimer(RepeatTimerHandle);
 }
 
-void AKeroroAIController::OnRepeatTimer()
-{
-	auto CurrentPawn = GetPawn();
-	if (CurrentPawn == nullptr) return;
-
-	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(GetWorld());
-	if (NavSystem == nullptr) return;
-
-	FNavLocation NextLocation;
-	if (NavSystem->GetRandomPointInNavigableRadius(FVector(1530.0f, 1981.0f,90.0f), 1000.0f, NextLocation))
-	{
-		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, NextLocation.Location);
-	}
-}
 

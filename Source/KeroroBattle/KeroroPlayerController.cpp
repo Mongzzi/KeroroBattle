@@ -80,8 +80,10 @@ void AKeroroPlayerController::BeginPlay()
 
 void AKeroroPlayerController::UpdateHPWidget()
 {
-	if (KRHUDWidget == nullptr) return;
-	KRHUDWidget->UpdateHPWidget();
+	if (IsValid(KRHUDWidget))
+	{
+		KRHUDWidget->UpdateHPWidget();
+	}
 }
 
 void AKeroroPlayerController::UpdateGoldWidget()

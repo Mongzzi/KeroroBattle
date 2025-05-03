@@ -108,14 +108,14 @@ public:
 	UPROPERTY(VisibleAnywhere,Category= Stat)
 	class UKeroroStatComponent* KRStat;
 
+	// 애님인스턴스
+	UPROPERTY()
+	class UKeroroAnimInstance* KRAnim;
+
 private:
 	// 플레이어 컨트롤러
 	UPROPERTY()
 	class AKeroroPlayerController* KRPlayerContoller;
-
-	// 애님인스턴스
-	UPROPERTY()
-	class UKeroroAnimInstance* KRAnim;
 
 	// 스트림핸들 저장하기위해선 꼭 TSharedPtr 타입으로 해줘야함 
 	TSharedPtr<struct FStreamableHandle> AssetStreamingHandle;

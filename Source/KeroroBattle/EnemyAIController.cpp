@@ -31,7 +31,7 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	BlackboardComponent = Blackboard.Get();
+	BlackboardComponent = GetBlackboardComponent();
 	if (UseBlackboard(BBAsset, BlackboardComponent))
 	{
 
