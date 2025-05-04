@@ -14,3 +14,9 @@ AKeroroGameMode::AKeroroGameMode()
 	PlayerStateClass = AKeroroPlayerState::StaticClass();
 	GameStateClass = AKeroroGameState::StaticClass();
 }
+
+void AKeroroGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+}

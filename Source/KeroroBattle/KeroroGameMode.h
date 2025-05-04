@@ -16,4 +16,6 @@ class KEROROBATTLE_API AKeroroGameMode : public AGameModeBase
 
 	AKeroroGameMode();
 	
+protected:
+	virtual void BeginPlay() override;
 };

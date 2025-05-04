@@ -2,6 +2,7 @@
 
 
 #include "KeroroCharacter.h"
+#include "KeroroEnemyCharacter.h"
 #include "KeroroPlayerController.h"
 #include "KeroroAnimInstance.h"
 #include "KeroroWeapon.h"
@@ -121,6 +122,12 @@ void AKeroroCharacter::BeginPlay()
 	if (HpBarWidget != nullptr)
 	{
 		HpBarWidget->BindKRStat(KRStat);
+	}
+
+	// 임시 레벨
+	if (KRStat)
+	{
+		KRStat->SetLevel(18);
 	}
 }
 
@@ -331,7 +338,8 @@ void AKeroroCharacter::AttackCheck()
 
 	if (bHit)
 	{
-		if (IsValid(HitResult.GetActor()))
+		// 캐스트 성공시 참반환 적캐릭터만 데미지주게
+		if (IsValid(HitResult.GetActor()) && Cast<AKeroroEnemyCharacter>(HitResult.GetActor()))
 		{
 			FDamageEvent DamageEvent;
 			HitResult.GetActor()->TakeDamage(KRStat->AttackPower * 2, DamageEvent, GetController(), this);

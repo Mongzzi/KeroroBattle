@@ -2,6 +2,7 @@
 
 
 #include "KeroroEnemyCharacter.h"
+#include "KeroroCharacter.h"
 #include "KeroroStatComponent.h"
 #include "EnemyAIController.h"
 #include "KeroroAnimInstance.h"
@@ -15,7 +16,7 @@
 // Sets default values
 AKeroroEnemyCharacter::AKeroroEnemyCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	EnemyStat = CreateDefaultSubobject<UKeroroStatComponent>(TEXT("KRSTAT"));
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>SKMESH(TEXT("/Game/Keroro_Model/joriri/joriri.joriri"));
@@ -25,11 +26,11 @@ AKeroroEnemyCharacter::AKeroroEnemyCharacter()
 	}
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FRotator(0.0f, -90.0f, 0.0f));
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("KeroroCharacter"));
-	
+
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 600.0f, 0.0f);
 	GetCharacterMovement()->bOrientRotationToMovement = true;	// 이동 방향으로 자동 회전
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
-	
+
 	AIControllerClass = AEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
@@ -81,10 +82,10 @@ void AKeroroEnemyCharacter::Tick(float DeltaTime)
 void AKeroroEnemyCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	
+
 	EnemyAnim = Cast<UKeroroAnimInstance>(GetMesh()->GetAnimInstance());
 	EnemyAnim->OnAttackHitCheck.AddUObject(this, &AKeroroEnemyCharacter::AttackCheck);
-	
+
 
 	// 스탯컴포넌트 체력0 델리게이트 바인딩
 	EnemyStat->OnHpIsZero.AddLambda([this]()->void {
@@ -168,7 +169,8 @@ void AKeroroEnemyCharacter::AttackCheck()
 
 	if (bHit)
 	{
-		if (IsValid(HitResult.GetActor()))
+		// 캐스트 성공시 참반환 적캐릭터만 데미지주게
+		if (IsValid(HitResult.GetActor()) && Cast<AKeroroCharacter>(HitResult.GetActor()))
 		{
 			FDamageEvent DamageEvent;
 			HitResult.GetActor()->TakeDamage(EnemyStat->AttackPower * 2, DamageEvent, GetController(), this);
