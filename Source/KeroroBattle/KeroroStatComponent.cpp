@@ -12,7 +12,7 @@ UKeroroStatComponent::UKeroroStatComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
-	Level = 1;
+	Level = 3;
 
 }
 
@@ -21,23 +21,28 @@ UKeroroStatComponent::UKeroroStatComponent()
 void UKeroroStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	SetLevel(Level);
+}
 
+// 계속 크래쉬나던이유 setlevel에서 데이터 가져오는데 beginplay에서
+// setlevel해주고있었음 beginplay시점에는 이미 다른 곳에서 data를 필요로 해서 문제
+// 따라서 컴포넌트 초기화할때 바로 데이터도 가져오는 형식으로 진행
+void UKeroroStatComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+	SetLevel(Level);
 }
 
 // 처음초기화 그리고 레벨업할 시 호출 예정
+// 레벨초기화 해줄때 hud 업데이트도 델리게이트로 할 예정
 void UKeroroStatComponent::SetLevel(int32 lv)
 {
 	auto KRGameInstance = Cast<UKeroroGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	if (KRGameInstance != nullptr)
 	{
-		// 레벨에따른 스탯정보 가져옴
 		StatData = KRGameInstance->GetKRStatData(lv);
-		UE_LOG(LogTemp, Warning, TEXT("Get StatData from GameInstance is Success"));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Get StatData from GameInstance is failed"));
 		return;
 	}
 
@@ -46,7 +51,7 @@ void UKeroroStatComponent::SetLevel(int32 lv)
 		Level = lv;
 		SetHP(StatData->MaxHp);
 		AttackPower = StatData->AttackPower;
-		UE_LOG(LogTemp, Warning, TEXT("set level success"));
+		OnLevelUpdate.Broadcast();
 	}
 }
 
@@ -54,7 +59,7 @@ void UKeroroStatComponent::SetDamage(float dm)
 {
 	if (StatData == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Stat Damage is nullptr - in setdamage"));
+		//UE_LOG(LogTemp, Error, TEXT("Stat Damage is nullptr - in setdamage"));
 		return;
 	}
 	SetHP(FMath::Clamp<float>(CurrentHP - dm, 0.0f, StatData->MaxHp));
@@ -72,6 +77,11 @@ void UKeroroStatComponent::SetHP(float hp)
 
 float UKeroroStatComponent::GetHpRatio()
 {
+	if (StatData == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Stat Data is nullptr - in GetHpRatio"));
+		return 0.0f;
+	}
 	return (CurrentHP / StatData->MaxHp);
 }
 

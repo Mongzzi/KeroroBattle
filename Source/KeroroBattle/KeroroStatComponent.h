@@ -8,6 +8,7 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnHPIsZeroDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnHPIsChangedDeleGate);
+DECLARE_MULTICAST_DELEGATE(FOnLevelUpdateDeleGate);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class KEROROBATTLE_API UKeroroStatComponent : public UActorComponent
@@ -21,6 +22,7 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	virtual void InitializeComponent() override;
 
 public:
 	UPROPERTY(EditInstanceOnly, Category = Stat)
@@ -40,6 +42,7 @@ public:
 
 	FOnHPIsZeroDelegate OnHpIsZero;
 	FOnHPIsChangedDeleGate OnHpIsChanged;
+	FOnLevelUpdateDeleGate OnLevelUpdate;
 
 private:
 	struct FKRStatData* StatData;

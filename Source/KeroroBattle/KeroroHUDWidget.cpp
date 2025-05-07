@@ -3,6 +3,7 @@
 
 #include "KeroroHUDWidget.h"
 #include "KeroroStatComponent.h"
+#include "KeroroPlayerState.h"
 #include "Components/ProgressBar.h"
 #include "Components/Image.h"
 #include "Components/EditableTextBox.h"
@@ -11,6 +12,14 @@ void UKeroroHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	UE_LOG(LogTemp, Error, TEXT(" in NativeConstruct"));
+
+	if (APlayerController* PC = GetOwningPlayer())
+	{
+		if (AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(PC->PlayerState))
+		{
+			PS->OnLevelChanged.AddUObject(this, &UKeroroHUDWidget::UpdateLevelWidget);
+		}
+	}
 
 
 	if (KillText)
@@ -23,14 +32,30 @@ void UKeroroHUDWidget::NativeConstruct()
 		GoldText->SetText(FText::FromString(TEXT("999")));
 	}
 
+	if (LevelText)
+	{
+		LevelText->SetText(FText::FromString(TEXT("555")));
+	}
 
 }
 
 void UKeroroHUDWidget::UpdateHPWidget()
 {
 	// 프로그레스바 이미지 min 0.266 max 0.866이 0~100%처럼보임 그래서 보간해주고 SetPercent해줌
-	float a = 0.266f + (CurrentKRStat->GetHpRatio())*0.6f;
+	if (CurrentKRStat == nullptr || HPBar == nullptr) return;
+	float a = 0.266f + (CurrentKRStat->GetHpRatio()) * 0.6f;
 	HPBar->SetPercent(a);
+}
+
+void UKeroroHUDWidget::UpdateLevelWidget()
+{
+
+	if (LevelText)
+	{
+		UE_LOG(LogTemp, Error, TEXT(" in level updated"));
+
+		LevelText->SetText(FText::FromString(TEXT("LV ") + FString::FromInt(CurrentKRStat->Level)));
+	}
 }
 
 void UKeroroHUDWidget::UpdateGoldWidget()
@@ -47,6 +72,7 @@ void UKeroroHUDWidget::UpdateTimeWidget(float RemainTime)
 
 void UKeroroHUDWidget::UpdateEXPWidget()
 {
+	//EXPBar->SetPercent();
 }
 
 void UKeroroHUDWidget::UpdateKillWidget()
@@ -65,7 +91,17 @@ void UKeroroHUDWidget::BindKRStat(UKeroroStatComponent* NewKRStat)
 
 	//// 추후 작업 예정
 	//NewKRStat->OnHpIsChanged.AddUObject(this, &UKeroroHUDWidget::UpdateHPWidget);
-	//UpdateHPWidget();
+	CurrentKRStat->OnLevelUpdate.AddUObject(this, &UKeroroHUDWidget::UpdateLevelWidget);
+
+	UpdateHPWidget();
+	UpdateLevelWidget();
+
+}
+
+void UKeroroHUDWidget::BindPlayerState(AKeroroPlayerState* PlayerState)
+{
+	if (PlayerState == nullptr) return;
+	CurrentKRPlayerState = PlayerState;
 }
 
 void UKeroroHUDWidget::UpdateWidget()

@@ -20,15 +20,21 @@ protected:
 
 public:
 	void BindKRStat(class UKeroroStatComponent* NewKRStat);
+	void BindPlayerState(class AKeroroPlayerState* PlayerState);
+
 	void UpdateWidget();
 	void UpdateHPWidget();	// ¿Ï
 	void UpdateGoldWidget();
-	void UpdateTimeWidget(float RemainTime);
+	void UpdateTimeWidget(float RemainTime);	// ¿Ï
 	void UpdateEXPWidget();
 	void UpdateKillWidget();
 
+	UFUNCTION()
+	void UpdateLevelWidget();
+
 private:
 	TWeakObjectPtr<class UKeroroStatComponent> CurrentKRStat;
+	TWeakObjectPtr<class AKeroroPlayerState> CurrentKRPlayerState;
 
 private:
 
@@ -52,4 +58,6 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	class UEditableTextBox* GoldText;
 
+	UPROPERTY(meta=(BindWidget))
+	class UEditableTextBox* LevelText;
 };
