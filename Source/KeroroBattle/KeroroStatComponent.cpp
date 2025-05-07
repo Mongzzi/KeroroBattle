@@ -36,7 +36,7 @@ void UKeroroStatComponent::InitializeComponent()
 // 레벨초기화 해줄때 hud 업데이트도 델리게이트로 할 예정
 void UKeroroStatComponent::SetLevel(int32 lv)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Set level in statcomp"));
+	//UE_LOG(LogTemp, Warning, TEXT("Set level in statcomp"));
 
 	auto KRGameInstance = Cast<UKeroroGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	if (KRGameInstance != nullptr)
@@ -53,8 +53,6 @@ void UKeroroStatComponent::SetLevel(int32 lv)
 		Level = lv;
 		SetHP(StatData->MaxHp);
 		AttackPower = StatData->AttackPower;
-		
-
 	}
 }
 
@@ -86,6 +84,11 @@ float UKeroroStatComponent::GetHpRatio()
 		return 0.0f;
 	}
 	return (CurrentHP / StatData->MaxHp);
+}
+
+int32 UKeroroStatComponent::GetDropExp()
+{
+	return StatData->DropExp;
 }
 
 

@@ -19,6 +19,7 @@ void UKeroroHUDWidget::NativeConstruct()
 		if (AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(PC->PlayerState))
 		{
 			PS->OnLevelChanged.AddUObject(this, &UKeroroHUDWidget::UpdateLevelWidget);
+			PS->OnExpChanged.AddUObject(this, &UKeroroHUDWidget::UpdateEXPWidget);
 		}
 	}
 
@@ -72,7 +73,10 @@ void UKeroroHUDWidget::UpdateTimeWidget(float RemainTime)
 
 void UKeroroHUDWidget::UpdateEXPWidget()
 {
-	//EXPBar->SetPercent();
+
+	if (CurrentKRPlayerState == nullptr) return;
+	float a = CurrentKRPlayerState->GetExpRatio();
+	EXPBar->SetPercent(a);
 }
 
 void UKeroroHUDWidget::UpdateKillWidget()
@@ -90,7 +94,7 @@ void UKeroroHUDWidget::BindKRStat(UKeroroStatComponent* NewKRStat)
 	CurrentKRStat = NewKRStat;
 
 	UpdateHPWidget();
-	UpdateLevelWidget();
+
 
 }
 
@@ -98,6 +102,8 @@ void UKeroroHUDWidget::BindPlayerState(AKeroroPlayerState* PlayerState)
 {
 	if (PlayerState == nullptr) return;
 	CurrentKRPlayerState = PlayerState;
+	UpdateLevelWidget();
+	UpdateEXPWidget();
 }
 
 void UKeroroHUDWidget::UpdateWidget()

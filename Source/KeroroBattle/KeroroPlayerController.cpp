@@ -50,38 +50,29 @@ void AKeroroPlayerController::PostInitializeComponents()
 void AKeroroPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	// 플레이어스테이트 초기화
 	KRPlayerState = Cast<AKeroroPlayerState>(PlayerState);
 
+	// 포제스중인 캐릭터가져와서 캐스팅
 	AKeroroCharacter* KRCharacter = Cast<AKeroroCharacter>(GetCharacter());
-	if (KRCharacter)
-	{
-		EKeroroType MyType = KRCharacter->GetKeroroCharacterType(); // 캐릭터가 자신의 타입 알려주는 함수
-		CharacterMap.Add(MyType, KRCharacter); // TMap에 미리 등록
-	}
+	if (KRCharacter == nullptr)return;
+	
+	
+	// 캐릭터가 자신의 타입 알려주는 함수
+	EKeroroType MyType = KRCharacter->GetKeroroCharacterType(); 
+	CharacterMap.Add(MyType, KRCharacter); // TMap에 미리 등록
 
-	if (KRHUDWidgetClass)
-	{
-		KRHUDWidget = CreateWidget<UKeroroHUDWidget>(this, KRHUDWidgetClass);
-		KRHUDWidget->AddToViewport();
 
-		if (KRCharacter)
-		{
-			KRHUDWidget->BindKRStat(KRCharacter->KRStat);
-		}
-	}
+	KRHUDWidget = CreateWidget<UKeroroHUDWidget>(this, KRHUDWidgetClass);
+	if (KRHUDWidget == nullptr) return;
 
-	if (KRHUDWidget)
-	{
-		if (KRCharacter)
-		{
-			KRCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
-		}
-	}
+	KRHUDWidget->AddToViewport();
+	KRHUDWidget->BindKRStat(KRCharacter->KRStat);
+	KRHUDWidget->BindPlayerState(KRPlayerState);
 
+	KRCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
 	KRPlayerState->OnLevelChanged.AddUObject(this, &AKeroroPlayerController::OnPlayerLevelUpdated);
-
 }
 
 void AKeroroPlayerController::UpdateStatWidget()
@@ -90,6 +81,7 @@ void AKeroroPlayerController::UpdateStatWidget()
 	{
 		KRHUDWidget->UpdateHPWidget();
 		KRHUDWidget->UpdateLevelWidget();
+		KRHUDWidget->UpdateEXPWidget();
 	}
 }
 
@@ -155,7 +147,7 @@ void AKeroroPlayerController::TagCharacter()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("spawn new character"));
+		//UE_LOG(LogTemp, Warning, TEXT("spawn new character"));
 		FVector SpawnLoc;
 		FRotator SpawnRot;
 		// 캐릭터 전혀없을때
@@ -246,6 +238,7 @@ void AKeroroPlayerController::Die()
 	}
 
 }
+
 
 // 플레이어 스테이트에서 레벨업할시 델리게이트에의해 호출하여
 // 관리중인 모든 캐릭터 레벨 초기화

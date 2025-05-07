@@ -4,6 +4,9 @@
 #include "KeroroEnemyCharacter.h"
 #include "KeroroCharacter.h"
 #include "KeroroStatComponent.h"
+#include "KeroroPlayerController.h"
+#include "KeroroPlayerState.h"
+#include "KeroroAIController.h"
 #include "EnemyAIController.h"
 #include "KeroroAnimInstance.h"
 #include "KeroroHPBarWidget.h"
@@ -11,7 +14,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/DamageEvents.h"
-
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AKeroroEnemyCharacter::AKeroroEnemyCharacter()
@@ -106,6 +109,19 @@ float AKeroroEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& 
 	if (EnemyStat->GetHpRatio() <= 0.0f)
 	{
 		Die();
+
+		// 굳이 EventInstigator 사용하지않고 GameplayStatics 함수로 사용했음
+		// ai컨트롤러가 처치시 코드가 복잡해짐
+		// 추후 멀티플레이 추가시 수정해야할듯
+		if (APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0))
+		{
+			if (AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(PC->PlayerState))
+			{
+				int32 DropExp = EnemyStat->GetDropExp();
+				PS->AddExp(DropExp);
+			}
+		}
+
 	}
 	return DamageAmount;
 }
@@ -169,12 +185,12 @@ void AKeroroEnemyCharacter::AttackCheck()
 
 	if (bHit)
 	{
-		// 캐스트 성공시 참반환 적캐릭터만 데미지주게
+		// 캐스트 성공시 참반환 적캐릭터만 데미지주게 
 		if (IsValid(HitResult.GetActor()) && Cast<AKeroroCharacter>(HitResult.GetActor()))
 		{
 			FDamageEvent DamageEvent;
 			HitResult.GetActor()->TakeDamage(EnemyStat->AttackPower * 2, DamageEvent, GetController(), this);
-			UE_LOG(LogTemp, Warning, TEXT(" hitted : %s"), *HitResult.GetActor()->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT(" hitted : %s"), *HitResult.GetActor()->GetName());
 
 		}
 	}

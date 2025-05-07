@@ -38,6 +38,7 @@ public:
 	void SetDamage(float dm);
 	void SetHP(float hp);
 	float GetHpRatio();
+	int32 GetDropExp();
 
 	FOnHPIsZeroDelegate OnHpIsZero;
 	FOnHPIsChangedDeleGate OnHpIsChanged;

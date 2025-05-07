@@ -18,10 +18,12 @@ public:
 	AKeroroAIController();
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
+	virtual void BeginPlay() override;
 
 	static const FName HomePosKey;
 	static const FName PatrolPosKey;
 	static const FName TargetKey;
+
 
 private:
 

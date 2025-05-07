@@ -58,7 +58,7 @@ void AKR_WaveManager::SpawnEnemies()
 	AActor* Player = UGameplayStatics::GetPlayerPawn(this, 0);
 	if (!Player) return;
 
-	FVector PlayerLocation = Player->GetActorLocation();
+	FVector PlayerLocation = Player->GetActorLocation()+FVector(0.0f,0.0f,300.0f);
 
 	for (int32 i = 0; i < EnemiesToSpawn; ++i)
 	{
@@ -74,6 +74,10 @@ void AKR_WaveManager::SpawnEnemies()
 		if (SpawnedEnemy)
 		{
 			SpawnedEnemy->OnDestroyed.AddDynamic(this, &AKR_WaveManager::OnEnemyDead);
+		}
+		else if (SpawnedEnemy == nullptr)
+		{
+			EnemiesAlive--;
 		}
 	}
 }

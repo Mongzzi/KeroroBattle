@@ -2,6 +2,9 @@
 
 
 #include "KeroroAIController.h"
+#include "KeroroEnemyCharacter.h"
+#include "KeroroPlayerState.h"
+#include "KeroroStatComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -42,5 +45,11 @@ void AKeroroAIController::OnUnPossess()
 {
 	Super::OnUnPossess();
 }
+
+void AKeroroAIController::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 
 

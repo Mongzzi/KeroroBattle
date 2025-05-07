@@ -24,7 +24,7 @@ EBTNodeResult::Type UBTTask_FindPatrolPos::ExecuteTask(UBehaviorTreeComponent& O
 	FNavLocation PatrolLocation;
 
 	// 500.0f 범위 내에서 랜덤 위치 찾기
-	if (NavSys->GetRandomReachablePointInRadius(AIPawn->GetActorLocation(), 1500.0f, PatrolLocation))
+	if (NavSys->GetRandomReachablePointInRadius(AIPawn->GetActorLocation(), 600.0f, PatrolLocation))
 	{
 		// Blackboard에 저장
 		OwnerComp.GetBlackboardComponent()->SetValueAsVector(FName("PatrolPos"), PatrolLocation.Location);

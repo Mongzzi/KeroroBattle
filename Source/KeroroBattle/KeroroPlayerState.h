@@ -20,6 +20,8 @@ class KEROROBATTLE_API AKeroroPlayerState : public APlayerState
 	GENERATED_BODY()
 
 	AKeroroPlayerState();
+	virtual void PostInitializeComponents() override;
+
 
 protected:
 	virtual void BeginPlay() override;
