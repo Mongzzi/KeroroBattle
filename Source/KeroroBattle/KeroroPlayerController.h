@@ -25,7 +25,6 @@ public:
 	virtual void OnPossess(APawn* PawnToPossess) override;
 
 	virtual void PostInitializeComponents() override;
-
 private:
 	void Move(const struct FInputActionValue& Value);
 	void Look(const struct FInputActionValue& Value);
@@ -35,6 +34,7 @@ private:
 	void Attack();
 	void TagCharacter();
 	void LoadInputActionAndMappingContext();
+	void OnPlayerLevelUpdated();
 
 public:
 	class UNiagaraSystem* NSTagEffect;
@@ -50,8 +50,10 @@ public:
 	UPROPERTY()
 	class UKeroroHUDWidget* KRHUDWidget;
 
+	void UpdateStatWidget();
 	void UpdateHPWidget();
 	void UpdateGoldWidget();
+	void UpdateLevelWidget();
 	void UpdateTimeWidget(float RemainTime);
 	void UpdateEXPWidget();
 	void UpdateKillWidget();

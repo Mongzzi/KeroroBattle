@@ -100,6 +100,12 @@ void AKeroroCharacter::PostInitializeComponents()
 
 	// (스켈레탈메시,애님인스턴스 로드 후 설정),(몽타주 델리게이트 바인딩)
 	LoadAssetandSetting(CurrentKeroroType);
+
+	// 임시 레벨
+	//if (KRStat)
+	//{
+	//	KRStat->SetLevel(2);
+	//}
 }
 
 // Called when the game starts or when spawned
@@ -122,12 +128,6 @@ void AKeroroCharacter::BeginPlay()
 	if (HpBarWidget != nullptr)
 	{
 		HpBarWidget->BindKRStat(KRStat);
-	}
-
-	// 임시 레벨
-	if (KRStat)
-	{
-		KRStat->SetLevel(18);
 	}
 }
 
@@ -343,7 +343,7 @@ void AKeroroCharacter::AttackCheck()
 		{
 			FDamageEvent DamageEvent;
 			HitResult.GetActor()->TakeDamage(KRStat->AttackPower * 2, DamageEvent, GetController(), this);
-			UE_LOG(LogTemp, Warning, TEXT(" hitted : %s"), *HitResult.GetActor()->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT(" hitted : %s"), *HitResult.GetActor()->GetName());
 
 		}
 	}

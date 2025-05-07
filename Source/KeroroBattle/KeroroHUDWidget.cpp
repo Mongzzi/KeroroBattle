@@ -12,6 +12,7 @@ void UKeroroHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	UE_LOG(LogTemp, Error, TEXT(" in NativeConstruct"));
+	
 
 	if (APlayerController* PC = GetOwningPlayer())
 	{
@@ -20,7 +21,6 @@ void UKeroroHUDWidget::NativeConstruct()
 			PS->OnLevelChanged.AddUObject(this, &UKeroroHUDWidget::UpdateLevelWidget);
 		}
 	}
-
 
 	if (KillText)
 	{
@@ -88,10 +88,6 @@ void UKeroroHUDWidget::BindKRStat(UKeroroStatComponent* NewKRStat)
 	}
 
 	CurrentKRStat = NewKRStat;
-
-	//// 추후 작업 예정
-	//NewKRStat->OnHpIsChanged.AddUObject(this, &UKeroroHUDWidget::UpdateHPWidget);
-	CurrentKRStat->OnLevelUpdate.AddUObject(this, &UKeroroHUDWidget::UpdateLevelWidget);
 
 	UpdateHPWidget();
 	UpdateLevelWidget();

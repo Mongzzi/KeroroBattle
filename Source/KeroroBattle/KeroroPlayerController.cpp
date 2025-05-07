@@ -39,11 +39,7 @@ AKeroroPlayerController::AKeroroPlayerController()
 void AKeroroPlayerController::OnPossess(APawn* PawnToPossess)
 {
 	Super::OnPossess(PawnToPossess);
-	//AKeroroCharacter* KRCharacter = Cast<AKeroroCharacter>(GetCharacter());
-	//if (KRCharacter && KRHUDWidget)
-	//{
-	//	Cast<UKeroroHUDWidget>(KRHUDWidget)->BindKRStat(KRCharacter->KRStat);
-	//}
+
 }
 
 void AKeroroPlayerController::PostInitializeComponents()
@@ -54,7 +50,10 @@ void AKeroroPlayerController::PostInitializeComponents()
 void AKeroroPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	// 플레이어스테이트 초기화
 	KRPlayerState = Cast<AKeroroPlayerState>(PlayerState);
+
 	AKeroroCharacter* KRCharacter = Cast<AKeroroCharacter>(GetCharacter());
 	if (KRCharacter)
 	{
@@ -65,8 +64,12 @@ void AKeroroPlayerController::BeginPlay()
 	if (KRHUDWidgetClass)
 	{
 		KRHUDWidget = CreateWidget<UKeroroHUDWidget>(this, KRHUDWidgetClass);
-		KRHUDWidget->BindKRStat(KRCharacter->KRStat);
 		KRHUDWidget->AddToViewport();
+
+		if (KRCharacter)
+		{
+			KRHUDWidget->BindKRStat(KRCharacter->KRStat);
+		}
 	}
 
 	if (KRHUDWidget)
@@ -75,6 +78,18 @@ void AKeroroPlayerController::BeginPlay()
 		{
 			KRCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
 		}
+	}
+
+	KRPlayerState->OnLevelChanged.AddUObject(this, &AKeroroPlayerController::OnPlayerLevelUpdated);
+
+}
+
+void AKeroroPlayerController::UpdateStatWidget()
+{
+	if (IsValid(KRHUDWidget))
+	{
+		KRHUDWidget->UpdateHPWidget();
+		KRHUDWidget->UpdateLevelWidget();
 	}
 }
 
@@ -88,6 +103,14 @@ void AKeroroPlayerController::UpdateHPWidget()
 
 void AKeroroPlayerController::UpdateGoldWidget()
 {
+}
+
+void AKeroroPlayerController::UpdateLevelWidget()
+{
+	if (IsValid(KRHUDWidget))
+	{
+		KRHUDWidget->UpdateLevelWidget();
+	}
 }
 
 void AKeroroPlayerController::UpdateTimeWidget(float RemainTime)
@@ -115,7 +138,6 @@ float AKeroroPlayerController::GetGameStateRemainingTime()
 	}
 	return 0.0f;
 }
-
 
 void AKeroroPlayerController::TagCharacter()
 {
@@ -152,10 +174,11 @@ void AKeroroPlayerController::TagCharacter()
 		if (NewCharacter)
 		{
 			NewCharacter->LoadAssetandSetting(NextType);
+			NewCharacter->KRStat->SetLevel(KRPlayerState->CurrentLevel);
 			CharacterMap.Add(NextType, NewCharacter);
 		}
 	}
-
+	//--------------------------------------------------------------------------------------------------------
 	// AIController 할당
 	if (GetCharacter())
 	{
@@ -168,7 +191,7 @@ void AKeroroPlayerController::TagCharacter()
 		}
 	}
 	Possess(NewCharacter);
-
+	//--------------------------------------------------------------------------------------------------------
 	// 캐릭터 스탯컴포넌트 HUD에 바인딩 및 체력 업데이트
 	if (KRHUDWidget && NewCharacter)
 	{
@@ -176,12 +199,12 @@ void AKeroroPlayerController::TagCharacter()
 		NewCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
 
 		// 새로운 캐릭터에 대한 스탯 바인딩
+		// 초기 HP 값,레벨 갱신
 		KRHUDWidget->BindKRStat(NewCharacter->KRStat);
 
-		// 초기 HP 값 갱신
-		UpdateHPWidget();
+		//UpdateStatWidget();
 	}
-
+	//--------------------------------------------------------------------------------------------------------
 	// 태그 이펙트
 	if (NSTagEffect && GetCharacter() != nullptr)
 	{
@@ -216,12 +239,31 @@ void AKeroroPlayerController::Die()
 				Possess(NextCharacter);
 				KRPlayerState->SetCurrentCharacterType(NextType);
 				KRHUDWidget->BindKRStat(NextCharacter->KRStat);
-				UpdateHPWidget();
+				//UpdateStatWidget();
 				return;
 			}
 		}
 	}
 
+}
+
+// 플레이어 스테이트에서 레벨업할시 델리게이트에의해 호출하여
+// 관리중인 모든 캐릭터 레벨 초기화
+void AKeroroPlayerController::OnPlayerLevelUpdated()
+{
+	int32 Level = KRPlayerState->CurrentLevel;
+
+	for (auto& pair : CharacterMap)
+	{
+		AKeroroCharacter* kero = pair.Value;
+		if (kero)
+		{
+			if (kero->KRStat)
+			{
+				kero->KRStat->SetLevel(Level);
+			}
+		}
+	}
 }
 
 
@@ -271,8 +313,6 @@ void AKeroroPlayerController::SetupInputComponent()
 		Input->BindAction(Tag, ETriggerEvent::Started, this, &AKeroroPlayerController::TagCharacter);
 	}
 }
-
-
 
 void AKeroroPlayerController::Move(const FInputActionValue& Value)
 {
@@ -325,7 +365,6 @@ void AKeroroPlayerController::Attack()
 	if (AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter()))
 	{
 		kero->Attack();
-
 	}
 }
 

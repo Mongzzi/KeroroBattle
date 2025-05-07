@@ -7,6 +7,9 @@
 #include "KeroroPlayerState.generated.h"
 
 
+DECLARE_MULTICAST_DELEGATE(FOnLevelChanged);
+DECLARE_MULTICAST_DELEGATE(FOnGoldChanged);
+DECLARE_MULTICAST_DELEGATE(FOnExpChanged);
 
 /**
  *
@@ -30,22 +33,38 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Keroro")
 	int32 TotalScore;
 
+public:
 	// 플레이어 레벨
-	UPROPERTY(Transient)
-	int32 KeroroLevel;
+	UPROPERTY(Transient, BlueprintReadOnly, Category = "Keroro")
+	int32 CurrentLevel;
 
 	// 경험치
-
+	UPROPERTY(Transient, BlueprintReadOnly, Category = "Keroro")
+	int32 CurrentExp;
 
 	// 골드
-
+	UPROPERTY(Transient, BlueprintReadOnly, Category = "Keroro")
+	int32 CurrentGold;
 
 	// 적 처치 수
+	UPROPERTY(Transient, BlueprintReadOnly, Category = "Keroro")
+	int32 KilledEnemyNum;
+
+public:
+	FOnLevelChanged OnLevelChanged;
+	FOnGoldChanged OnGoldChanged;
+	FOnExpChanged OnExpChanged;
 
 public:
 	EKeroroType GetCurrentCharacterType() const { return CurrentKeroro; }
 	void SetCurrentCharacterType(EKeroroType type) { CurrentKeroro = type; }
 	EKeroroType SetNextCharacterType();
 
+	bool AddExp(int32 exp);
+	float GetExpRatio() const;
+	
+	void SetLevel(int32 lv);
 
+private:
+	struct FKRStatData* StatData;
 };
