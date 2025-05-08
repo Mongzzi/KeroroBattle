@@ -17,6 +17,7 @@ UBTTask_AttackEnemy::UBTTask_AttackEnemy()
 EBTNodeResult::Type UBTTask_AttackEnemy::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
+
 	auto KRCharacter = Cast<AKeroroCharacter>(OwnerComp.GetAIOwner()->GetCharacter());
 	if (KRCharacter == nullptr) return EBTNodeResult::Failed;
 
@@ -33,6 +34,7 @@ EBTNodeResult::Type UBTTask_AttackEnemy::ExecuteTask(UBehaviorTreeComponent& Own
 
 	KRCharacter->KRAnim->OnMontageEnded.RemoveDynamic(this, &UBTTask_AttackEnemy::OnAttackMontageEnded);
 	KRCharacter->KRAnim->OnMontageEnded.AddDynamic(this, &UBTTask_AttackEnemy::OnAttackMontageEnded);
+
 
 	return EBTNodeResult::InProgress;
 }

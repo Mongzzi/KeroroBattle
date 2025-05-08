@@ -20,6 +20,7 @@ void UKeroroHUDWidget::NativeConstruct()
 		{
 			PS->OnLevelChanged.AddUObject(this, &UKeroroHUDWidget::UpdateLevelWidget);
 			PS->OnExpChanged.AddUObject(this, &UKeroroHUDWidget::UpdateEXPWidget);
+			PS->OnKillNumChanged.AddUObject(this, &UKeroroHUDWidget::UpdateKillWidget);
 		}
 	}
 
@@ -81,6 +82,11 @@ void UKeroroHUDWidget::UpdateEXPWidget()
 
 void UKeroroHUDWidget::UpdateKillWidget()
 {
+	if (CurrentKRPlayerState == nullptr) return;
+	if (KillText)
+	{
+		KillText->SetText(FText::FromString(FString::FromInt(CurrentKRPlayerState->KilledEnemyNum)));
+	}
 }
 
 void UKeroroHUDWidget::BindKRStat(UKeroroStatComponent* NewKRStat)
@@ -104,6 +110,7 @@ void UKeroroHUDWidget::BindPlayerState(AKeroroPlayerState* PlayerState)
 	CurrentKRPlayerState = PlayerState;
 	UpdateLevelWidget();
 	UpdateEXPWidget();
+	UpdateKillWidget();
 }
 
 void UKeroroHUDWidget::UpdateWidget()

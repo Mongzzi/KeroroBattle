@@ -119,6 +119,7 @@ float AKeroroEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& 
 			{
 				int32 DropExp = EnemyStat->GetDropExp();
 				PS->AddExp(DropExp);
+				PS->AddKillEnemyNum();
 			}
 		}
 

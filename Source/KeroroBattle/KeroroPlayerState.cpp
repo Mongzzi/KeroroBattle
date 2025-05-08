@@ -9,7 +9,7 @@ AKeroroPlayerState::AKeroroPlayerState()
 {
 	CurrentKeroro = EKeroroType::Keroro;
 	TotalScore = 0;
-	CurrentLevel = 2;
+	CurrentLevel = 7;
 	CurrentGold = 0;
 	CurrentExp = 0;
 	KilledEnemyNum = 0;
@@ -81,6 +81,12 @@ float AKeroroPlayerState::GetExpRatio() const
 
 	float Result = (float)CurrentExp / (float)StatData->NextExp;
 	return Result;
+}
+
+void AKeroroPlayerState::AddKillEnemyNum()
+{
+	KilledEnemyNum += 1;
+	OnKillNumChanged.Broadcast();
 }
 
 

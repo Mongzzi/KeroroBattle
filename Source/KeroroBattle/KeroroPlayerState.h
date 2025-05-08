@@ -10,6 +10,7 @@
 DECLARE_MULTICAST_DELEGATE(FOnLevelChanged);
 DECLARE_MULTICAST_DELEGATE(FOnGoldChanged);
 DECLARE_MULTICAST_DELEGATE(FOnExpChanged);
+DECLARE_MULTICAST_DELEGATE(FOnKillNumChanged)
 
 /**
  *
@@ -56,6 +57,7 @@ public:
 	FOnLevelChanged OnLevelChanged;
 	FOnGoldChanged OnGoldChanged;
 	FOnExpChanged OnExpChanged;
+	FOnKillNumChanged OnKillNumChanged;
 
 public:
 	EKeroroType GetCurrentCharacterType() const { return CurrentKeroro; }
@@ -65,6 +67,8 @@ public:
 	bool AddExp(int32 exp);
 	float GetExpRatio() const;
 	
+	void AddKillEnemyNum();
+
 	void SetLevel(int32 lv);
 
 private:
