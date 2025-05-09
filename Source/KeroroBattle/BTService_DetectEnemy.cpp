@@ -15,7 +15,7 @@ UBTService_DetectEnemy::UBTService_DetectEnemy()
 }
 
 // 아래 코드 템플릿 함수로 빼서 관리 하는게 좋을듯 ( 몬스터와 동일하게 동작 )
-
+// 플레이어 ai 클래스임
 void UBTService_DetectEnemy::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
@@ -28,6 +28,12 @@ void UBTService_DetectEnemy::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 
 	float DetectRadius = 600.0f;
 	float NoDetectRadius = 1200.0f;
+
+	auto TargetObj = OwnerComp.GetBlackboardComponent()->GetValueAsObject(AKeroroAIController::TargetKey);
+	if (!IsValid(TargetObj))
+	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsObject(AKeroroAIController::TargetKey, nullptr);
+	}
 
 	AKeroroEnemyCharacter* NearestEnemy = nullptr;
 	float NearestDist = FLT_MAX;

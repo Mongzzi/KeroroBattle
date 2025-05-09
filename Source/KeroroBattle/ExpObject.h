@@ -23,7 +23,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void SetTargetAndSpeed(class AKeroroCharacter* Target, float Speed);
+	void SetTargetAndSpeedAndExp(class AKeroroCharacter* Target, float Speed,int32 Exp);
 
 
 
@@ -34,5 +34,5 @@ public:
 
 	class AKeroroCharacter* TargetKeroro;
 	float MoveSpeed;
-
+	int32 DropExp;
 };

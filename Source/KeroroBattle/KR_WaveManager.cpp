@@ -12,9 +12,9 @@ AKR_WaveManager::AKR_WaveManager()
 	PrimaryActorTick.bCanEverTick = true;
 	EnemyClass = AKeroroEnemyCharacter::StaticClass();
 
-	SpawnRadius = 400.0f;
+	SpawnRadius = 1400.0f;
 
-	BaseEnemyCount = 1;
+	BaseEnemyCount = 100;
 	CurrentWave = 0;
 	MaxWave = 5;
 	EnemiesToSpawn = 0;

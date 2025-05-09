@@ -4,6 +4,7 @@
 #include "KeroroItemBox.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
+#include "KeroroCharacter.h"
 #include "KeroroWeapon.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
@@ -65,6 +66,8 @@ void AKeroroItemBox::Tick(float DeltaTime)
 
 void AKeroroItemBox::OnCharacterBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (!Cast<AKeroroCharacter>(OtherActor)) return;
+
 	UE_LOG(LogTemp, Warning, TEXT("item box overlapped"));
 
 	NCOpenEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSOpenEffect, GetActorLocation() + FVector(0.0f, 0.0f, 100.0f), FRotator::ZeroRotator, FVector(3.0f));

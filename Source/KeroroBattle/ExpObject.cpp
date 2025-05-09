@@ -3,11 +3,12 @@
 
 #include "ExpObject.h"
 #include "KeroroCharacter.h"
+#include "KeroroPlayerState.h"
 
 // Sets default values
 AExpObject::AExpObject()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComp"));
@@ -21,14 +22,14 @@ AExpObject::AExpObject()
 	}
 
 	MoveSpeed = 0.0f;
-
+	DropExp = 0;
 }
 
 // Called when the game starts or when spawned
 void AExpObject::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
@@ -45,18 +46,22 @@ void AExpObject::Tick(float DeltaTime)
 
 	if (FVector::Dist(NewLoc, TargetLoc) < 50.0f)
 	{
-		// 경험치 증가 처리 여기서 델리게이트 호출하여 경험치 증가 처리하면될듯
-		UE_LOG(LogTemp, Error, TEXT("Exp object already come to keroro"));
+		auto PS = Cast<AKeroroPlayerState>(TargetKeroro->GetPlayerState());
+		if (PS)
+		{
+			PS->AddExp(DropExp);
+		}
 		Destroy();
 	}
 }
 
-void AExpObject::SetTargetAndSpeed(AKeroroCharacter* Target, float Speed)
+void AExpObject::SetTargetAndSpeedAndExp(AKeroroCharacter* Target, float Speed, int32 Exp)
 {
 	if (IsValid(Target))
 	{
 		TargetKeroro = Target;
 		MoveSpeed = Speed;
+		DropExp = Exp;
 	}
 	else {
 		UE_LOG(LogTemp, Error, TEXT("SetTargetAndSpeed is failed , Target is not valid"));

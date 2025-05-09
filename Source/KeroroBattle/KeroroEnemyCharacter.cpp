@@ -11,6 +11,7 @@
 #include "KeroroAnimInstance.h"
 #include "KeroroHPBarWidget.h"
 #include "ExpObject.h"
+#include "DropGold.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
@@ -111,28 +112,6 @@ float AKeroroEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& 
 	{
 		Die();
 
-		// 굳이 EventInstigator 사용하지않고 GameplayStatics 함수로 사용했음
-		// ai컨트롤러가 처치시 코드가 복잡해짐
-		// 추후 멀티플레이 추가시 수정해야할듯
-		if (APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0))
-		{
-			if (AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(PC->PlayerState))
-			{
-				int32 DropExp = EnemyStat->GetDropExp();
-				PS->AddExp(DropExp);
-				PS->AddKillEnemyNum();
-				
-				
-				AExpObject* ExpObj = GetWorld()->SpawnActor<AExpObject>(AExpObject::StaticClass(), GetActorLocation(), FRotator::ZeroRotator);
-				if (ExpObj)
-				{
-					AKeroroCharacter* KR =Cast<AKeroroCharacter>(PC->GetCharacter());
-					ExpObj->SetTargetAndSpeed(KR, 1.5f);
-				}
-
-			}
-		}
-
 	}
 	return DamageAmount;
 }
@@ -149,12 +128,33 @@ void AKeroroEnemyCharacter::Die()
 	{
 		AC->UnPossess();
 	}
-
 	// 콜리전 끄기
 	SetActorEnableCollision(false);
 
 	// 일정 시간 후 소멸
 	SetLifeSpan(2.0f);
+
+	// 굳이 EventInstigator 사용하지않고 GameplayStatics 함수로 사용했음 // ai컨트롤러가 처치시 코드가 복잡해짐 추후 멀티플레이 추가시 수정해야할듯
+	if (APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0))
+	{
+		if (AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(PC->PlayerState))
+		{
+			PS->AddKillEnemyNum();
+
+			// exp 오브젝트 생성
+			AExpObject* ExpObj = GetWorld()->SpawnActor<AExpObject>(AExpObject::StaticClass(), GetActorLocation(), FRotator::ZeroRotator);
+			if (ExpObj)
+			{
+				AKeroroCharacter* KR = Cast<AKeroroCharacter>(PC->GetCharacter());
+				int32 DropExp = EnemyStat->GetDropExp();
+				// 여기서 타겟 , 경험치구슬 속도 , 경험치 수치 정해주고 구슬이 캐릭터에 닿으면 addexp호출
+				ExpObj->SetTargetAndSpeedAndExp(KR, 1.5f, DropExp);
+			}
+
+			// 골드 오브젝트 생성
+			ADropGold* GoldObj = GetWorld()->SpawnActor<ADropGold>(ADropGold::StaticClass(), GetActorLocation(), FRotator::ZeroRotator);
+		}
+	}
 }
 
 void AKeroroEnemyCharacter::AttackCheck()
