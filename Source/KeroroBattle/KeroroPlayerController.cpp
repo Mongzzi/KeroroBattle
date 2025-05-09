@@ -73,8 +73,10 @@ void AKeroroPlayerController::BeginPlay()
 
 	KRCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
 	KRPlayerState->OnLevelChanged.AddUObject(this, &AKeroroPlayerController::OnPlayerLevelUpdated);
+	UpdateStatWidget();
 }
 
+// 처음초기화용
 void AKeroroPlayerController::UpdateStatWidget()
 {
 	if (IsValid(KRHUDWidget))
@@ -82,6 +84,7 @@ void AKeroroPlayerController::UpdateStatWidget()
 		KRHUDWidget->UpdateHPWidget();
 		KRHUDWidget->UpdateLevelWidget();
 		KRHUDWidget->UpdateEXPWidget();
+		KRHUDWidget->UpdateGoldWidget();
 	}
 }
 
@@ -95,6 +98,10 @@ void AKeroroPlayerController::UpdateHPWidget()
 
 void AKeroroPlayerController::UpdateGoldWidget()
 {
+	if (IsValid(KRHUDWidget))
+	{
+		KRHUDWidget->UpdateGoldWidget();
+	}
 }
 
 void AKeroroPlayerController::UpdateLevelWidget()

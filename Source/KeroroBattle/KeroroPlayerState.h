@@ -64,11 +64,10 @@ public:
 	void SetCurrentCharacterType(EKeroroType type) { CurrentKeroro = type; }
 	EKeroroType SetNextCharacterType();
 
-	bool AddExp(int32 exp);
 	float GetExpRatio() const;
-	
+	bool AddExp(int32 exp);
+	void AddGold(int32 gold);
 	void AddKillEnemyNum();
-
 	void SetLevel(int32 lv);
 
 private:

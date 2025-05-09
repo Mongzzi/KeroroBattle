@@ -69,6 +69,13 @@ bool AKeroroPlayerState::AddExp(int32 exp)
 	return DidLevelUp;
 }
 
+void AKeroroPlayerState::AddGold(int32 gold)
+{
+	CurrentGold += gold;
+	OnGoldChanged.Broadcast();
+	UE_LOG(LogTemp, Error, TEXT("Gold = %d"), CurrentGold);
+}
+
 float AKeroroPlayerState::GetExpRatio() const
 {
 	if (StatData == nullptr)

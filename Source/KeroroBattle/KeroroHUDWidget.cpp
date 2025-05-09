@@ -12,7 +12,7 @@ void UKeroroHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	UE_LOG(LogTemp, Error, TEXT(" in NativeConstruct"));
-	
+
 
 	if (APlayerController* PC = GetOwningPlayer())
 	{
@@ -21,22 +21,8 @@ void UKeroroHUDWidget::NativeConstruct()
 			PS->OnLevelChanged.AddUObject(this, &UKeroroHUDWidget::UpdateLevelWidget);
 			PS->OnExpChanged.AddUObject(this, &UKeroroHUDWidget::UpdateEXPWidget);
 			PS->OnKillNumChanged.AddUObject(this, &UKeroroHUDWidget::UpdateKillWidget);
+			PS->OnGoldChanged.AddUObject(this, &UKeroroHUDWidget::UpdateGoldWidget);
 		}
-	}
-
-	if (KillText)
-	{
-		KillText->SetText(FText::FromString(TEXT("1234")));
-	}
-
-	if (GoldText)
-	{
-		GoldText->SetText(FText::FromString(TEXT("999")));
-	}
-
-	if (LevelText)
-	{
-		LevelText->SetText(FText::FromString(TEXT("555")));
 	}
 
 }
@@ -62,6 +48,11 @@ void UKeroroHUDWidget::UpdateLevelWidget()
 
 void UKeroroHUDWidget::UpdateGoldWidget()
 {
+	if (CurrentKRPlayerState == nullptr) return;
+	if (GoldText)
+	{
+		GoldText->SetText(FText::FromString(FString::FromInt(CurrentKRPlayerState->CurrentGold) + TEXT("G")));
+	}
 }
 
 void UKeroroHUDWidget::UpdateTimeWidget(float RemainTime)
