@@ -10,6 +10,7 @@
 #include "EnemyAIController.h"
 #include "KeroroAnimInstance.h"
 #include "KeroroHPBarWidget.h"
+#include "ExpObject.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
@@ -120,6 +121,15 @@ float AKeroroEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& 
 				int32 DropExp = EnemyStat->GetDropExp();
 				PS->AddExp(DropExp);
 				PS->AddKillEnemyNum();
+				
+				
+				AExpObject* ExpObj = GetWorld()->SpawnActor<AExpObject>(AExpObject::StaticClass(), GetActorLocation(), FRotator::ZeroRotator);
+				if (ExpObj)
+				{
+					AKeroroCharacter* KR =Cast<AKeroroCharacter>(PC->GetCharacter());
+					ExpObj->SetTargetAndSpeed(KR, 1.5f);
+				}
+
 			}
 		}
 
@@ -144,7 +154,7 @@ void AKeroroEnemyCharacter::Die()
 	SetActorEnableCollision(false);
 
 	// 일정 시간 후 소멸
-	SetLifeSpan(5.0f);
+	SetLifeSpan(2.0f);
 }
 
 void AKeroroEnemyCharacter::AttackCheck()

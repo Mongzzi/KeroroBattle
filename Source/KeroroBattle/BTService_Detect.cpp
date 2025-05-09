@@ -30,6 +30,12 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	float DetectRadius = 600.0f;
 	float NoDetectRadius = 1200.0f;
 
+	auto TargetObj = OwnerComp.GetBlackboardComponent()->GetValueAsObject(AEnemyAIController::TargetKey);
+	if (!IsValid(TargetObj))
+	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsObject(AEnemyAIController::TargetKey, nullptr);
+	}
+
 	AKeroroCharacter* NearestKeroro = nullptr;
 	float NearestDist = FLT_MAX;
 	for (TActorIterator<AKeroroCharacter>IT(World); IT; ++IT)
@@ -62,6 +68,8 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 			EnemyCharacter->GetCharacterMovement()->MaxWalkSpeed = 700.0f;
 		}
 	}
+
+
 	//DrawDebugSphere(World, AIPawn->GetActorLocation(), DetectRadius, 16, FColor::Red, false, 0.2f);
 	//DrawDebugSphere(World, AIPawn->GetActorLocation(), NoDetectRadius, 16, FColor::Green, false, 0.2f);
 }

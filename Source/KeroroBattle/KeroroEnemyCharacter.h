@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "KeroroEnemyCharacter.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate)
+DECLARE_MULTICAST_DELEGATE(FOnEnemyDie)
 
 UCLASS()
 class KEROROBATTLE_API AKeroroEnemyCharacter : public ACharacter
@@ -41,6 +41,8 @@ public:
     
     // 사망 처리 여부
     bool bIsDead;
+
+    FOnEnemyDie OnEnemyDie;
 
 public:
     // 적 몬스터 콤보 공격용
