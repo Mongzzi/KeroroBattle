@@ -4,9 +4,12 @@
 #include "KeroroHUDWidget.h"
 #include "KeroroStatComponent.h"
 #include "KeroroPlayerState.h"
+#include "LevelupCardWidget.h"
 #include "Components/ProgressBar.h"
 #include "Components/Image.h"
 #include "Components/EditableTextBox.h"
+
+
 
 void UKeroroHUDWidget::NativeConstruct()
 {
@@ -25,6 +28,18 @@ void UKeroroHUDWidget::NativeConstruct()
 		}
 	}
 
+	// 카드 인덱스 부여
+	if (CardWidget1) CardWidget1->SetCardIndex(1);
+	if (CardWidget2) CardWidget2->SetCardIndex(2);
+	if (CardWidget3) CardWidget3->SetCardIndex(3);
+
+	// 델리게이트 바인딩
+	if (CardWidget1) CardWidget1->OnCardSelected.AddUObject(this, &UKeroroHUDWidget::PlayCardAnimation);
+	if (CardWidget2) CardWidget2->OnCardSelected.AddUObject(this, &UKeroroHUDWidget::PlayCardAnimation);
+	if (CardWidget3) CardWidget3->OnCardSelected.AddUObject(this, &UKeroroHUDWidget::PlayCardAnimation);
+
+	// 처음 Draw 애니메이션 실행
+	PlayDrawAnimation_AllCard();
 }
 
 void UKeroroHUDWidget::UpdateHPWidget()
@@ -44,6 +59,43 @@ void UKeroroHUDWidget::UpdateLevelWidget()
 
 		LevelText->SetText(FText::FromString(TEXT("LV ") + FString::FromInt(CurrentKRStat->Level)));
 	}
+}
+
+void UKeroroHUDWidget::PlayCardAnimation(int32 SelectedIndex)
+{
+	if (CardWidget1 && CardWidget1->CardIndex == SelectedIndex)
+	{
+		CardWidget1->PlaySelectCardAnimation();
+	}
+	else if (CardWidget1)
+	{
+		CardWidget1->PlayAnotherSelectCardAnimation();
+	}
+
+	if (CardWidget2 && CardWidget2->CardIndex == SelectedIndex)
+	{
+		CardWidget2->PlaySelectCardAnimation();
+	}
+	else if (CardWidget2)
+	{
+		CardWidget2->PlayAnotherSelectCardAnimation();
+	}
+
+	if (CardWidget3 && CardWidget3->CardIndex == SelectedIndex)
+	{
+		CardWidget3->PlaySelectCardAnimation();
+	}
+	else if (CardWidget3)
+	{
+		CardWidget3->PlayAnotherSelectCardAnimation();
+	}
+}
+
+void UKeroroHUDWidget::PlayDrawAnimation_AllCard()
+{
+	if (CardWidget1) CardWidget1->PlayDrawCardAnimation();
+	if (CardWidget2) CardWidget2->PlayDrawCardAnimation();
+	if (CardWidget3) CardWidget3->PlayDrawCardAnimation();
 }
 
 void UKeroroHUDWidget::UpdateGoldWidget()

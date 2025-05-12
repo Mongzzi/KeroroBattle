@@ -8,10 +8,12 @@
 #include "KeroroHUDWidget.h"
 #include "KeroroGameState.h"
 #include "KeroroAIController.h"
+#include "LevelupCardWidget.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "InputAction.h"
+#include "Blueprint/UserWidget.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "NiagaraComponent.h"
@@ -33,7 +35,6 @@ AKeroroPlayerController::AKeroroPlayerController()
 	{
 		KRHUDWidgetClass = WidgetClassFinder.Class;
 	}
-
 }
 
 void AKeroroPlayerController::OnPossess(APawn* PawnToPossess)
@@ -57,12 +58,11 @@ void AKeroroPlayerController::BeginPlay()
 	// 포제스중인 캐릭터가져와서 캐스팅
 	AKeroroCharacter* KRCharacter = Cast<AKeroroCharacter>(GetCharacter());
 	if (KRCharacter == nullptr)return;
-	
-	
-	// 캐릭터가 자신의 타입 알려주는 함수
-	EKeroroType MyType = KRCharacter->GetKeroroCharacterType(); 
-	CharacterMap.Add(MyType, KRCharacter); // TMap에 미리 등록
 
+
+	// 캐릭터가 자신의 타입 알려주는 함수
+	EKeroroType MyType = KRCharacter->GetKeroroCharacterType();
+	CharacterMap.Add(MyType, KRCharacter); // TMap에 미리 등록
 
 	KRHUDWidget = CreateWidget<UKeroroHUDWidget>(this, KRHUDWidgetClass);
 	if (KRHUDWidget == nullptr) return;
@@ -70,6 +70,7 @@ void AKeroroPlayerController::BeginPlay()
 	KRHUDWidget->AddToViewport();
 	KRHUDWidget->BindKRStat(KRCharacter->KRStat);
 	KRHUDWidget->BindPlayerState(KRPlayerState);
+
 
 	KRCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
 	KRPlayerState->OnLevelChanged.AddUObject(this, &AKeroroPlayerController::OnPlayerLevelUpdated);
@@ -342,6 +343,15 @@ void AKeroroPlayerController::Jump()
 	{
 		kero->Jump();
 	}
+
+	// test card draw
+	if (KRHUDWidget)
+	{
+		KRHUDWidget->PlayDrawAnimation_AllCard();
+
+
+	}
+
 }
 
 void AKeroroPlayerController::StartRun()

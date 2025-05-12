@@ -31,6 +31,8 @@ public:
 
 	UFUNCTION()
 	void UpdateLevelWidget();
+	void PlayCardAnimation(int32 SelectedIndex);
+	void PlayDrawAnimation_AllCard();
 
 private:
 	TWeakObjectPtr<class UKeroroStatComponent> CurrentKRStat;
@@ -60,4 +62,14 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	class UEditableTextBox* LevelText;
+
+public:
+	UPROPERTY(meta = (BindWidget))
+	class ULevelupCardWidget* CardWidget1;
+
+	UPROPERTY(meta = (BindWidget))
+	class ULevelupCardWidget* CardWidget2;
+
+	UPROPERTY(meta = (BindWidget))
+	class ULevelupCardWidget* CardWidget3;
 };

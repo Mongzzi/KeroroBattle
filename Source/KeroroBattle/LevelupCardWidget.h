@@ -1,0 +1,60 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Blueprint/UserWidget.h"
+#include "LevelupCardWidget.generated.h"
+
+// broadcast에 int32 인자로 카드인덱스 넘겨서 바인딩된 함수에 현재 인덱스 알림
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnCardSelected, int32);
+
+/**
+ * 
+ */
+UCLASS()
+class KEROROBATTLE_API ULevelupCardWidget : public UUserWidget
+{
+	GENERATED_BODY()
+
+public:
+	virtual void NativeConstruct() override;
+
+	UFUNCTION(BlueprintCallable)
+	void PlayDrawCardAnimation();
+	void PlaySelectCardAnimation();
+	void PlayAnotherSelectCardAnimation();
+
+	void SetCardInfo(const FText& Title, const FText& Description, UTexture2D* IconTexture);
+	void SetCardIndex(int32 Index) { CardIndex = Index; }
+	FOnCardSelected OnCardSelected;
+
+public:
+	int32 CardIndex = 0;
+
+protected:
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* DrawCard;
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* SelectCard;
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* AnotherSelectCard;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* CardTitle;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* CardDescription;
+
+	UPROPERTY(meta = (BindWidget))
+	class UImage* CardImage;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* CardButton;
+
+	UFUNCTION()
+	void OnSelectButtonClicked();
+};

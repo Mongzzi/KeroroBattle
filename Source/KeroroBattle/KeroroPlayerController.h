@@ -43,10 +43,9 @@ public:
 	TMap<EKeroroType, class AKeroroCharacter*> CharacterMap;
 
 
-	// test
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<class UKeroroHUDWidget> KRHUDWidgetClass;
-
+	
 	UPROPERTY()
 	class UKeroroHUDWidget* KRHUDWidget;
 
