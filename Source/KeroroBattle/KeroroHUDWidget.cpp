@@ -21,6 +21,10 @@ void UKeroroHUDWidget::NativeConstruct()
 	{
 		if (AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(PC->PlayerState))
 		{
+			// 레벨업 시 카드 드로우
+			PS->OnLevelChanged.AddUObject(this, &UKeroroHUDWidget::PlayDrawAnimation_AllCard);
+
+			// UI 업데이트
 			PS->OnLevelChanged.AddUObject(this, &UKeroroHUDWidget::UpdateLevelWidget);
 			PS->OnExpChanged.AddUObject(this, &UKeroroHUDWidget::UpdateEXPWidget);
 			PS->OnKillNumChanged.AddUObject(this, &UKeroroHUDWidget::UpdateKillWidget);

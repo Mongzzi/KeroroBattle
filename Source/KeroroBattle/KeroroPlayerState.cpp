@@ -9,7 +9,7 @@ AKeroroPlayerState::AKeroroPlayerState()
 {
 	CurrentKeroro = EKeroroType::Keroro;
 	TotalScore = 0;
-	CurrentLevel = 18;
+	CurrentLevel = 2;
 	CurrentGold = 0;
 	CurrentExp = 0;
 	KilledEnemyNum = 0;

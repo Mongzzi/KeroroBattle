@@ -360,11 +360,6 @@ void AKeroroPlayerController::Jump()
 	{
 		kero->Jump();
 	}
-	if (KRHUDWidget)
-	{
-		KRHUDWidget->PlayDrawAnimation_AllCard();
-		SetUIMode();
-	}
 }
 
 void AKeroroPlayerController::StartRun()

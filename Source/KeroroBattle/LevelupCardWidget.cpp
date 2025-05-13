@@ -21,6 +21,8 @@ void ULevelupCardWidget::PlayDrawCardAnimation()
 {
 	if (DrawCard)
 	{
+		AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
+		PC->SetUIMode();
 		PlayAnimation(DrawCard);
 	}
 }
@@ -30,7 +32,6 @@ void ULevelupCardWidget::PlaySelectCardAnimation()
 	if (SelectCard)
 	{
 		PlayAnimation(SelectCard);
-		
 	}
 }
 
