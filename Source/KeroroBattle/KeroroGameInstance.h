@@ -36,6 +36,33 @@ public:
 
 };
 
+USTRUCT(BlueprintType)
+struct FCardData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	FCardData();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	int32 CardID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	FText CardName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	FText Description;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	FName CardType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	float CardValue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	FSoftObjectPath ImagePath;
+};
+
 
 /**
  *
@@ -50,9 +77,11 @@ public:
 
 	virtual void Init() override;
 	FKRStatData* GetKRStatData(int Level);
-	
+	FCardData* GetCardData(int CardID);
+
 private:
 	UPROPERTY()
 	UDataTable* KRStatTable;
+	UDataTable* CardTable;
 
 };

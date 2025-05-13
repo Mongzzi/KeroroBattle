@@ -25,7 +25,7 @@ public:
 	void PlaySelectCardAnimation();
 	void PlayAnotherSelectCardAnimation();
 
-	void SetCardInfo(const FText& Title, const FText& Description, UTexture2D* IconTexture);
+	void SetCardInfo();
 	void SetCardIndex(int32 Index) { CardIndex = Index; }
 	FOnCardSelected OnCardSelected;
 
@@ -35,13 +35,13 @@ public:
 protected:
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
-	UWidgetAnimation* DrawCard;
+	UWidgetAnimation* DrawCardAnim;
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
-	UWidgetAnimation* SelectCard;
+	UWidgetAnimation* SelectCardAnim;
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
-	UWidgetAnimation* AnotherSelectCard;
+	UWidgetAnimation* AnotherSelectCardAnim;
 
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* CardTitle;

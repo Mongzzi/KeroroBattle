@@ -7,6 +7,10 @@ UKeroroGameInstance::UKeroroGameInstance()
 {
 	static ConstructorHelpers::FObjectFinder<UDataTable>KRDT(TEXT("/Game/GameData/StatData.StatData"));
 	if (KRDT.Succeeded())KRStatTable = KRDT.Object;
+
+	static ConstructorHelpers::FObjectFinder<UDataTable>CDDT(TEXT("/Game/GameData/CardData.CardData"));
+	if (CDDT.Succeeded())CardTable = CDDT.Object;
+
 }
 
 void UKeroroGameInstance::Init()
@@ -21,7 +25,17 @@ FKRStatData* UKeroroGameInstance::GetKRStatData(int Level)
 	return KRStatTable->FindRow<FKRStatData>(*FString::FromInt(Level), TEXT(""));
 }
 
+FCardData* UKeroroGameInstance::GetCardData(int CardID)
+{
+	return CardTable->FindRow<FCardData>(*FString::FromInt(CardID), TEXT(""));
+}
+
 FKRStatData::FKRStatData()
 {
 	Level = 1;
+}
+
+FCardData::FCardData()
+{
+	CardID = 1;
 }
