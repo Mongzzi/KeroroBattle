@@ -2,6 +2,7 @@
 
 
 #include "LevelupCardWidget.h"
+#include "KeroroPlayerController.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
 #include "Components/Button.h"
@@ -29,6 +30,7 @@ void ULevelupCardWidget::PlaySelectCardAnimation()
 	if (SelectCard)
 	{
 		PlayAnimation(SelectCard);
+		
 	}
 }
 
@@ -58,5 +60,6 @@ void ULevelupCardWidget::OnSelectButtonClicked()
 	
 	// 선택된 카드 인덱스 전달
 	OnCardSelected.Broadcast(CardIndex); 
-
+	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
+	PC->SetGameMode();
 }

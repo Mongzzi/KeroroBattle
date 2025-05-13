@@ -247,6 +247,23 @@ void AKeroroPlayerController::Die()
 
 }
 
+void AKeroroPlayerController::SetUIMode()
+{
+	// test card draw
+	FInputModeUIOnly InputMode;
+	SetInputMode(InputMode);
+	bShowMouseCursor = true;
+	SetPause(true);
+}
+
+void AKeroroPlayerController::SetGameMode()
+{
+	FInputModeGameOnly InputMode;
+	SetInputMode(InputMode);
+	bShowMouseCursor = false;
+	SetPause(false);
+}
+
 
 // 플레이어 스테이트에서 레벨업할시 델리게이트에의해 호출하여
 // 관리중인 모든 캐릭터 레벨 초기화
@@ -343,15 +360,11 @@ void AKeroroPlayerController::Jump()
 	{
 		kero->Jump();
 	}
-
-	// test card draw
 	if (KRHUDWidget)
 	{
 		KRHUDWidget->PlayDrawAnimation_AllCard();
-
-
+		SetUIMode();
 	}
-
 }
 
 void AKeroroPlayerController::StartRun()

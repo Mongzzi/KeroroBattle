@@ -58,6 +58,9 @@ public:
 	void UpdateKillWidget();
 	float GetGameStateRemainingTime();
 	void Die();
+	
+	void SetUIMode();
+	void SetGameMode();
 
 protected:
 
