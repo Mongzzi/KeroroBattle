@@ -8,6 +8,9 @@ AKeroroWeapon::AKeroroWeapon()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
+	SocketName = TEXT("SwordSocket");
+
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WEAPON"));
 	RootComponent = Weapon;
 
@@ -17,9 +20,12 @@ AKeroroWeapon::AKeroroWeapon()
 		Weapon->SetSkeletalMesh(WEAPON.Object);
 	}
 
-	AttachLocationOffset = FVector(0.684671, -10.78493, 3.753229);
-	AttachRotationOffset = FRotator(-179.845136, -90.0, 179.845127);
-	AttachScale = FVector(1.5f, 1.5f, 1.5f);
+	//static ConstructorHelpers::FObjectFinder<USkeletalMesh> RIFLE(TEXT("/Game/Fab/Cartoony_Laser_Rifle/gun_part_2textured.gun_part_2textured"));
+	//if (RIFLE.Succeeded())
+	//{
+	//	Weapon->SetSkeletalMesh(RIFLE.Object);
+	//}
+
 }
 
 // Called when the game starts or when spawned

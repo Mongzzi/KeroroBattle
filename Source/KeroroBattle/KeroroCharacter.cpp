@@ -87,7 +87,7 @@ AKeroroCharacter::AKeroroCharacter()
 
 	// 공격 범위
 	AttackRange = 200.0f;
-	AttackRadius = 50.0f;
+	AttackRadius = 100.0f;
 
 	// AI설정
 	AIControllerClass = AKeroroAIController::StaticClass();
@@ -112,15 +112,11 @@ void AKeroroCharacter::PostInitializeComponents()
 void AKeroroCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	FName WeaponSocket(TEXT("hand_rSocket"));
+
 	auto CurWeapon = GetWorld()->SpawnActor<AKeroroWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
 	if (CurWeapon)
 	{
-		// 오프셋 적용 ( 무기마다 자연스러운 포지션 - 추후 데이터테이블 생성 후 꺼내올 예정)
-		CurWeapon->SetActorRelativeLocation(CurWeapon->AttachLocationOffset);
-		CurWeapon->SetActorRelativeRotation(CurWeapon->AttachRotationOffset);
-		CurWeapon->SetActorRelativeScale3D(CurWeapon->AttachScale);
-		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
+		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, CurWeapon->GetSocketName());
 	}
 
 	// HP바 위젯
@@ -301,13 +297,13 @@ void AKeroroCharacter::AttackEndComboState()
 
 void AKeroroCharacter::AttackCheck()
 {
-	FHitResult HitResult;
+	TArray<FHitResult> HitResults;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this); // 자기 자신은 무시
 
-	bool bHit = GetWorld()->SweepSingleByChannel(
-		HitResult,
-		GetActorLocation(),	// 시작위치
+	bool bHit = GetWorld()->SweepMultiByChannel(
+		HitResults,
+		GetActorLocation()+ GetActorForwardVector() * AttackRadius/2,	// 시작위치 - 구형태이므로 반지름(attack radios)이 커지면 캐릭터 뒤쪽도 공격판정들어감
 		GetActorLocation() + GetActorForwardVector() * AttackRange,	// 끝위치
 		FQuat::Identity, // 회전 없음
 		ECC_GameTraceChannel3, // Attack채널 ( DefaultEngine 파일에 내가만든 채널 몇번쨰인지 나와있음 )
@@ -315,36 +311,38 @@ void AKeroroCharacter::AttackCheck()
 		Params
 	);
 
-#if ENABLE_DRAW_DEBUG
-	FVector TraceVec = GetActorForwardVector() * AttackRange;
-	FVector Center = GetActorLocation() + TraceVec * 0.5f;
-	float HalfHeight = AttackRange * 0.5f + AttackRadius;
-	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
-	FColor DrawColor = bHit ? FColor::Green : FColor::Red;
-	float DebugLifeTime = 5.0f;
+//#if ENABLE_DRAW_DEBUG
+//	FVector TraceVec = GetActorForwardVector() * AttackRange;
+//	FVector Center = GetActorLocation() + TraceVec * 0.5f;
+//	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+//	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
+//	FColor DrawColor = bHit ? FColor::Green : FColor::Red;
+//	float DebugLifeTime = 5.0f;
+//
+//	DrawDebugCapsule(
+//		GetWorld(),
+//		Center,
+//		HalfHeight,
+//		AttackRadius,
+//		CapsuleRot,
+//		DrawColor,
+//		false,
+//		DebugLifeTime
+//	);
+//
+//#endif
 
-	//DrawDebugCapsule(
-	//	GetWorld(),
-	//	Center,
-	//	HalfHeight,
-	//	AttackRadius,
-	//	CapsuleRot,
-	//	DrawColor,
-	//	false,
-	//	DebugLifeTime
-	//);
-
-#endif
-
-	if (bHit)
+if (bHit)
 	{
-		// 캐스트 성공시 참반환 적캐릭터만 데미지주게
-		if (IsValid(HitResult.GetActor()) && Cast<AKeroroEnemyCharacter>(HitResult.GetActor()))
+		for (const FHitResult& Hit : HitResults)
 		{
-			FDamageEvent DamageEvent;
-			HitResult.GetActor()->TakeDamage(KRStat->AttackPower * 2, DamageEvent, GetController(), this);
-			//UE_LOG(LogTemp, Warning, TEXT(" hitted : %s"), *HitResult.GetActor()->GetName());
-
+			AActor* HitActor = Hit.GetActor();
+			if (IsValid(HitActor) && Cast<AKeroroEnemyCharacter>(Hit.GetActor()))
+			{
+				FDamageEvent DamageEvent;
+				HitActor->TakeDamage(KRStat->AttackPower * 5, DamageEvent, GetController(), this);
+				//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *HitActor->GetName());
+			}
 		}
 	}
 }

@@ -23,11 +23,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	FName GetSocketName() { return SocketName; };
+
+private:
+	FName SocketName;
+
 public:
 	UPROPERTY(VisibleAnywhere,Category= Weapon)
 	USkeletalMeshComponent* Weapon;
 
-	FVector AttachLocationOffset;	// 상대적 위치( hand_rSocket )
-	FRotator AttachRotationOffset; // 상대적 회전 ( hand_rSocket )
-	FVector AttachScale;
 };
