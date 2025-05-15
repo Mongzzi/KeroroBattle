@@ -19,17 +19,16 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+public:
 	FName GetSocketName() { return SocketName; };
 
-private:
+protected:
 	FName SocketName;
-
-public:
-	UPROPERTY(VisibleAnywhere,Category= Weapon)
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	USkeletalMeshComponent* Weapon;
+
 
 };
