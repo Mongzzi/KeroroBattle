@@ -6,6 +6,8 @@
 #include "KeroroPlayerController.h"
 #include "KeroroAnimInstance.h"
 #include "KeroroWeapon.h"
+#include "SwordWeapon.h"
+#include "RifleWeapon.h"
 #include "KeroroPlayerState.h"
 #include "KeroroStatComponent.h"
 #include "KeroroHPBarWidget.h"
@@ -100,12 +102,6 @@ void AKeroroCharacter::PostInitializeComponents()
 
 	// (스켈레탈메시,애님인스턴스 로드 후 설정),(몽타주 델리게이트 바인딩)
 	LoadAssetandSetting(CurrentKeroroType);
-
-	// 임시 레벨
-	//if (KRStat)
-	//{
-	//	KRStat->SetLevel(2);
-	//}
 }
 
 // Called when the game starts or when spawned
@@ -113,18 +109,13 @@ void AKeroroCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	auto CurWeapon = GetWorld()->SpawnActor<AKeroroWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
-	if (CurWeapon)
-	{
-		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, CurWeapon->GetSocketName());
-	}
-
 	// HP바 위젯
 	auto HpBarWidget = Cast<UKeroroHPBarWidget>(HPBar->GetUserWidgetObject());
 	if (HpBarWidget != nullptr)
 	{
 		HpBarWidget->BindKRStat(KRStat);
 	}
+
 }
 
 // Called every frame
@@ -207,6 +198,36 @@ void AKeroroCharacter::StartNewAttack()
 	KRAnim->PlayAttackMontage();
 	KRAnim->JumptoAttackMontageSection(CurrentCombo);
 	IsAttacking = true;
+}
+
+void AKeroroCharacter::SetWeapon()
+{
+	if (Weapon)
+	{
+		Weapon->Destroy();
+	}
+
+	switch (WeaponType)
+	{
+	case EWeaponType::EMPTY:
+		Weapon = nullptr;
+		break;
+	case EWeaponType::TNT:
+		Weapon = GetWorld()->SpawnActor<AKeroroWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+		break;
+	case EWeaponType::RIFLE:
+		Weapon = GetWorld()->SpawnActor<ARifleWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+		break;
+	case EWeaponType::SWORD:
+		Weapon = GetWorld()->SpawnActor<ASwordWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+		break;
+	case EWeaponType::MAX:
+		break;
+	}
+	if (Weapon)
+	{
+		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Weapon->GetSocketName());
+	}
 }
 
 void AKeroroCharacter::PlaySwordEffect()
@@ -303,7 +324,7 @@ void AKeroroCharacter::AttackCheck()
 
 	bool bHit = GetWorld()->SweepMultiByChannel(
 		HitResults,
-		GetActorLocation()+ GetActorForwardVector() * AttackRadius/2,	// 시작위치 - 구형태이므로 반지름(attack radios)이 커지면 캐릭터 뒤쪽도 공격판정들어감
+		GetActorLocation() + GetActorForwardVector() * AttackRadius / 2,	// 시작위치 - 구형태이므로 반지름(attack radios)이 커지면 캐릭터 뒤쪽도 공격판정들어감
 		GetActorLocation() + GetActorForwardVector() * AttackRange,	// 끝위치
 		FQuat::Identity, // 회전 없음
 		ECC_GameTraceChannel3, // Attack채널 ( DefaultEngine 파일에 내가만든 채널 몇번쨰인지 나와있음 )
@@ -311,28 +332,7 @@ void AKeroroCharacter::AttackCheck()
 		Params
 	);
 
-//#if ENABLE_DRAW_DEBUG
-//	FVector TraceVec = GetActorForwardVector() * AttackRange;
-//	FVector Center = GetActorLocation() + TraceVec * 0.5f;
-//	float HalfHeight = AttackRange * 0.5f + AttackRadius;
-//	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
-//	FColor DrawColor = bHit ? FColor::Green : FColor::Red;
-//	float DebugLifeTime = 5.0f;
-//
-//	DrawDebugCapsule(
-//		GetWorld(),
-//		Center,
-//		HalfHeight,
-//		AttackRadius,
-//		CapsuleRot,
-//		DrawColor,
-//		false,
-//		DebugLifeTime
-//	);
-//
-//#endif
-
-if (bHit)
+	if (bHit)
 	{
 		for (const FHitResult& Hit : HitResults)
 		{
@@ -367,22 +367,29 @@ void AKeroroCharacter::LoadAssetandSetting(EKeroroType type)
 {
 	USkeletalMesh* NewMesh = nullptr;
 
+	CurrentKeroroType = type;
+
 	switch (type)
 	{
 	case EKeroroType::Keroro:
 		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/keroro/keroro.keroro"));
+		WeaponType = EWeaponType::SWORD;
 		break;
 	case EKeroroType::Tamama:
 		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/tamama/tamama.tamama"));
+		WeaponType = EWeaponType::EMPTY;
 		break;
 	case EKeroroType::Giroro:
 		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/giroro/giroro.giroro"));
+		WeaponType = EWeaponType::RIFLE;
 		break;
 	case EKeroroType::Kururu:
 		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/kururu/kururu.kururu"));
+		WeaponType = EWeaponType::EMPTY;
 		break;
 	case EKeroroType::Dororo:
 		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/dororo/dororo.dororo"));
+		WeaponType = EWeaponType::SWORD;
 		break;
 	}
 
@@ -398,8 +405,9 @@ void AKeroroCharacter::LoadAssetandSetting(EKeroroType type)
 		}
 
 		KRAnim = Cast<UKeroroAnimInstance>(GetMesh()->GetAnimInstance());
-
+		KRAnim->SetWeaponType(WeaponType);
 		// 애님인스턴스 설정 및 델리게이트 바인딩
 		BindCharacterEvents();
+		SetWeapon();
 	}
 }

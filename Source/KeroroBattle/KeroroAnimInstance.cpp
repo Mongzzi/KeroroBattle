@@ -13,10 +13,21 @@ UKeroroAnimInstance::UKeroroAnimInstance()
 	IsInAir = false;
 	IsDead = false;
 	bIsRunning = false;
+	WeaponType = EWeaponType::SWORD;
 
-	// ¸ùÅ¸ÁÖ ·Îµå
-	static ConstructorHelpers::FObjectFinder<UAnimMontage>SWORD_ATTACK_MONTAGE(TEXT("/Game/Animation/KR_Montage_Sword.KR_Montage_Sword"));
-	if (SWORD_ATTACK_MONTAGE.Succeeded())SwordAttackMontage = SWORD_ATTACK_MONTAGE.Object;
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SWORD_ATTACK_MONTAGE(TEXT("/Game/Animation/KR_Montage_Sword.KR_Montage_Sword"));
+	if (SWORD_ATTACK_MONTAGE.Succeeded())
+	{
+		SwordAttackMontage = SWORD_ATTACK_MONTAGE.Object;
+		AttackMontages.Add(EWeaponType::SWORD, SwordAttackMontage);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> RIFLE_ATTACK_MONTAGE(TEXT("/Game/Animation/KR_Montage_Rifle.KR_Montage_Rifle"));
+	if (RIFLE_ATTACK_MONTAGE.Succeeded())
+	{
+		RifleAttackMontage = RIFLE_ATTACK_MONTAGE.Object;
+		AttackMontages.Add(EWeaponType::RIFLE, RifleAttackMontage);
+	}
 }
 
 void UKeroroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -42,15 +53,32 @@ void UKeroroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 void UKeroroAnimInstance::PlayAttackMontage()
 {
 	if (IsDead) return;
-	if (!Montage_IsPlaying(SwordAttackMontage))
+	if (UAnimMontage* Montage = GetWeaponMontage())
 	{
-		Montage_Play(SwordAttackMontage, 1.0f);
+		if (!Montage_IsPlaying(Montage))
+		{
+			Montage_Play(Montage, 1.0f);
+		}
 	}
 }
 
 void UKeroroAnimInstance::SetDeadAnim()
 {
 	IsDead = true;
+}
+
+void UKeroroAnimInstance::SetWeaponType(EWeaponType type)
+{
+	WeaponType = type;
+}
+
+UAnimMontage* UKeroroAnimInstance::GetWeaponMontage()
+{
+	if (UAnimMontage** FoundPtr = AttackMontages.Find(WeaponType))
+	{
+		return *FoundPtr;
+	}
+	return nullptr;
 }
 
 void UKeroroAnimInstance::AnimNotify_AttackHitCheck()
@@ -79,6 +107,11 @@ void UKeroroAnimInstance::JumptoAttackMontageSection(int32 NewSection)
 {
 	if (IsDead) return;
 
-	if (!Montage_IsPlaying(SwordAttackMontage)) return;
-	Montage_JumpToSection(GetAttackMontageSectionName(NewSection), SwordAttackMontage);
+	if (UAnimMontage* MontageToPlay = GetWeaponMontage())
+	{
+		if (Montage_IsPlaying(MontageToPlay))
+		{
+			Montage_JumpToSection(GetAttackMontageSectionName(NewSection), MontageToPlay);
+		}
+	}
 }

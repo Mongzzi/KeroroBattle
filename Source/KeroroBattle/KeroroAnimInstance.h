@@ -31,6 +31,9 @@ public:
 	FOnEffectCreateCheckDelegate OnEffectCreateCheck;
 	
 	void SetDeadAnim();
+	void SetWeaponType(EWeaponType type);
+	UAnimMontage* GetWeaponMontage();
+
 private:
 	UFUNCTION()
 	void AnimNotify_AttackHitCheck();
@@ -53,9 +56,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn)
 	bool bIsRunning;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon)
+	EWeaponType WeaponType;
+
 private:
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TMap<EWeaponType, UAnimMontage*> AttackMontages;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	class UAnimMontage* SwordAttackMontage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category= Attack, Meta=(AllowPrivateAccess=true))
+	class UAnimMontage* RifleAttackMontage;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=Pawn,meta=(AllowPrivateAccess=true))
 	bool IsDead;

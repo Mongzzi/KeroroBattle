@@ -15,3 +15,13 @@ enum class EKeroroType : uint8
     Dororo     UMETA(DisplayName = "Dororo"),
     MAX UMETA(Hidden) // 순환 계산용
 };
+
+UENUM(BlueprintType)
+enum class EWeaponType : uint8
+{
+    EMPTY   UMETA(DisplayName = "EMPTY"),
+    TNT     UMETA(DisplayName = "TNT"),
+    RIFLE   UMETA(DisplayName = "RIFLE"),
+    SWORD   UMETA(DisplayName = "SWORD"),
+    MAX     UMETA(Hidden) // 순환 계산용
+};

@@ -98,9 +98,12 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* SpringArm;
 
+	void SetWeapon();
+	EWeaponType WeaponType;
+
 public:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
-	USkeletalMeshComponent* Weapon;
+	class AKeroroWeapon* Weapon;
 
 	UPROPERTY(VisibleAnywhere,Category= UI)
 	class UWidgetComponent* HPBar;
