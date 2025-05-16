@@ -25,3 +25,11 @@ void AKeroroWeapon::Tick(float DeltaTime)
 
 }
 
+void AKeroroWeapon::PlayEffect()
+{
+}
+
+void AKeroroWeapon::PlaySound()
+{
+}
+

@@ -15,4 +15,6 @@ class KEROROBATTLE_API ASwordWeapon : public AKeroroWeapon
 	GENERATED_BODY()
 
 	ASwordWeapon();
+
+	virtual void PlayEffect()override;
 };

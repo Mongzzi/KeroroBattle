@@ -50,7 +50,12 @@ AKeroroCharacter::AKeroroCharacter()
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NE(TEXT("/Game/Knife_light/VFX/NE_attack02.NE_attack02"));
 	if (NE.Succeeded())
 	{
-		NSAttackEffect = NE.Object;
+		NSSWordEffect = NE.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NE2(TEXT("/Game/MuzzleFlash/MuzzleFlash/Niagara/NS_MuzzleFlash.NS_MuzzleFlash"));
+	if (NE2.Succeeded())
+	{
+		NSRifleEffect = NE2.Object;
 	}
 
 	// HP바 추가
@@ -67,7 +72,7 @@ AKeroroCharacter::AKeroroCharacter()
 	SpringArm->bInheritPitch = false;
 	SpringArm->bInheritRoll = false;
 	SpringArm->bInheritYaw = true; // Yaw만 따라가게
-	SpringArm->bDoCollisionTest = true; // 벽에 가까이 갔을 때 카메라 충돌 보정
+	SpringArm->bDoCollisionTest = false; // 벽에 가까이 갔을 때 카메라 충돌 보정
 
 	// 카메라 설정
 	Camera->bUsePawnControlRotation = false;
@@ -75,7 +80,7 @@ AKeroroCharacter::AKeroroCharacter()
 	// 캐릭터 회전 관련 설정
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true; // 입력 방향 따라 몸 회전
-	GetCharacterMovement()->bUseControllerDesiredRotation = false; // 컨트롤러 회전 비활성화
+	GetCharacterMovement()->bUseControllerDesiredRotation = true; // 컨트롤러 회전 비활성화
 
 	// 캐릭터 속도
 	WalkSpeed = 600.0f;
@@ -194,6 +199,16 @@ void AKeroroCharacter::HandleComboInput()
 void AKeroroCharacter::StartNewAttack()
 {
 	if (CurrentCombo != 0) return;
+	
+	if (WeaponType == EWeaponType::RIFLE)
+	{
+		FRotator ControlRotation = GetControlRotation();
+		ControlRotation.Pitch = 0.0f;
+		ControlRotation.Roll = 0.0f;
+		SetActorRotation(ControlRotation);
+
+	}
+
 	AttackStartComboState();
 	KRAnim->PlayAttackMontage();
 	KRAnim->JumptoAttackMontageSection(CurrentCombo);
@@ -232,13 +247,44 @@ void AKeroroCharacter::SetWeapon()
 
 void AKeroroCharacter::PlaySwordEffect()
 {
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-		GetWorld(),
-		NSAttackEffect,
-		GetActorLocation() + GetActorForwardVector() * 100.0f, // 캐릭터 앞 방향으로 100 유닛 이동
-		GetActorRotation(),
-		FVector(2.0f)
-	);
+	if (WeaponType == EWeaponType::SWORD)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSSWordEffect,
+			GetActorLocation() + GetActorForwardVector() * 100.0f, // 캐릭터 앞 방향으로 100 유닛 이동
+			GetActorRotation(),
+			FVector(2.0f)
+		);
+	}
+	else if (WeaponType == EWeaponType::RIFLE)
+	{
+		if (Weapon && Cast<ARifleWeapon>(Weapon)) {
+			UNiagaraComponent* RifleEffect = UNiagaraFunctionLibrary::SpawnSystemAttached(
+				NSRifleEffect,
+				Weapon->SKMeshComponent,
+				"Muzzle",
+				FVector::ZeroVector,
+				FRotator(0.0f,0.0f,90.0f),
+				EAttachLocation::SnapToTarget,
+				true
+			);
+			if (RifleEffect)
+			{
+				RifleEffect->SetRelativeScale3D(FVector(300.0f));
+				RifleEffect->Activate();
+
+				// 람다에서 안전하게 이펙트 관리
+				TWeakObjectPtr<UNiagaraComponent> WeakRifleEffect = RifleEffect;
+				FTimerHandle EffectTimerHandle;
+				GetWorld()->GetTimerManager().SetTimer(EffectTimerHandle, [WeakRifleEffect]()
+					{
+						if (WeakRifleEffect.IsValid())
+						{
+							WeakRifleEffect->Deactivate();
+						}
+					}, 1.0f, false);
+			}
+		}
+	}
 }
 
 void AKeroroCharacter::BindCharacterEvents()
@@ -318,6 +364,23 @@ void AKeroroCharacter::AttackEndComboState()
 
 void AKeroroCharacter::AttackCheck()
 {
+	switch (WeaponType)
+	{
+	case EWeaponType::EMPTY:
+		break;
+	case EWeaponType::TNT:
+		break;
+	case EWeaponType::RIFLE:
+		AttackCheck_Rifle();
+		break;
+	case EWeaponType::SWORD:
+		AttackCheck_Sword();
+		break;
+	}
+}
+
+void AKeroroCharacter::AttackCheck_Sword()
+{
 	TArray<FHitResult> HitResults;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this); // 자기 자신은 무시
@@ -340,13 +403,51 @@ void AKeroroCharacter::AttackCheck()
 			if (IsValid(HitActor) && Cast<AKeroroEnemyCharacter>(Hit.GetActor()))
 			{
 				FDamageEvent DamageEvent;
-				HitActor->TakeDamage(KRStat->AttackPower * 5, DamageEvent, GetController(), this);
+				HitActor->TakeDamage(KRStat->AttackPower*5, DamageEvent, GetController(), this);
 				//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *HitActor->GetName());
 			}
 		}
 	}
 }
 
+void AKeroroCharacter::AttackCheck_Rifle()
+{
+	FRotator ControlRot = GetControlRotation(); // 컨트롤러(카메라) 기준 회전
+	ControlRot.Pitch = 0.0f;
+	FVector ShootDirection = ControlRot.Vector(); // Forward 방향
+
+	FVector Start = GetActorLocation();
+	FVector End = Start + ShootDirection * 10000.0f;
+
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this); // 자기 자신은 무시
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		Start,
+		End,
+		ECC_GameTraceChannel3,
+		Params
+	);
+
+	if (bHit)
+	{
+		DrawDebugLine(GetWorld(), Start, HitResult.ImpactPoint, FColor::Red, false, 1.0f, 0, 1.0f);
+		DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 12.0f, FColor::Red, false, 1.0f);
+		AActor* HitActor = HitResult.GetActor();
+
+		FDamageEvent DamageEvent;
+		HitActor->TakeDamage(KRStat->AttackPower * 5, DamageEvent, GetController(), this);
+
+	}
+	else
+	{
+		DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 1.0f, 0, 1.0f);
+	}
+
+	Weapon->PlaySound();
+}
 void AKeroroCharacter::StartRun()
 {
 	if (KRAnim != nullptr) {

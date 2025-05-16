@@ -14,4 +14,10 @@ class KEROROBATTLE_API ARifleWeapon : public AKeroroWeapon
 {
 	GENERATED_BODY()
 	ARifleWeapon();
+	
+	virtual void PlayEffect() override;
+	virtual void PlaySound() override;
+
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundBase* RifleFireSound;
 };

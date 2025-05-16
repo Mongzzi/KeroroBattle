@@ -7,12 +7,18 @@ ASwordWeapon::ASwordWeapon()
 {
 	SocketName = TEXT("SwordSocket");
 
-	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WEAPON"));
-	RootComponent = Weapon;
+	SKMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WEAPON"));
+	RootComponent = SKMeshComponent;
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SWORD(TEXT("/Game/InfinityBladeWeapons/Weapons/Blade/Swords/Blade_BlackKnight/SK_Blade_BlackKnight.SK_Blade_BlackKnight"));
 	if (SWORD.Succeeded())
 	{
-		Weapon->SetSkeletalMesh(SWORD.Object);
+		SKMeshComponent->SetSkeletalMesh(SWORD.Object);
 	}
+
+
+}
+
+void ASwordWeapon::PlayEffect()
+{
 }

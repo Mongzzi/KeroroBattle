@@ -33,7 +33,10 @@ public:
 public:
 	// 나이아가라 시스템
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
-	class UNiagaraSystem* NSAttackEffect;
+	class UNiagaraSystem* NSSWordEffect;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
+	class UNiagaraSystem* NSRifleEffect;
 
 	// 이펙트 생성
 	UFUNCTION()
@@ -58,6 +61,8 @@ public:
 	void AttackStartComboState();
 	void AttackEndComboState();
 	void AttackCheck();
+	void AttackCheck_Sword();
+	void AttackCheck_Rifle();
 	void HandleComboInput();
 	void StartNewAttack();
 	bool GetIsAttacking() { return IsAttacking; };

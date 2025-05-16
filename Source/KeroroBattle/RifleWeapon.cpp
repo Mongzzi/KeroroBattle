@@ -2,18 +2,37 @@
 
 
 #include "RifleWeapon.h"
-
+#include "Kismet/GameplayStatics.h"
 
 ARifleWeapon::ARifleWeapon()
 {
 	SocketName = TEXT("RifleSocket");
 
-	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WEAPON"));
-	RootComponent = Weapon;
+	SKMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WEAPON"));
+	RootComponent = SKMeshComponent;
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> RIFLE(TEXT("/Game/Fab/Cartoony_Laser_Rifle/gun_part_2textured.gun_part_2textured"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> RIFLE(TEXT("/Game/MuzzleFlash/Demo/FPWeapon/Mesh/SK_FPGun.SK_FPGun"));
 	if (RIFLE.Succeeded())
 	{
-		Weapon->SetSkeletalMesh(RIFLE.Object);
+		SKMeshComponent->SetSkeletalMesh(RIFLE.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundWave> SOUND(TEXT("/Game/MuzzleFlash/Demo/FPWeapon/Audio/FirstPersonTemplateWeaponFire02.FirstPersonTemplateWeaponFire02"));
+	if (SOUND.Succeeded())
+	{
+		RifleFireSound = SOUND.Object;
+	}
+
+}
+
+void ARifleWeapon::PlayEffect()
+{
+}
+
+void ARifleWeapon::PlaySound()
+{
+	if (RifleFireSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, RifleFireSound, GetActorLocation());
 	}
 }

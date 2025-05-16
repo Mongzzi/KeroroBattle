@@ -23,12 +23,13 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	virtual void PlayEffect();
+	virtual void PlaySound();
+
 	FName GetSocketName() { return SocketName; };
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	USkeletalMeshComponent* SKMeshComponent;
 
 protected:
 	FName SocketName;
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
-	USkeletalMeshComponent* Weapon;
-
-
 };
