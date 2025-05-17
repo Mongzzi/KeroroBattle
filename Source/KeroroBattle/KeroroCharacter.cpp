@@ -8,6 +8,7 @@
 #include "KeroroWeapon.h"
 #include "SwordWeapon.h"
 #include "RifleWeapon.h"
+#include "RifleBullet.h"
 #include "KeroroPlayerState.h"
 #include "KeroroStatComponent.h"
 #include "KeroroHPBarWidget.h"
@@ -37,7 +38,7 @@ AKeroroCharacter::AKeroroCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
-	SpringArm->TargetArmLength = 300.0f;
+	SpringArm->TargetArmLength = 200.0f;
 	SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 50.0f, 60.0f), FRotator(-15.0f, 0.0f, 0.0f));
 
 	// 캡슐컴포넌트 콜리전프로파일 설정 
@@ -364,6 +365,7 @@ void AKeroroCharacter::AttackEndComboState()
 
 void AKeroroCharacter::AttackCheck()
 {
+
 	switch (WeaponType)
 	{
 	case EWeaponType::EMPTY:
@@ -371,6 +373,7 @@ void AKeroroCharacter::AttackCheck()
 	case EWeaponType::TNT:
 		break;
 	case EWeaponType::RIFLE:
+
 		AttackCheck_Rifle();
 		break;
 	case EWeaponType::SWORD:
@@ -412,40 +415,15 @@ void AKeroroCharacter::AttackCheck_Sword()
 
 void AKeroroCharacter::AttackCheck_Rifle()
 {
-	FRotator ControlRot = GetControlRotation(); // 컨트롤러(카메라) 기준 회전
-	ControlRot.Pitch = 0.0f;
-	FVector ShootDirection = ControlRot.Vector(); // Forward 방향
-
-	FVector Start = GetActorLocation();
-	FVector End = Start + ShootDirection * 10000.0f;
-
-	FHitResult HitResult;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this); // 자기 자신은 무시
-
-	bool bHit = GetWorld()->LineTraceSingleByChannel(
-		HitResult,
-		Start,
-		End,
-		ECC_GameTraceChannel3,
-		Params
-	);
-
-	if (bHit)
-	{
-		DrawDebugLine(GetWorld(), Start, HitResult.ImpactPoint, FColor::Red, false, 1.0f, 0, 1.0f);
-		DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 12.0f, FColor::Red, false, 1.0f);
-		AActor* HitActor = HitResult.GetActor();
-
-		FDamageEvent DamageEvent;
-		HitActor->TakeDamage(KRStat->AttackPower * 5, DamageEvent, GetController(), this);
-
-	}
-	else
-	{
-		DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 1.0f, 0, 1.0f);
-	}
-
+	FRotator MuzzleRotation = GetControlRotation();
+	MuzzleRotation.Pitch = 0.0f;
+	FVector MuzzleOffset = FVector(100.f, 0.f, 50.f);
+	FVector MuzzleLocation = GetActorLocation() + MuzzleRotation.RotateVector(MuzzleOffset);
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	//SpawnParams.Owner = this;
+	SpawnParams.Instigator = this;
+	GetWorld()->SpawnActor<ARifleBullet>(ARifleBullet::StaticClass(), MuzzleLocation, MuzzleRotation, SpawnParams);
 	Weapon->PlaySound();
 }
 void AKeroroCharacter::StartRun()
