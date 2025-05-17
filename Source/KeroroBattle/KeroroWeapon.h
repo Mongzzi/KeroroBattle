@@ -30,6 +30,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	USkeletalMeshComponent* SKMeshComponent;
 
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UStaticMeshComponent* StaticMeshComponent;
+
 protected:
 	FName SocketName;
 };

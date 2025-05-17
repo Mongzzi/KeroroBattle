@@ -6,6 +6,7 @@
 #include "KeroroPlayerController.h"
 #include "KeroroAnimInstance.h"
 #include "KeroroWeapon.h"
+#include "KeroballWeapon.h"
 #include "SwordWeapon.h"
 #include "RifleWeapon.h"
 #include "RifleBullet.h"
@@ -38,7 +39,7 @@ AKeroroCharacter::AKeroroCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
-	SpringArm->TargetArmLength = 200.0f;
+	SpringArm->TargetArmLength = 250.0f;
 	SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 50.0f, 60.0f), FRotator(-15.0f, 0.0f, 0.0f));
 
 	// Ä¸½¶ÄÄÆ÷³ÍÆ® ÄÝ¸®ÀüÇÁ·ÎÆÄÀÏ ¼³Á¤ 
@@ -228,8 +229,8 @@ void AKeroroCharacter::SetWeapon()
 	case EWeaponType::EMPTY:
 		Weapon = nullptr;
 		break;
-	case EWeaponType::TNT:
-		Weapon = GetWorld()->SpawnActor<AKeroroWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+	case EWeaponType::KEROBALL:
+		Weapon = GetWorld()->SpawnActor<AKeroballWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
 		break;
 	case EWeaponType::RIFLE:
 		Weapon = GetWorld()->SpawnActor<ARifleWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
@@ -370,7 +371,7 @@ void AKeroroCharacter::AttackCheck()
 	{
 	case EWeaponType::EMPTY:
 		break;
-	case EWeaponType::TNT:
+	case EWeaponType::KEROBALL:
 		break;
 	case EWeaponType::RIFLE:
 
@@ -417,7 +418,7 @@ void AKeroroCharacter::AttackCheck_Rifle()
 {
 	FRotator MuzzleRotation = GetControlRotation();
 	MuzzleRotation.Pitch = 0.0f;
-	FVector MuzzleOffset = FVector(100.f, 0.f, 50.f);
+	FVector MuzzleOffset = FVector(100.f, 0.0f, 50.0f);
 	FVector MuzzleLocation = GetActorLocation() + MuzzleRotation.RotateVector(MuzzleOffset);
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
@@ -452,7 +453,7 @@ void AKeroroCharacter::LoadAssetandSetting(EKeroroType type)
 	{
 	case EKeroroType::Keroro:
 		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/keroro/keroro.keroro"));
-		WeaponType = EWeaponType::SWORD;
+		WeaponType = EWeaponType::KEROBALL;
 		break;
 	case EKeroroType::Tamama:
 		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/tamama/tamama.tamama"));

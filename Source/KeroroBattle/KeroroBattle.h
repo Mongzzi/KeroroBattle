@@ -20,7 +20,7 @@ UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
     EMPTY   UMETA(DisplayName = "EMPTY"),
-    TNT     UMETA(DisplayName = "TNT"),
+    KEROBALL     UMETA(DisplayName = "KEROBALL"),
     RIFLE   UMETA(DisplayName = "RIFLE"),
     SWORD   UMETA(DisplayName = "SWORD"),
     MAX     UMETA(Hidden) // 순환 계산용

@@ -15,8 +15,6 @@ ASwordWeapon::ASwordWeapon()
 	{
 		SKMeshComponent->SetSkeletalMesh(SWORD.Object);
 	}
-
-
 }
 
 void ASwordWeapon::PlayEffect()
