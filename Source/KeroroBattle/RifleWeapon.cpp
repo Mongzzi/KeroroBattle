@@ -2,6 +2,7 @@
 
 
 #include "RifleWeapon.h"
+#include "KeroroCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 ARifleWeapon::ARifleWeapon()
@@ -15,6 +16,8 @@ ARifleWeapon::ARifleWeapon()
 	if (RIFLE.Succeeded())
 	{
 		SKMeshComponent->SetSkeletalMesh(RIFLE.Object);
+		SKMeshComponent->SetCollisionProfileName(TEXT("KeroroWeapon"));
+
 	}
 
 	static ConstructorHelpers::FObjectFinder<USoundWave> SOUND(TEXT("/Game/MuzzleFlash/Demo/FPWeapon/Audio/FirstPersonTemplateWeaponFire02.FirstPersonTemplateWeaponFire02"));
@@ -35,4 +38,14 @@ void ARifleWeapon::PlaySound()
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, RifleFireSound, GetActorLocation());
 	}
+}
+
+void ARifleWeapon::Throw(const FVector& Direction, float Force)
+{
+
+}
+
+void ARifleWeapon::ReturnToHand(AKeroroCharacter* Character)
+{
+
 }

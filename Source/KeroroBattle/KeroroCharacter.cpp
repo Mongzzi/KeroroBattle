@@ -201,7 +201,7 @@ void AKeroroCharacter::HandleComboInput()
 void AKeroroCharacter::StartNewAttack()
 {
 	if (CurrentCombo != 0) return;
-	
+
 	if (WeaponType == EWeaponType::RIFLE)
 	{
 		FRotator ControlRotation = GetControlRotation();
@@ -226,7 +226,7 @@ void AKeroroCharacter::SetWeapon()
 
 	switch (WeaponType)
 	{
-	case EWeaponType::EMPTY:
+	case EWeaponType::FIST:
 		Weapon = nullptr;
 		break;
 	case EWeaponType::KEROBALL:
@@ -265,7 +265,7 @@ void AKeroroCharacter::PlaySwordEffect()
 				Weapon->SKMeshComponent,
 				"Muzzle",
 				FVector::ZeroVector,
-				FRotator(0.0f,0.0f,90.0f),
+				FRotator(0.0f, 0.0f, 90.0f),
 				EAttachLocation::SnapToTarget,
 				true
 			);
@@ -310,6 +310,10 @@ void AKeroroCharacter::BindCharacterEvents()
 		KRAnim->OnEffectCreateCheck.AddUObject(this, &AKeroroCharacter::PlaySwordEffect);
 		// 공격 충돌 체크 바인딩
 		KRAnim->OnAttackHitCheck.AddUObject(this, &AKeroroCharacter::AttackCheck);
+
+		// 무기 다시생성
+		KRAnim->OnNextAttackCheck.AddUObject(this, &AKeroroCharacter::SpawnToHand);
+
 	}
 
 	if (KRStat)
@@ -369,12 +373,12 @@ void AKeroroCharacter::AttackCheck()
 
 	switch (WeaponType)
 	{
-	case EWeaponType::EMPTY:
+	case EWeaponType::FIST:
 		break;
 	case EWeaponType::KEROBALL:
+		AttackCheck_Keroball();
 		break;
 	case EWeaponType::RIFLE:
-
 		AttackCheck_Rifle();
 		break;
 	case EWeaponType::SWORD:
@@ -407,7 +411,7 @@ void AKeroroCharacter::AttackCheck_Sword()
 			if (IsValid(HitActor) && Cast<AKeroroEnemyCharacter>(Hit.GetActor()))
 			{
 				FDamageEvent DamageEvent;
-				HitActor->TakeDamage(KRStat->AttackPower*5, DamageEvent, GetController(), this);
+				HitActor->TakeDamage(KRStat->AttackPower * 5, DamageEvent, GetController(), this);
 				//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *HitActor->GetName());
 			}
 		}
@@ -418,7 +422,7 @@ void AKeroroCharacter::AttackCheck_Rifle()
 {
 	FRotator MuzzleRotation = GetControlRotation();
 	MuzzleRotation.Pitch = 0.0f;
-	FVector MuzzleOffset = FVector(100.f, 0.0f, 50.0f);
+	FVector MuzzleOffset = FVector(100.f, 0.0f, 25.0f);
 	FVector MuzzleLocation = GetActorLocation() + MuzzleRotation.RotateVector(MuzzleOffset);
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
@@ -427,6 +431,32 @@ void AKeroroCharacter::AttackCheck_Rifle()
 	GetWorld()->SpawnActor<ARifleBullet>(ARifleBullet::StaticClass(), MuzzleLocation, MuzzleRotation, SpawnParams);
 	Weapon->PlaySound();
 }
+
+void AKeroroCharacter::AttackCheck_Keroball()
+{
+	if (Weapon)
+	{
+		UE_LOG(LogTemp, Error, TEXT("attack check Keroball "));
+		FRotator ControlRot = GetControlRotation();
+		ControlRot.Pitch = 1.0f;
+
+		// 던지는 방향 (컨트롤러 앞방향)
+		FVector ThrowDir = ControlRot.Vector();
+		Weapon->Throw(ThrowDir, 1000.0f);
+	}
+}
+
+void AKeroroCharacter::SpawnToHand()
+{
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Instigator = this;
+	Weapon = GetWorld()->SpawnActor<AKeroballWeapon>(FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+	if (Weapon)
+	{
+		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Weapon->GetSocketName());
+	}
+}
+
 void AKeroroCharacter::StartRun()
 {
 	if (KRAnim != nullptr) {
@@ -457,7 +487,7 @@ void AKeroroCharacter::LoadAssetandSetting(EKeroroType type)
 		break;
 	case EKeroroType::Tamama:
 		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/tamama/tamama.tamama"));
-		WeaponType = EWeaponType::EMPTY;
+		WeaponType = EWeaponType::FIST;
 		break;
 	case EKeroroType::Giroro:
 		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/giroro/giroro.giroro"));
@@ -465,7 +495,7 @@ void AKeroroCharacter::LoadAssetandSetting(EKeroroType type)
 		break;
 	case EKeroroType::Kururu:
 		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/kururu/kururu.kururu"));
-		WeaponType = EWeaponType::EMPTY;
+		WeaponType = EWeaponType::FIST;
 		break;
 	case EKeroroType::Dororo:
 		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/dororo/dororo.dororo"));

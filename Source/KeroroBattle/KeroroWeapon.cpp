@@ -2,6 +2,7 @@
 
 
 #include "KeroroWeapon.h"
+#include "KeroroCharacter.h"
 
 // Sets default values
 AKeroroWeapon::AKeroroWeapon()
@@ -30,6 +31,14 @@ void AKeroroWeapon::PlayEffect()
 }
 
 void AKeroroWeapon::PlaySound()
+{
+}
+
+void AKeroroWeapon::Throw(const FVector& Direction, float Force)
+{
+}
+
+void AKeroroWeapon::ReturnToHand(AKeroroCharacter* Character)
 {
 }
 

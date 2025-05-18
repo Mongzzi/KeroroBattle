@@ -56,7 +56,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn)
 	bool bIsRunning;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	EWeaponType WeaponType;
 
 private:
@@ -68,6 +68,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category= Attack, Meta=(AllowPrivateAccess=true))
 	class UAnimMontage* RifleAttackMontage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	class UAnimMontage* KeroBallAttackMontage;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=Pawn,meta=(AllowPrivateAccess=true))
 	bool IsDead;

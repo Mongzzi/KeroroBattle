@@ -14,4 +14,8 @@ class KEROROBATTLE_API AKeroballWeapon : public AKeroroWeapon
 {
 	GENERATED_BODY()
 	AKeroballWeapon();
+
+	virtual void Throw(const FVector& Direction, float Force) override;
+	virtual void ReturnToHand(class AKeroroCharacter* Character) override;
+
 };

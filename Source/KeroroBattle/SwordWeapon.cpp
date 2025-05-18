@@ -14,6 +14,7 @@ ASwordWeapon::ASwordWeapon()
 	if (SWORD.Succeeded())
 	{
 		SKMeshComponent->SetSkeletalMesh(SWORD.Object);
+		SKMeshComponent->SetCollisionProfileName(TEXT("KeroroWeapon"));
 	}
 }
 

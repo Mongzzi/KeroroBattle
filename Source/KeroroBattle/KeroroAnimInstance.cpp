@@ -28,6 +28,13 @@ UKeroroAnimInstance::UKeroroAnimInstance()
 		RifleAttackMontage = RIFLE_ATTACK_MONTAGE.Object;
 		AttackMontages.Add(EWeaponType::RIFLE, RifleAttackMontage);
 	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> KEROBALL_ATTACK_MONTAGE(TEXT("/Game/Animation/KR_Montage_KeroBall.KR_Montage_KeroBall"));
+	if (KEROBALL_ATTACK_MONTAGE.Succeeded())
+	{
+		KeroBallAttackMontage = KEROBALL_ATTACK_MONTAGE.Object;
+		AttackMontages.Add(EWeaponType::KEROBALL, KeroBallAttackMontage);
+	}
 }
 
 void UKeroroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)

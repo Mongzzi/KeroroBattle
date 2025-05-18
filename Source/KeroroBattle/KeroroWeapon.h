@@ -25,6 +25,8 @@ protected:
 public:
 	virtual void PlayEffect();
 	virtual void PlaySound();
+	virtual void Throw(const FVector& Direction, float Force);
+	virtual void ReturnToHand(class AKeroroCharacter* Character);
 
 	FName GetSocketName() { return SocketName; };
 	UPROPERTY(VisibleAnywhere, Category = Weapon)

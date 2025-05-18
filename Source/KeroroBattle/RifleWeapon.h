@@ -17,6 +17,8 @@ class KEROROBATTLE_API ARifleWeapon : public AKeroroWeapon
 	
 	virtual void PlayEffect() override;
 	virtual void PlaySound() override;
+	virtual void Throw(const FVector& Direction, float Force) override;
+	virtual void ReturnToHand(class AKeroroCharacter* Character) override;
 
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	USoundBase* RifleFireSound;

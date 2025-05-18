@@ -19,9 +19,9 @@ enum class EKeroroType : uint8
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
-    EMPTY   UMETA(DisplayName = "EMPTY"),
     KEROBALL     UMETA(DisplayName = "KEROBALL"),
     RIFLE   UMETA(DisplayName = "RIFLE"),
     SWORD   UMETA(DisplayName = "SWORD"),
+    FIST   UMETA(DisplayName = "FIST"),
     MAX     UMETA(Hidden) // 순환 계산용
 };

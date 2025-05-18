@@ -63,6 +63,8 @@ public:
 	void AttackCheck();
 	void AttackCheck_Sword();
 	void AttackCheck_Rifle();
+	void AttackCheck_Keroball();
+	void SpawnToHand();
 	void HandleComboInput();
 	void StartNewAttack();
 	bool GetIsAttacking() { return IsAttacking; };
