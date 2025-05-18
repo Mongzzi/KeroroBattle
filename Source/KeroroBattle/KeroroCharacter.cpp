@@ -312,7 +312,10 @@ void AKeroroCharacter::BindCharacterEvents()
 		KRAnim->OnAttackHitCheck.AddUObject(this, &AKeroroCharacter::AttackCheck);
 
 		// 무기 다시생성
-		KRAnim->OnNextAttackCheck.AddUObject(this, &AKeroroCharacter::SpawnToHand);
+		if (WeaponType == EWeaponType::KEROBALL)
+		{
+			KRAnim->OnNextAttackCheck.AddUObject(this, &AKeroroCharacter::SpawnToHand);
+		}
 
 	}
 
