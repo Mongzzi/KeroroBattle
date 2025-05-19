@@ -40,7 +40,7 @@ public:
 
 	// 이펙트 생성
 	UFUNCTION()
-	void PlaySwordEffect();
+	void PlayEffect();
 
 	UFUNCTION()
 	void Die();

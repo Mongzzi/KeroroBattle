@@ -30,7 +30,7 @@ AKeroroEnemyCharacter::AKeroroEnemyCharacter()
 		GetMesh()->SetSkeletalMesh(SKMESH.Object);
 	}
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FRotator(0.0f, -90.0f, 0.0f));
-	GetCapsuleComponent()->SetCollisionProfileName(TEXT("KeroroCharacter"));
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Enemy"));
 
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 600.0f, 0.0f);
 	GetCharacterMovement()->bOrientRotationToMovement = true;	// 이동 방향으로 자동 회전

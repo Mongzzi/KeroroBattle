@@ -129,6 +129,7 @@ void AKeroroCharacter::BeginPlay()
 void AKeroroCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 }
 
 void AKeroroCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -202,13 +203,14 @@ void AKeroroCharacter::StartNewAttack()
 {
 	if (CurrentCombo != 0) return;
 
-	if (WeaponType == EWeaponType::RIFLE)
+	// 공격 시작시 컨트롤러 방향으로 캐릭터 회전
+	if (WeaponType == EWeaponType::RIFLE|| WeaponType == EWeaponType::KEROBALL)
 	{
 		FRotator ControlRotation = GetControlRotation();
 		ControlRotation.Pitch = 0.0f;
 		ControlRotation.Roll = 0.0f;
 		SetActorRotation(ControlRotation);
-
+		GetCharacterMovement()->bOrientRotationToMovement = false; // 입력 방향 따라 몸 회전 안되게
 	}
 
 	AttackStartComboState();
@@ -247,7 +249,7 @@ void AKeroroCharacter::SetWeapon()
 	}
 }
 
-void AKeroroCharacter::PlaySwordEffect()
+void AKeroroCharacter::PlayEffect()
 {
 	if (WeaponType == EWeaponType::SWORD)
 	{
@@ -307,7 +309,7 @@ void AKeroroCharacter::BindCharacterEvents()
 			}
 			});
 		// 공격 이펙트 바인딩
-		KRAnim->OnEffectCreateCheck.AddUObject(this, &AKeroroCharacter::PlaySwordEffect);
+		KRAnim->OnEffectCreateCheck.AddUObject(this, &AKeroroCharacter::PlayEffect);
 		// 공격 충돌 체크 바인딩
 		KRAnim->OnAttackHitCheck.AddUObject(this, &AKeroroCharacter::AttackCheck);
 
@@ -351,6 +353,7 @@ void AKeroroCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterru
 {
 	if (!IsAttacking || CurrentCombo == 0) return;
 	IsAttacking = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true; // 입력 방향 따라 몸 회전
 	AttackEndComboState();
 	OnAttaackEnd.Broadcast();
 }
@@ -439,14 +442,15 @@ void AKeroroCharacter::AttackCheck_Keroball()
 {
 	if (Weapon)
 	{
-		UE_LOG(LogTemp, Error, TEXT("attack check Keroball "));
 		FRotator ControlRot = GetControlRotation();
-		ControlRot.Pitch = 1.0f;
+		ControlRot.Pitch = 0.0f;
 
 		// 던지는 방향 (컨트롤러 앞방향)
 		FVector ThrowDir = ControlRot.Vector();
-		Weapon->Throw(ThrowDir, 1000.0f);
+		Weapon->Throw(ThrowDir, 500.0f);
 	}
+
+
 }
 
 void AKeroroCharacter::SpawnToHand()
