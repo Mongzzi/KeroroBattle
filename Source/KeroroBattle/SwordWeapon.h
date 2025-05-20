@@ -14,7 +14,14 @@ class KEROROBATTLE_API ASwordWeapon : public AKeroroWeapon
 {
 	GENERATED_BODY()
 
+public:
 	ASwordWeapon();
 
 	virtual void PlayEffect()override;
+
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundBase* BombSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Effect)
+	class UNiagaraSystem* NSEffect;
 };

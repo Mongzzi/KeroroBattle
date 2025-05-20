@@ -5,7 +5,7 @@
 
 ASwordWeapon::ASwordWeapon()
 {
-	SocketName = TEXT("SwordSocket");
+	SocketNames.Add(TEXT("SwordSocket"));
 
 	SKMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WEAPON"));
 	RootComponent = SKMeshComponent;

@@ -8,6 +8,7 @@
 #include "KeroroWeapon.h"
 #include "KeroballWeapon.h"
 #include "SwordWeapon.h"
+#include "FistWeapon.h"
 #include "RifleWeapon.h"
 #include "RifleBullet.h"
 #include "KeroroPlayerState.h"
@@ -204,7 +205,7 @@ void AKeroroCharacter::StartNewAttack()
 	if (CurrentCombo != 0) return;
 
 	// 공격 시작시 컨트롤러 방향으로 캐릭터 회전
-	if (WeaponType == EWeaponType::RIFLE|| WeaponType == EWeaponType::KEROBALL)
+	if (WeaponType == EWeaponType::RIFLE || WeaponType == EWeaponType::KEROBALL)
 	{
 		FRotator ControlRotation = GetControlRotation();
 		ControlRotation.Pitch = 0.0f;
@@ -229,7 +230,8 @@ void AKeroroCharacter::SetWeapon()
 	switch (WeaponType)
 	{
 	case EWeaponType::FIST:
-		Weapon = nullptr;
+		Weapon = GetWorld()->SpawnActor<AFistWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+		Cast<AFistWeapon>(Weapon)->InitEffect(this);
 		break;
 	case EWeaponType::KEROBALL:
 		Weapon = GetWorld()->SpawnActor<AKeroballWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
@@ -245,7 +247,11 @@ void AKeroroCharacter::SetWeapon()
 	}
 	if (Weapon)
 	{
-		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Weapon->GetSocketName());
+		TArray<FName> SocketNames = Weapon->GetSocketNames();
+		if (SocketNames.IsValidIndex(0))
+		{
+			Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, SocketNames[0]);
+		}
 	}
 }
 
@@ -458,9 +464,10 @@ void AKeroroCharacter::SpawnToHand()
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Instigator = this;
 	Weapon = GetWorld()->SpawnActor<AKeroballWeapon>(FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
-	if (Weapon)
+	TArray<FName> SocketNames = Weapon->GetSocketNames();
+	if (SocketNames.IsValidIndex(0))
 	{
-		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Weapon->GetSocketName());
+		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, SocketNames[0]);
 	}
 }
 
@@ -502,7 +509,7 @@ void AKeroroCharacter::LoadAssetandSetting(EKeroroType type)
 		break;
 	case EKeroroType::Kururu:
 		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/kururu/kururu.kururu"));
-		WeaponType = EWeaponType::FIST;
+		WeaponType = EWeaponType::RIFLE;
 		break;
 	case EKeroroType::Dororo:
 		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/dororo/dororo.dororo"));

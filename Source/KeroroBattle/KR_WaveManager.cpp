@@ -86,7 +86,7 @@ void AKR_WaveManager::OnEnemyDead(AActor* DestroyedActor)
 {
 	EnemiesAlive--;
 
-	UE_LOG(LogTemp, Log, TEXT("Enemy killed Remaining: %d"), EnemiesAlive);
+	//UE_LOG(LogTemp, Log, TEXT("Enemy killed Remaining: %d"), EnemiesAlive);
 
 	if (EnemiesAlive <= 0)
 	{

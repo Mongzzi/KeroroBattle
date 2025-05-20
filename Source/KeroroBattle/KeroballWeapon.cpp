@@ -10,7 +10,7 @@
 
 AKeroballWeapon::AKeroballWeapon()
 {
-	SocketName = TEXT("KeroballSocket");
+	SocketNames.Add(TEXT("KeroballSocket"));
 
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WEAPON"));
 	StaticMeshComponent->SetCollisionProfileName(TEXT("KeroroWeapon"));
@@ -49,20 +49,21 @@ void AKeroballWeapon::Throw(const FVector& Direction, float Force)
 void AKeroballWeapon::ReturnToHand(AKeroroCharacter* Character)
 {
 	if (!Character) return;
+	if (!SocketNames.IsValidIndex(0))return;
 	StaticMeshComponent->SetSimulatePhysics(false);
-	AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
+	AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, SocketNames[0]);
 }
 
 void AKeroballWeapon::Explode()
 {
 	if (!IsValid(this)) return;
 
-	UE_LOG(LogTemp, Warning, TEXT("Explode called"));
+	//UE_LOG(LogTemp, Warning, TEXT("Explode called"));
 
 
 	TArray<FHitResult> HitResults;
 	float DamageRadius = 300.0f;
-	float DamageAmount = 30.0f;
+	float DamageAmount = 300.0f;
 
 	bool bHit = GetWorld()->SweepMultiByChannel(
 		HitResults,
@@ -100,7 +101,7 @@ void AKeroballWeapon::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 
 	if (OtherActor->IsA(AKeroroEnemyCharacter::StaticClass()))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Attack succed"));
+		//UE_LOG(LogTemp, Warning, TEXT("Attack succed"));
 		Explode();
 	}
 }

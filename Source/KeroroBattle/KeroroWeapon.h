@@ -28,7 +28,7 @@ public:
 	virtual void Throw(const FVector& Direction, float Force);
 	virtual void ReturnToHand(class AKeroroCharacter* Character);
 
-	FName GetSocketName() { return SocketName; };
+	TArray<FName> GetSocketNames();
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	USkeletalMeshComponent* SKMeshComponent;
 
@@ -36,5 +36,5 @@ public:
 	UStaticMeshComponent* StaticMeshComponent;
 
 protected:
-	FName SocketName;
+	TArray<FName> SocketNames;
 };

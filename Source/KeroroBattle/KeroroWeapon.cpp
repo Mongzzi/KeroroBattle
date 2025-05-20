@@ -42,3 +42,8 @@ void AKeroroWeapon::ReturnToHand(AKeroroCharacter* Character)
 {
 }
 
+TArray<FName> AKeroroWeapon::GetSocketNames()
+{
+	return SocketNames;
+}
+

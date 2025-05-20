@@ -35,6 +35,13 @@ UKeroroAnimInstance::UKeroroAnimInstance()
 		KeroBallAttackMontage = KEROBALL_ATTACK_MONTAGE.Object;
 		AttackMontages.Add(EWeaponType::KEROBALL, KeroBallAttackMontage);
 	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> FIST_ATTACK_MONTAGE(TEXT("/Game/Animation/KR_Montage_Fist.KR_Montage_Fist"));
+	if (FIST_ATTACK_MONTAGE.Succeeded())
+	{
+		FistAttackMontage = FIST_ATTACK_MONTAGE.Object;
+		AttackMontages.Add(EWeaponType::FIST, FistAttackMontage);
+	}
 }
 
 void UKeroroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -65,6 +72,8 @@ void UKeroroAnimInstance::PlayAttackMontage()
 		if (!Montage_IsPlaying(Montage))
 		{
 			Montage_Play(Montage, 1.0f);
+			UE_LOG(LogTemp, Error, TEXT(" play attack montage called"));
+
 		}
 	}
 }

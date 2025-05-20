@@ -7,7 +7,7 @@
 
 ARifleWeapon::ARifleWeapon()
 {
-	SocketName = TEXT("RifleSocket");
+	SocketNames.Add(TEXT("RifleSocket"));
 
 	SKMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WEAPON"));
 	RootComponent = SKMeshComponent;
