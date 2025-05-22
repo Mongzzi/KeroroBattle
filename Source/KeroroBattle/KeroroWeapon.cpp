@@ -30,7 +30,7 @@ void AKeroroWeapon::PlayEffect()
 {
 }
 
-void AKeroroWeapon::PlaySound()
+void AKeroroWeapon::PlaySound(int32 ComboIndex)
 {
 }
 

@@ -32,7 +32,7 @@ void ARifleWeapon::PlayEffect()
 {
 }
 
-void ARifleWeapon::PlaySound()
+void ARifleWeapon::PlaySound(int32 ComboIndex)
 {
 	if (RifleFireSound)
 	{

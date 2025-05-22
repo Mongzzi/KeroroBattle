@@ -19,28 +19,24 @@ UKeroroAnimInstance::UKeroroAnimInstance()
 	if (SWORD_ATTACK_MONTAGE.Succeeded())
 	{
 		SwordAttackMontage = SWORD_ATTACK_MONTAGE.Object;
-		AttackMontages.Add(EWeaponType::SWORD, SwordAttackMontage);
 	}
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> RIFLE_ATTACK_MONTAGE(TEXT("/Game/Animation/KR_Montage_Rifle.KR_Montage_Rifle"));
 	if (RIFLE_ATTACK_MONTAGE.Succeeded())
 	{
 		RifleAttackMontage = RIFLE_ATTACK_MONTAGE.Object;
-		AttackMontages.Add(EWeaponType::RIFLE, RifleAttackMontage);
 	}
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> KEROBALL_ATTACK_MONTAGE(TEXT("/Game/Animation/KR_Montage_KeroBall.KR_Montage_KeroBall"));
 	if (KEROBALL_ATTACK_MONTAGE.Succeeded())
 	{
 		KeroBallAttackMontage = KEROBALL_ATTACK_MONTAGE.Object;
-		AttackMontages.Add(EWeaponType::KEROBALL, KeroBallAttackMontage);
 	}
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> FIST_ATTACK_MONTAGE(TEXT("/Game/Animation/KR_Montage_Fist.KR_Montage_Fist"));
 	if (FIST_ATTACK_MONTAGE.Succeeded())
 	{
 		FistAttackMontage = FIST_ATTACK_MONTAGE.Object;
-		AttackMontages.Add(EWeaponType::FIST, FistAttackMontage);
 	}
 }
 
@@ -67,12 +63,11 @@ void UKeroroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 void UKeroroAnimInstance::PlayAttackMontage()
 {
 	if (IsDead) return;
-	if (UAnimMontage* Montage = GetWeaponMontage())
+	if (UAnimMontage* Montage = GetAnimMontage())
 	{
 		if (!Montage_IsPlaying(Montage))
 		{
 			Montage_Play(Montage, 1.0f);
-			UE_LOG(LogTemp, Error, TEXT(" play attack montage called"));
 
 		}
 	}
@@ -86,15 +81,6 @@ void UKeroroAnimInstance::SetDeadAnim()
 void UKeroroAnimInstance::SetWeaponType(EWeaponType type)
 {
 	WeaponType = type;
-}
-
-UAnimMontage* UKeroroAnimInstance::GetWeaponMontage()
-{
-	if (UAnimMontage** FoundPtr = AttackMontages.Find(WeaponType))
-	{
-		return *FoundPtr;
-	}
-	return nullptr;
 }
 
 void UKeroroAnimInstance::AnimNotify_AttackHitCheck()
@@ -119,11 +105,28 @@ FName UKeroroAnimInstance::GetAttackMontageSectionName(int32 Section)
 	else return NAME_None;
 }
 
+UAnimMontage* UKeroroAnimInstance::GetAnimMontage()
+{
+
+	switch (WeaponType)
+	{
+	case EWeaponType::FIST:
+		return FistAttackMontage;
+	case EWeaponType::KEROBALL:
+		return KeroBallAttackMontage;
+	case EWeaponType::RIFLE:
+		return RifleAttackMontage;
+	case EWeaponType::SWORD:
+		return SwordAttackMontage;
+	}
+	return SwordAttackMontage;
+}
+
 void UKeroroAnimInstance::JumptoAttackMontageSection(int32 NewSection)
 {
 	if (IsDead) return;
 
-	if (UAnimMontage* MontageToPlay = GetWeaponMontage())
+	if (UAnimMontage* MontageToPlay = GetAnimMontage())
 	{
 		if (Montage_IsPlaying(MontageToPlay))
 		{

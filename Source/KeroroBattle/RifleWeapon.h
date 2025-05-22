@@ -16,7 +16,7 @@ class KEROROBATTLE_API ARifleWeapon : public AKeroroWeapon
 	ARifleWeapon();
 	
 	virtual void PlayEffect() override;
-	virtual void PlaySound() override;
+	virtual void PlaySound(int32 ComboIndex) override;
 	virtual void Throw(const FVector& Direction, float Force) override;
 	virtual void ReturnToHand(class AKeroroCharacter* Character) override;
 

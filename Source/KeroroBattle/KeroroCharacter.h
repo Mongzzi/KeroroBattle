@@ -64,6 +64,7 @@ public:
 	void AttackCheck_Sword();
 	void AttackCheck_Rifle();
 	void AttackCheck_Keroball();
+	void AttackCheck_Fist();
 	void SpawnToHand();
 	void HandleComboInput();
 	void StartNewAttack();

@@ -32,7 +32,6 @@ public:
 	
 	void SetDeadAnim();
 	void SetWeaponType(EWeaponType type);
-	UAnimMontage* GetWeaponMontage();
 
 private:
 	UFUNCTION()
@@ -59,10 +58,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	EWeaponType WeaponType;
 
-private:
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TMap<EWeaponType, UAnimMontage*> AttackMontages;
+	class UAnimMontage* GetAnimMontage();
 
+private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	class UAnimMontage* SwordAttackMontage;
 

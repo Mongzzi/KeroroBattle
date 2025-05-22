@@ -24,7 +24,7 @@ protected:
 
 public:
 	virtual void PlayEffect();
-	virtual void PlaySound();
+	virtual void PlaySound(int32 ComboIndex);
 	virtual void Throw(const FVector& Direction, float Force);
 	virtual void ReturnToHand(class AKeroroCharacter* Character);
 
