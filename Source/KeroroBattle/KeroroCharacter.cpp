@@ -60,6 +60,11 @@ AKeroroCharacter::AKeroroCharacter()
 	{
 		NSRifleEffect = NE2.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NE3(TEXT("/Game/Vefects/Zap_VFX/VFX/Zap/Particles/NS_Zap_03_Yellow.NS_Zap_03_Yellow"));
+	if (NE3.Succeeded())
+	{
+		NSFistHitEffect = NE3.Object;
+	}
 
 	// HP바 추가
 	HPBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
@@ -462,32 +467,35 @@ void AKeroroCharacter::AttackCheck_Keroball()
 
 void AKeroroCharacter::AttackCheck_Fist()
 {
-	TArray<FHitResult> HitResults;
+	FHitResult HitResult;
 	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this); // 자기 자신은 무시
+	Params.AddIgnoredActor(this);
 
-	bool bHit = GetWorld()->SweepMultiByChannel(
-		HitResults,
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		HitResult,
 		GetActorLocation() + GetActorForwardVector() * AttackRadius / 2,	// 시작위치 - 구형태이므로 반지름(attack radios)이 커지면 캐릭터 뒤쪽도 공격판정들어감
-		GetActorLocation() + GetActorForwardVector() * AttackRange,	// 끝위치
+		GetActorLocation() + GetActorForwardVector() * AttackRange,	// 
 		FQuat::Identity, // 회전 없음
-		ECC_GameTraceChannel3, // Attack채널 ( DefaultEngine 파일에 내가만든 채널 몇번쨰인지 나와있음 )
+		ECC_GameTraceChannel3,
 		FCollisionShape::MakeSphere(AttackRadius),
 		Params
 	);
 
 	if (bHit)
 	{
-		for (const FHitResult& Hit : HitResults)
+		AActor* HitActor = HitResult.GetActor();
+		if (IsValid(HitActor) && HitActor->IsA(AKeroroEnemyCharacter::StaticClass()))
 		{
-			AActor* HitActor = Hit.GetActor();
-			if (IsValid(HitActor) && Cast<AKeroroEnemyCharacter>(Hit.GetActor()))
-			{
-				FDamageEvent DamageEvent;
-				HitActor->TakeDamage(KRStat->AttackPower * 5, DamageEvent, GetController(), this);
-				//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *HitActor->GetName());
-				Weapon->PlaySound(CurrentCombo);
-			}
+			FDamageEvent DamageEvent;
+			HitActor->TakeDamage(KRStat->AttackPower * 5, DamageEvent, GetController(), this);
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+				GetWorld(),
+				NSFistHitEffect,
+				HitResult.ImpactPoint,
+				HitResult.ImpactNormal.Rotation(),
+				FVector(1.0f)
+			);
+			Weapon->PlaySound(CurrentCombo);
 		}
 	}
 }

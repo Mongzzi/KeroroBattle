@@ -88,28 +88,36 @@ void ADropGold::OnCharacterBeginOverlap(UPrimitiveComponent* OverlappedComponent
 	{
 		UE_LOG(LogTemp, Error, TEXT("gold is overlap"));
 
-		// 다른캐릭이 먹으면 ai컨트롤러여서 플레이어스테이트 접근 어려움 -> 골드 추가 안됨 고쳐야할듯
 		AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(kero->GetPlayerState());
 		if (PS)
 		{
-			PS->AddGold(100);	// 임시 골드 수치
+			PS->AddGold(100); // 임시 골드 수치
 		}
 
-		NCEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSEffect, GetActorLocation(), FRotator::ZeroRotator, FVector(3.0f));
+		UNiagaraComponent* TempEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			NSEffect, 
+			GetActorLocation(),
+			FRotator::ZeroRotator, 
+			FVector(3.0f)
+		);
 
-		if (NCEffect)
+		if (TempEffect)
 		{
-			NCEffect->Activate();
+			TempEffect->Activate();
 
-			FTimerHandle EffectTimerHandle;
-			GetWorld()->GetTimerManager().SetTimer(EffectTimerHandle, [this]()
+			FTimerHandle TimerHandle;
+			UNiagaraComponent* TempEffectComp = TempEffect;
+
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [TempEffectComp]()
 				{
-					if (NCEffect)
+					if (TempEffectComp)
 					{
-						NCEffect->Deactivate();
+						TempEffectComp->Deactivate();
 					}
 				}, 1.0f, false);
 		}
+
 		Destroy();
 	}
 }

@@ -27,8 +27,8 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	auto World = AIPawn->GetWorld();
 	if (World == nullptr) return;
 
-	float DetectRadius = 600.0f;
-	float NoDetectRadius = 1200.0f;
+	float DetectRadius = 1000.0f;
+	float NoDetectRadius = 2000.0f;
 
 	auto TargetObj = OwnerComp.GetBlackboardComponent()->GetValueAsObject(AEnemyAIController::TargetKey);
 	if (!IsValid(TargetObj))

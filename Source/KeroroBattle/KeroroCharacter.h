@@ -38,6 +38,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
 	class UNiagaraSystem* NSRifleEffect;
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
+	class UNiagaraSystem* NSFistHitEffect;
+
 	// 이펙트 생성
 	UFUNCTION()
 	void PlayEffect();

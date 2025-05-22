@@ -11,8 +11,8 @@ AFistWeapon::AFistWeapon()
 {
 	SocketNames.Add(TEXT("RightFistSocket"));
 	SocketNames.Add(TEXT("LeftFistSocket"));
-
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem>FIST(TEXT("/Game/MixedVFX/Particles/Fires/NS_Campfire.NS_Campfire"));
+	//static ConstructorHelpers::FObjectFinder<UNiagaraSystem>FIST(TEXT("/Game/MixedVFX/Particles/Fires/NS_Campfire.NS_Campfire"));
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem>FIST(TEXT("/Game/MixedVFX/Particles/Projectiles/NS_Projectile_04.NS_Projectile_04"));
 	if (FIST.Succeeded())
 	{
 		NSEffect = FIST.Object;
@@ -83,7 +83,7 @@ void AFistWeapon::PlaySound(int32 ComboIndex)
 {
 	if (FMath::IsWithinInclusive<int32>(ComboIndex, 1, 4))
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, FistComboAttackSounds[ComboIndex-1], GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(this, FistComboAttackSounds[ComboIndex - 1], GetActorLocation());
 	}
 
 }
@@ -98,6 +98,9 @@ void AFistWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 	for (UNiagaraComponent* a : NCEffects)
 	{
-		a->DestroyComponent();
+		if (IsValid(a))
+		{
+			a->DestroyComponent();
+		}
 	}
 }
