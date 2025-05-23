@@ -89,7 +89,7 @@ void AKeroballWeapon::Explode()
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSEffect, GetActorLocation(), FRotator::ZeroRotator, FVector(3.0f));
 	if (BombSound)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, BombSound, GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(this, BombSound, GetActorLocation(),3.0f);
 	}
 	Destroy();
 }

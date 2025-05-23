@@ -24,6 +24,7 @@
 #include "NiagaraComponent.h"
 #include "DrawDebugHelpers.h"	// 디버그 드로잉 기능 사용하기위한 헤더
 #include "Engine/DamageEvents.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -65,6 +66,8 @@ AKeroroCharacter::AKeroroCharacter()
 	{
 		NSFistHitEffect = NE3.Object;
 	}
+
+	LoadSounds(EKeroroType::Tamama);
 
 	// HP바 추가
 	HPBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
@@ -467,6 +470,11 @@ void AKeroroCharacter::AttackCheck_Keroball()
 
 void AKeroroCharacter::AttackCheck_Fist()
 {
+	if (FMath::IsWithinInclusive<int32>(CurrentCombo, 1, 4))
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, TamamaSounds[CurrentCombo - 1], GetActorLocation());
+	}
+
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
@@ -574,5 +582,46 @@ void AKeroroCharacter::LoadAssetandSetting(EKeroroType type)
 		// 애님인스턴스 설정 및 델리게이트 바인딩
 		BindCharacterEvents();
 		SetWeapon();
+	}
+}
+
+void AKeroroCharacter::LoadSounds(EKeroroType type)
+{
+	switch (type)
+	{
+	case EKeroroType::Keroro:
+		break;
+	case EKeroroType::Tamama:
+	{
+
+		// 사운드 추가
+		static ConstructorHelpers::FObjectFinder<USoundWave> TAMASOUND1(TEXT("/Game/keroro_asset/tamama1.tamama1"));
+		if (TAMASOUND1.Succeeded())
+		{
+			TamamaSounds.Add(TAMASOUND1.Object);
+		}
+		static ConstructorHelpers::FObjectFinder<USoundWave> TAMASOUND2(TEXT("/Game/keroro_asset/tamama2.tamama2"));
+		if (TAMASOUND2.Succeeded())
+		{
+			TamamaSounds.Add(TAMASOUND2.Object);
+		}
+		static ConstructorHelpers::FObjectFinder<USoundWave> TAMASOUND3(TEXT("/Game/keroro_asset/tamama3.tamama3"));
+		if (TAMASOUND3.Succeeded())
+		{
+			TamamaSounds.Add(TAMASOUND3.Object);
+		}
+		static ConstructorHelpers::FObjectFinder<USoundWave> TAMASOUND4(TEXT("/Game/keroro_asset/tamama4.tamama4"));
+		if (TAMASOUND4.Succeeded())
+		{
+			TamamaSounds.Add(TAMASOUND4.Object);
+		}
+	}
+	break;
+	case EKeroroType::Giroro:
+		break;
+	case EKeroroType::Kururu:
+		break;
+	case EKeroroType::Dororo:
+		break;
 	}
 }

@@ -53,6 +53,7 @@ public:
 	void BindCharacterEvents();
 	void UnbindCharacterEvents();
 	void LoadAssetandSetting(EKeroroType type);
+	void LoadSounds(EKeroroType type);
 
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
@@ -144,5 +145,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category = Stat)
 	float WalkSpeed;
+
+
+	public:
+		UPROPERTY(EditAnywhere, Category = "Sound")
+		TArray<USoundBase*> TamamaSounds;
+
 
 };

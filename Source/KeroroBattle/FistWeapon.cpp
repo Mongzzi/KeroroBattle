@@ -85,7 +85,6 @@ void AFistWeapon::PlaySound(int32 ComboIndex)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, FistComboAttackSounds[ComboIndex - 1], GetActorLocation());
 	}
-
 }
 
 void AFistWeapon::BeginPlay()

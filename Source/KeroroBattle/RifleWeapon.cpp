@@ -36,7 +36,7 @@ void ARifleWeapon::PlaySound(int32 ComboIndex)
 {
 	if (RifleFireSound)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, RifleFireSound, GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(this, RifleFireSound, GetActorLocation(),0.35f);
 	}
 }
 
