@@ -38,6 +38,13 @@ UKeroroAnimInstance::UKeroroAnimInstance()
 	{
 		FistAttackMontage = FIST_ATTACK_MONTAGE.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> NOTEBOOK_ATTACK_MONTAGE(TEXT("/Game/Animation/KR_Montage_NoteBook.KR_Montage_NoteBook"));
+	if (NOTEBOOK_ATTACK_MONTAGE.Succeeded())
+	{
+		NoteBookAttackMontage= NOTEBOOK_ATTACK_MONTAGE.Object;
+	}
+
 }
 
 void UKeroroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -118,6 +125,8 @@ UAnimMontage* UKeroroAnimInstance::GetAnimMontage()
 		return RifleAttackMontage;
 	case EWeaponType::SWORD:
 		return SwordAttackMontage;
+	case EWeaponType::NOTEBOOK:
+		return NoteBookAttackMontage;
 	}
 	return SwordAttackMontage;
 }

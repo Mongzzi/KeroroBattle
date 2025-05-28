@@ -10,6 +10,7 @@
 #include "SwordWeapon.h"
 #include "FistWeapon.h"
 #include "RifleWeapon.h"
+#include "NoteBookWeapon.h"
 #include "RifleBullet.h"
 #include "KeroroPlayerState.h"
 #include "KeroroStatComponent.h"
@@ -250,7 +251,8 @@ void AKeroroCharacter::SetWeapon()
 	case EWeaponType::SWORD:
 		Weapon = GetWorld()->SpawnActor<ASwordWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
 		break;
-	case EWeaponType::MAX:
+	case EWeaponType::NOTEBOOK:
+		Weapon = GetWorld()->SpawnActor<ANoteBookWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
 		break;
 	}
 	if (Weapon)
@@ -558,7 +560,7 @@ void AKeroroCharacter::LoadAssetandSetting(EKeroroType type)
 		break;
 	case EKeroroType::Kururu:
 		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/kururu/kururu.kururu"));
-		WeaponType = EWeaponType::RIFLE;
+		WeaponType = EWeaponType::NOTEBOOK;
 		break;
 	case EKeroroType::Dororo:
 		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/dororo/dororo.dororo"));
