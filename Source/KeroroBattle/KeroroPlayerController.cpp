@@ -8,6 +8,7 @@
 #include "KeroroHUDWidget.h"
 #include "KeroroGameState.h"
 #include "KeroroAIController.h"
+#include "NoteBookWeapon.h"
 #include "LevelupCardWidget.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -215,6 +216,7 @@ void AKeroroPlayerController::TagCharacter()
 	}
 }
 
+
 void AKeroroPlayerController::Die()
 {
 	EKeroroType CurrentKeroroType = KRPlayerState->GetCurrentCharacterType();
@@ -284,6 +286,17 @@ void AKeroroPlayerController::OnPlayerLevelUpdated()
 	}
 }
 
+void AKeroroPlayerController::OnMagicCircleActivated()
+{
+	UE_LOG(LogTemp, Error, TEXT("magic circle activated"));
+	IsMagicCircleActivated = !IsMagicCircleActivated;
+	if (AKeroroCharacter* Kero = Cast<AKeroroCharacter>(GetPawn()))
+	{
+		//Kero->bUseControllerRotationYaw = false; // 회전도 막기
+		//Kero->GetCharacterMovement()->bOrientRotationToMovement = false; // 이동 방향 회전도 막기
+	}
+}
+
 
 void AKeroroPlayerController::LoadInputActionAndMappingContext()
 {
@@ -307,6 +320,9 @@ void AKeroroPlayerController::LoadInputActionAndMappingContext()
 
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_TAG(TEXT("/Game/Input/IA_Keroro_Tag.IA_Keroro_Tag"));
 	if (IA_TAG.Succeeded()) Tag = IA_TAG.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_MOUSE_RIGHT(TEXT("/Game/Input/IA_MOUSE_RIGHT_BUTTON.IA_MOUSE_RIGHT_BUTTON"));
+	if (IA_MOUSE_RIGHT.Succeeded()) MouseRight = IA_MOUSE_RIGHT.Object;
 }
 
 
@@ -329,11 +345,14 @@ void AKeroroPlayerController::SetupInputComponent()
 		Input->BindAction(Running, ETriggerEvent::Completed, this, &AKeroroPlayerController::StopRun);
 		Input->BindAction(Attacking, ETriggerEvent::Started, this, &AKeroroPlayerController::Attack);
 		Input->BindAction(Tag, ETriggerEvent::Started, this, &AKeroroPlayerController::TagCharacter);
+		Input->BindAction(MouseRight, ETriggerEvent::Started, this, &AKeroroPlayerController::OnMagicCircleActivated);
 	}
 }
 
 void AKeroroPlayerController::Move(const FInputActionValue& Value)
 {
+	if (IsMagicCircleActivated) return;
+
 	if (AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter()))
 	{
 		const FVector2D InputVector = Value.Get<FVector2D>();
@@ -349,7 +368,18 @@ void AKeroroPlayerController::Move(const FInputActionValue& Value)
 
 void AKeroroPlayerController::Look(const FInputActionValue& Value)
 {
+
 	const FVector2D LookInput = Value.Get<FVector2D>();
+
+	if (IsMagicCircleActivated)
+	{
+		AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter());
+		if (kero->WeaponType == EWeaponType::NOTEBOOK)
+		{
+			Cast<ANoteBookWeapon>(kero->Weapon)->ActivateMagicCircle();
+		}
+	}
+
 	AddYawInput(LookInput.X);
 	AddPitchInput(LookInput.Y);
 }
@@ -386,10 +416,8 @@ void AKeroroPlayerController::StopRun()
 
 void AKeroroPlayerController::Attack()
 {
-	if (AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter()))
-	{
-		kero->Attack();
-	}
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter());
+	kero->Attack();
 }
 
 

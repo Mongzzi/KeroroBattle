@@ -25,7 +25,9 @@ public:
 	virtual void OnPossess(APawn* PawnToPossess) override;
 
 	virtual void PostInitializeComponents() override;
+
 private:
+	void LoadInputActionAndMappingContext();
 	void Move(const struct FInputActionValue& Value);
 	void Look(const struct FInputActionValue& Value);
 	void Jump();
@@ -33,8 +35,10 @@ private:
 	void StopRun();
 	void Attack();
 	void TagCharacter();
-	void LoadInputActionAndMappingContext();
 	void OnPlayerLevelUpdated();
+	void OnMagicCircleActivated();
+
+	bool IsMagicCircleActivated;
 
 public:
 	class UNiagaraSystem* NSTagEffect;
@@ -87,4 +91,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* Tag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category= Input)
+	class UInputAction* MouseRight;
 };

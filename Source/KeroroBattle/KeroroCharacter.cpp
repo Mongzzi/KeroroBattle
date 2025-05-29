@@ -192,14 +192,22 @@ void AKeroroCharacter::Die()
 void AKeroroCharacter::Attack()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Attack succed"));
-
-	if (IsAttacking) // 애니메이션(몽타주) 재생중인가
+	if (WeaponType == EWeaponType::NOTEBOOK)
 	{
-		HandleComboInput();
+		Cast<ANoteBookWeapon>(Weapon)->ActivateMagicCircle();
+		KRAnim->PlayAttackMontage();
+
 	}
 	else
 	{
-		StartNewAttack();
+		if (IsAttacking) // 애니메이션(몽타주) 재생중인가
+		{
+			HandleComboInput();
+		}
+		else
+		{
+			StartNewAttack();
+		}
 	}
 }
 
@@ -253,6 +261,7 @@ void AKeroroCharacter::SetWeapon()
 		break;
 	case EWeaponType::NOTEBOOK:
 		Weapon = GetWorld()->SpawnActor<ANoteBookWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+		Cast<ANoteBookWeapon>(Weapon)->InitEffect(this);
 		break;
 	}
 	if (Weapon)
