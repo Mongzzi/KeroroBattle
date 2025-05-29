@@ -24,6 +24,7 @@ public:
 	void ActivateMagicCircle();
 	void DeactivateMagicCircle();
 	void SpawnOrUpdateEffect(FVector Location, FRotator Rotation);
+	void SpawnOrUpdateEffect2(FVector Location, FRotator Rotation);
 
 protected:
 	UPROPERTY()
@@ -34,6 +35,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effect")
 	class UNiagaraSystem* MagicCircleEffect;
+
+	UPROPERTY()
+	UParticleSystemComponent* MagicCircleParticle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+	UParticleSystem* MagicCircleEffect2;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effect")
 	float TraceDistance = 4000.f;

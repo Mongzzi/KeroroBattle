@@ -5,6 +5,7 @@
 #include "KeroroCharacter.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 ANoteBookWeapon::ANoteBookWeapon()
 {
@@ -28,6 +29,12 @@ ANoteBookWeapon::ANoteBookWeapon()
 	if (NS_Magic.Succeeded())
 	{
 		MagicCircleEffect = NS_Magic.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> NS_Magic2(TEXT("/Game/FXVarietyPack/Particles/P_ky_magicCircle1.P_ky_magicCircle1"));
+	if (NS_Magic2.Succeeded())
+	{
+		MagicCircleEffect2 = NS_Magic2.Object;
 	}
 }
 
@@ -71,7 +78,7 @@ void ANoteBookWeapon::ActivateMagicCircle()
 		float Dot = FVector::DotProduct(HitResult.ImpactNormal, FVector::UpVector);
 		if (Dot > 0.9f)
 		{
-			SpawnOrUpdateEffect(HitResult.Location, PC->GetControlRotation());
+			SpawnOrUpdateEffect2(HitResult.Location, FRotator::ZeroRotator);
 			return;
 		}
 	}
@@ -88,7 +95,7 @@ void ANoteBookWeapon::ActivateMagicCircle()
 
 	if (GetWorld()->LineTraceSingleByChannel(DownHit, DownTraceStart, DownTraceEnd, ECC_Visibility, Params))
 	{
-		SpawnOrUpdateEffect(DownHit.Location, Rotation); // 바닥 위에 정렬
+		SpawnOrUpdateEffect2(DownHit.Location, FRotator::ZeroRotator); // 바닥 위에 정렬
 	}
 }
 
@@ -130,3 +137,30 @@ void ANoteBookWeapon::SpawnOrUpdateEffect(FVector Location, FRotator Rotation)
 }
 
 
+void ANoteBookWeapon::SpawnOrUpdateEffect2(FVector Location, FRotator Rotation)
+{
+    if (!MagicCircleParticle)
+    {
+        UE_LOG(LogTemp, Error, TEXT("effect create"));
+
+		MagicCircleParticle = UGameplayStatics::SpawnEmitterAtLocation(
+            GetWorld(),
+			MagicCircleEffect2,
+            Location,
+            Rotation
+        );
+    }
+    else
+    {
+		MagicCircleParticle->SetWorldLocation(Location);
+		MagicCircleParticle->SetWorldRotation(Rotation);
+        if (!bIsMagicCircleActive)
+        {
+			MagicCircleParticle->ActivateSystem(true);
+            bIsMagicCircleActive = true;
+        }
+    }
+
+    bIsMagicCircleActive = true;
+    //DrawDebugSphere(GetWorld(), Location, 50.f, 12, FColor::Blue, false, 2.f);
+}
