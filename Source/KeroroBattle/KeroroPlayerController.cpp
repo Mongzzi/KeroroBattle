@@ -288,13 +288,7 @@ void AKeroroPlayerController::OnPlayerLevelUpdated()
 
 void AKeroroPlayerController::OnMagicCircleActivated()
 {
-	UE_LOG(LogTemp, Error, TEXT("magic circle activated"));
 	IsMagicCircleActivated = !IsMagicCircleActivated;
-	if (AKeroroCharacter* Kero = Cast<AKeroroCharacter>(GetPawn()))
-	{
-		//Kero->bUseControllerRotationYaw = false; // 회전도 막기
-		//Kero->GetCharacterMovement()->bOrientRotationToMovement = false; // 이동 방향 회전도 막기
-	}
 }
 
 
@@ -351,7 +345,10 @@ void AKeroroPlayerController::SetupInputComponent()
 
 void AKeroroPlayerController::Move(const FInputActionValue& Value)
 {
-	if (IsMagicCircleActivated) return;
+	if (IsMagicCircleActivated) {
+		AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter());
+		if (kero->WeaponType == EWeaponType::NOTEBOOK) return;
+	}
 
 	if (AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter()))
 	{
@@ -374,9 +371,19 @@ void AKeroroPlayerController::Look(const FInputActionValue& Value)
 	if (IsMagicCircleActivated)
 	{
 		AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter());
-		if (kero->WeaponType == EWeaponType::NOTEBOOK)
+		if (kero && kero->WeaponType == EWeaponType::NOTEBOOK)
 		{
 			Cast<ANoteBookWeapon>(kero->Weapon)->ActivateMagicCircle();
+			//UE_LOG(LogTemp, Warning, TEXT("Activate"));
+		}
+	}
+	else
+	{
+		AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter());
+		if (kero&&kero->WeaponType == EWeaponType::NOTEBOOK)
+		{
+			Cast<ANoteBookWeapon>(kero->Weapon)->DeactivateMagicCircle2();
+			//UE_LOG(LogTemp, Warning, TEXT("DeActivate"));
 		}
 	}
 

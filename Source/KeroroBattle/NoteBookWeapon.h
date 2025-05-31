@@ -22,9 +22,16 @@ public:
 
 	void InitEffect(class AKeroroCharacter* kero);
 	void ActivateMagicCircle();
+	void ActivateFinalEffect();
+	void AttackCheck_NoteBook();
 	void DeactivateMagicCircle();
+	void DeactivateMagicCircle2();
 	void SpawnOrUpdateEffect(FVector Location, FRotator Rotation);
-	void SpawnOrUpdateEffect2(FVector Location, FRotator Rotation);
+	void SpawnOrUpdateEffect_Particle(FVector Location, FRotator Rotation);
+	void StopNoteBookAttack();
+
+public:
+	FVector FinalEffectLoc;
 
 protected:
 	UPROPERTY()
@@ -43,7 +50,19 @@ protected:
 	UParticleSystem* MagicCircleEffect2;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+	UParticleSystem* MagicCircleEffect3;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
 	float TraceDistance = 4000.f;
+
+	UPROPERTY(EditDefaultsOnly,Category = "Effect")
+	float EffectRemainTime = 3.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+	float DamageTickInterval = 0.5;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+	FTimerHandle DamageTickHandle;
 
 	bool bIsMagicCircleActive = false;
 };

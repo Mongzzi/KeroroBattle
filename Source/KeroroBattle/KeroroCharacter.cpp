@@ -194,9 +194,8 @@ void AKeroroCharacter::Attack()
 	//UE_LOG(LogTemp, Warning, TEXT("Attack succed"));
 	if (WeaponType == EWeaponType::NOTEBOOK)
 	{
-		Cast<ANoteBookWeapon>(Weapon)->ActivateMagicCircle();
+		Cast<ANoteBookWeapon>(Weapon)->ActivateFinalEffect();
 		KRAnim->PlayAttackMontage();
-
 	}
 	else
 	{

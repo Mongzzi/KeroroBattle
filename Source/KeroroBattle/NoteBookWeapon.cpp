@@ -3,6 +3,9 @@
 
 #include "NoteBookWeapon.h"
 #include "KeroroCharacter.h"
+#include "Engine/DamageEvents.h"
+#include "KeroroStatComponent.h"
+#include "KeroroEnemyCharacter.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
@@ -25,7 +28,7 @@ ANoteBookWeapon::ANoteBookWeapon()
 	}
 
 	// 스킬 이펙트
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NS_Magic(TEXT("/Game/MixedVFX/Particles/Mix/NS_ElectricField.NS_ElectricField"));
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NS_Magic(TEXT("/Game/Vefects/Zap_VFX/VFX/Zap/Particles/NS_Zap_01_Red.NS_Zap_01_Red"));
 	if (NS_Magic.Succeeded())
 	{
 		MagicCircleEffect = NS_Magic.Object;
@@ -36,6 +39,14 @@ ANoteBookWeapon::ANoteBookWeapon()
 	{
 		MagicCircleEffect2 = NS_Magic2.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> NS_Magic3(TEXT("/Game/FXVarietyPack/Particles/P_ky_fireStorm.P_ky_fireStorm"));
+	if (NS_Magic3.Succeeded())
+	{
+		MagicCircleEffect3 = NS_Magic3.Object;
+	}
+
+	FinalEffectLoc = FVector::ZeroVector;
 }
 
 void ANoteBookWeapon::BeginPlay()
@@ -78,7 +89,8 @@ void ANoteBookWeapon::ActivateMagicCircle()
 		float Dot = FVector::DotProduct(HitResult.ImpactNormal, FVector::UpVector);
 		if (Dot > 0.9f)
 		{
-			SpawnOrUpdateEffect2(HitResult.Location, FRotator::ZeroRotator);
+			FinalEffectLoc = HitResult.Location;
+			SpawnOrUpdateEffect_Particle(HitResult.Location, FRotator::ZeroRotator);
 			return;
 		}
 	}
@@ -95,8 +107,99 @@ void ANoteBookWeapon::ActivateMagicCircle()
 
 	if (GetWorld()->LineTraceSingleByChannel(DownHit, DownTraceStart, DownTraceEnd, ECC_Visibility, Params))
 	{
-		SpawnOrUpdateEffect2(DownHit.Location, FRotator::ZeroRotator); // 바닥 위에 정렬
+		FinalEffectLoc = HitResult.Location;
+		SpawnOrUpdateEffect_Particle(DownHit.Location, FRotator::ZeroRotator); // 바닥 위에 정렬
 	}
+}
+
+void ANoteBookWeapon::ActivateFinalEffect()
+{
+	if (!OwnerKero) return;
+	FVector loc = FinalEffectLoc;
+
+	UParticleSystemComponent* temp = UGameplayStatics::SpawnEmitterAtLocation(
+		GetWorld(),
+		MagicCircleEffect3,
+		loc,
+		FRotator::ZeroRotator,
+		FVector(1.0f)
+	);
+
+	FTimerHandle EffectTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(EffectTimerHandle, [temp]() {
+		if (temp)
+		{
+			temp->DestroyComponent();
+		}
+		},
+		EffectRemainTime,
+		false
+	);
+
+	// DamageTickInterval 마다 데미지 체크 시작
+	GetWorld()->GetTimerManager().SetTimer(
+		DamageTickHandle,
+		this,
+		&ANoteBookWeapon::AttackCheck_NoteBook,
+		DamageTickInterval,
+		true // 루프
+	);
+
+	// EffectRemainTime 시간 되면 데미지 핸들 초기화
+	FTimerHandle StopHandle;
+	GetWorld()->GetTimerManager().SetTimer(
+		StopHandle,
+		this,
+		&ANoteBookWeapon::StopNoteBookAttack,
+		EffectRemainTime,
+		false
+	);
+}
+
+void ANoteBookWeapon::AttackCheck_NoteBook()
+{
+	TArray<FHitResult> HitResults;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	const float Radius = 300.0f;
+
+	bool bHit = GetWorld()->SweepMultiByChannel(
+		HitResults,
+		FinalEffectLoc,
+		FinalEffectLoc + FVector::UpVector * 700.0f,
+		FQuat::Identity,
+		ECC_GameTraceChannel3,
+		FCollisionShape::MakeSphere(Radius),
+		Params
+	);
+
+	if (bHit)
+	{
+		for (const FHitResult& Hit : HitResults)
+		{
+			AActor* HitActor = Hit.GetActor();
+			if (IsValid(HitActor) && Cast<AKeroroEnemyCharacter>(Hit.GetActor()))
+			{
+				FDamageEvent DamageEvent;
+				HitActor->TakeDamage(10.0f, DamageEvent, OwnerKero->GetController(), this);
+				//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *HitActor->GetName());
+			}
+		}
+
+		DrawDebugCapsule(
+			GetWorld(),
+			FinalEffectLoc + FVector::UpVector * 350.0f,
+			350.0f,
+			Radius,
+			FQuat::Identity,
+			FColor::Red,
+			false,
+			EffectRemainTime
+		);
+	}
+
+
 }
 
 
@@ -105,6 +208,15 @@ void ANoteBookWeapon::DeactivateMagicCircle()
 	if (MagicCircleNiagara)
 	{
 		MagicCircleNiagara->Deactivate();
+	}
+	bIsMagicCircleActive = false;
+}
+
+void ANoteBookWeapon::DeactivateMagicCircle2()
+{
+	if (MagicCircleParticle)
+	{
+		MagicCircleParticle->DeactivateSystem();
 	}
 	bIsMagicCircleActive = false;
 }
@@ -118,7 +230,9 @@ void ANoteBookWeapon::SpawnOrUpdateEffect(FVector Location, FRotator Rotation)
 			GetWorld(),
 			MagicCircleEffect,
 			Location,
-			Rotation
+			Rotation,
+			FVector(10.0f),
+			false
 		);
 	}
 	else
@@ -137,30 +251,37 @@ void ANoteBookWeapon::SpawnOrUpdateEffect(FVector Location, FRotator Rotation)
 }
 
 
-void ANoteBookWeapon::SpawnOrUpdateEffect2(FVector Location, FRotator Rotation)
+void ANoteBookWeapon::SpawnOrUpdateEffect_Particle(FVector Location, FRotator Rotation)
 {
-    if (!MagicCircleParticle)
-    {
-        UE_LOG(LogTemp, Error, TEXT("effect create"));
+	if (!MagicCircleParticle)
+	{
+		UE_LOG(LogTemp, Error, TEXT("effect create"));
 
 		MagicCircleParticle = UGameplayStatics::SpawnEmitterAtLocation(
-            GetWorld(),
+			GetWorld(),
 			MagicCircleEffect2,
-            Location,
-            Rotation
-        );
-    }
-    else
-    {
+			Location,
+			Rotation,
+			FVector(3.0f),
+			false
+		);
+	}
+	else
+	{
 		MagicCircleParticle->SetWorldLocation(Location);
 		MagicCircleParticle->SetWorldRotation(Rotation);
-        if (!bIsMagicCircleActive)
-        {
+		if (!bIsMagicCircleActive)
+		{
 			MagicCircleParticle->ActivateSystem(true);
-            bIsMagicCircleActive = true;
-        }
-    }
+			bIsMagicCircleActive = true;
+		}
+	}
 
-    bIsMagicCircleActive = true;
-    //DrawDebugSphere(GetWorld(), Location, 50.f, 12, FColor::Blue, false, 2.f);
+	bIsMagicCircleActive = true;
+	//DrawDebugSphere(GetWorld(), Location, 50.f, 12, FColor::Blue, false, 2.f);
+}
+
+void ANoteBookWeapon::StopNoteBookAttack()
+{
+	GetWorld()->GetTimerManager().ClearTimer(DamageTickHandle);
 }
