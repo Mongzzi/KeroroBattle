@@ -68,7 +68,13 @@ AKeroroCharacter::AKeroroCharacter()
 		NSFistHitEffect = NE3.Object;
 	}
 
+	// 여기 나중에 다시 일단 타마마 사운드 로드 중인데 캐릭타입에 맞게 로드해야함
 	LoadSounds(EKeroroType::Tamama);
+
+	// 얼굴 표정
+	FaceTexturePaths.SetNum(2);
+	FaceTexturePaths[0] = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/Keroro_Model/keroro/face2.face2")));
+	FaceTexturePaths[1] = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/Keroro_Model/keroro/face3.face3")));
 
 	// HP바 추가
 	HPBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
@@ -474,8 +480,8 @@ void AKeroroCharacter::AttackCheck_Keroball()
 		FVector ThrowDir = ControlRot.Vector();
 		Weapon->Throw(ThrowDir, 500.0f);
 	}
-
-
+	UE_LOG(LogTemp, Warning, TEXT("change face"));
+	ChangeFaceTexture(1);
 }
 
 void AKeroroCharacter::AttackCheck_Fist()
@@ -527,6 +533,17 @@ void AKeroroCharacter::SpawnToHand()
 	if (SocketNames.IsValidIndex(0))
 	{
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, SocketNames[0]);
+	}
+}
+
+void AKeroroCharacter::ChangeFaceTexture(int32 n)
+{
+	if (!FaceMaterialInstance || !FaceTexturePaths.IsValidIndex(n - 1)) return;
+
+	UTexture2D* LoadedTexture = FaceTexturePaths[n - 1].LoadSynchronous();
+	if (LoadedTexture)
+	{
+		FaceMaterialInstance->SetTextureParameterValue(FName("FaceTexture"), LoadedTexture);
 	}
 }
 
@@ -592,6 +609,14 @@ void AKeroroCharacter::LoadAssetandSetting(EKeroroType type)
 		// 애님인스턴스 설정 및 델리게이트 바인딩
 		BindCharacterEvents();
 		SetWeapon();
+
+		// 표정 바꾸기 위한 동적 머테리얼 인스턴스 // 1번 슬롯 = 얼굴 표정
+		UMaterialInterface* FaceMaterial = GetMesh()->GetMaterial(1);
+		if (FaceMaterial)
+		{
+			FaceMaterialInstance = UMaterialInstanceDynamic::Create(FaceMaterial, this);
+			GetMesh()->SetMaterial(1, FaceMaterialInstance);
+		}
 	}
 }
 

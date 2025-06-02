@@ -68,7 +68,7 @@ protected:
 	float EffectRemainTime = 3.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effect")
-	float DamageTickInterval = 0.5f;
+	float DamageTickInterval = 0.2f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effect")
 	float AttackRadius = 350.0f;

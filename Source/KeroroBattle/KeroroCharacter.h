@@ -57,7 +57,7 @@ public:
 
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
-	
+
 public:
 	void StartRun();
 	void StopRun();
@@ -70,6 +70,7 @@ public:
 	void AttackCheck_Keroball();
 	void AttackCheck_Fist();
 	void SpawnToHand();
+	void ChangeFaceTexture(int32 n);
 	void HandleComboInput();
 	void StartNewAttack();
 	bool GetIsAttacking() { return IsAttacking; };
@@ -85,7 +86,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	bool IsAttacking;
 
-	UPROPERTY(VisibleInstanceOnly,BlueprintReadOnly,Category = Attack,Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	bool CanNextCombo;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
@@ -117,10 +118,10 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	class AKeroroWeapon* Weapon;
 
-	UPROPERTY(VisibleAnywhere,Category= UI)
+	UPROPERTY(VisibleAnywhere, Category = UI)
 	class UWidgetComponent* HPBar;
 
-	UPROPERTY(VisibleAnywhere,Category= Stat)
+	UPROPERTY(VisibleAnywhere, Category = Stat)
 	class UKeroroStatComponent* KRStat;
 
 	// 애님인스턴스
@@ -132,24 +133,24 @@ private:
 	UPROPERTY()
 	class AKeroroPlayerController* KRPlayerContoller;
 
-	// 스트림핸들 저장하기위해선 꼭 TSharedPtr 타입으로 해줘야함 
-	TSharedPtr<struct FStreamableHandle> AssetStreamingHandle;
-
-
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=KeroroType)
-	EKeroroType CurrentKeroroType = EKeroroType::Kururu;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KeroroType)
+	EKeroroType CurrentKeroroType = EKeroroType::Keroro;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat)
 	float RunSpeed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category = Stat)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat)
 	float WalkSpeed;
 
+public:
+	UPROPERTY(EditAnywhere, Category = Sound)
+	TArray<USoundBase*> TamamaSounds;
 
-	public:
-		UPROPERTY(EditAnywhere, Category = "Sound")
-		TArray<USoundBase*> TamamaSounds;
+	UPROPERTY()
+	UMaterialInstanceDynamic* FaceMaterialInstance;
 
+	UPROPERTY(EditAnywhere, Category = Face)
+	TArray<TSoftObjectPtr<UTexture2D>> FaceTexturePaths;
 
 };
