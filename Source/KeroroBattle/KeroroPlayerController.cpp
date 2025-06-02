@@ -19,6 +19,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 AKeroroPlayerController::AKeroroPlayerController()
 {
@@ -159,6 +160,7 @@ void AKeroroPlayerController::TagCharacter()
 		//UE_LOG(LogTemp, Warning, TEXT("spawn new character"));
 		FVector SpawnLoc;
 		FRotator SpawnRot;
+
 		// 캐릭터 전혀없을때
 		if (GetCharacter() == nullptr)
 		{
@@ -170,11 +172,14 @@ void AKeroroPlayerController::TagCharacter()
 			SpawnLoc = GetCharacter()->GetActorLocation() + FVector(0, 0, 300);
 			SpawnRot = GetCharacter()->GetActorRotation();
 		}
+		FTransform SpawnTransform = FTransform(SpawnRot, SpawnLoc);
 
-		NewCharacter = GetWorld()->SpawnActor<AKeroroCharacter>(AKeroroCharacter::StaticClass(), SpawnLoc, SpawnRot);
+		NewCharacter = GetWorld()->SpawnActorDeferred<AKeroroCharacter>(AKeroroCharacter::StaticClass(), SpawnTransform, this, nullptr);
 		if (NewCharacter)
 		{
-			NewCharacter->LoadAssetandSetting(NextType);
+			NewCharacter->CurrentKeroroType = NextType;
+			UGameplayStatics::FinishSpawningActor(NewCharacter, SpawnTransform);
+
 			NewCharacter->KRStat->SetLevel(KRPlayerState->CurrentLevel);
 			CharacterMap.Add(NextType, NewCharacter);
 		}
@@ -380,7 +385,7 @@ void AKeroroPlayerController::Look(const FInputActionValue& Value)
 	else
 	{
 		AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter());
-		if (kero&&kero->WeaponType == EWeaponType::NOTEBOOK)
+		if (kero && kero->WeaponType == EWeaponType::NOTEBOOK)
 		{
 			Cast<ANoteBookWeapon>(kero->Weapon)->DeactivateMagicCircle2();
 			//UE_LOG(LogTemp, Warning, TEXT("DeActivate"));
