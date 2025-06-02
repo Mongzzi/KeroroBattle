@@ -9,6 +9,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
 
 ANoteBookWeapon::ANoteBookWeapon()
 {
@@ -46,6 +47,13 @@ ANoteBookWeapon::ANoteBookWeapon()
 		MagicCircleEffect3 = NS_Magic3.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<USoundWave> SOUND(TEXT("/Game/Vefects/Free_Fire/Shared/Audio/SFX_FireBig_L.SFX_FireBig_L"));
+	if (SOUND.Succeeded())
+	{
+		FinalEffectSound = SOUND.Object;
+	}
+
+
 	FinalEffectLoc = FVector::ZeroVector;
 }
 
@@ -57,6 +65,27 @@ void ANoteBookWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ANoteBookWeapon::PlaySound(int32 ComboIndex)
+{
+	if (FinalEffectSound)
+	{
+		// 사운드를 스폰하고 AudioComponent를 저장
+		UAudioComponent* AudioComp = UGameplayStatics::SpawnSoundAtLocation(this, FinalEffectSound, GetActorLocation(), FRotator::ZeroRotator, 1.0f);
+
+		if (AudioComp)
+		{
+			FTimerHandle TimeHandle;
+			GetWorld()->GetTimerManager().SetTimer(TimeHandle, [AudioComp]() {
+				if (AudioComp->IsPlaying())
+				{
+					AudioComp->Stop();
+				}
+				},
+				EffectRemainTime,false);
+		}
+	}
 }
 
 void ANoteBookWeapon::InitEffect(AKeroroCharacter* kero)
@@ -115,6 +144,9 @@ void ANoteBookWeapon::ActivateMagicCircle()
 void ANoteBookWeapon::ActivateFinalEffect()
 {
 	if (!OwnerKero) return;
+
+	PlaySound(0);
+
 	FVector loc = FinalEffectLoc;
 
 	UParticleSystemComponent* temp = UGameplayStatics::SpawnEmitterAtLocation(
@@ -162,15 +194,13 @@ void ANoteBookWeapon::AttackCheck_NoteBook()
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 
-	const float Radius = 300.0f;
-
 	bool bHit = GetWorld()->SweepMultiByChannel(
 		HitResults,
 		FinalEffectLoc,
 		FinalEffectLoc + FVector::UpVector * 700.0f,
 		FQuat::Identity,
 		ECC_GameTraceChannel3,
-		FCollisionShape::MakeSphere(Radius),
+		FCollisionShape::MakeSphere(AttackRadius),
 		Params
 	);
 
@@ -187,18 +217,17 @@ void ANoteBookWeapon::AttackCheck_NoteBook()
 			}
 		}
 
-		DrawDebugCapsule(
-			GetWorld(),
-			FinalEffectLoc + FVector::UpVector * 350.0f,
-			350.0f,
-			Radius,
-			FQuat::Identity,
-			FColor::Red,
-			false,
-			EffectRemainTime
-		);
+		//DrawDebugCapsule(
+		//	GetWorld(),
+		//	FinalEffectLoc + FVector::UpVector * 350.0f,
+		//	350.0f,
+		//	AttackRadius,
+		//	FQuat::Identity,
+		//	FColor::Red,
+		//	false,
+		//	EffectRemainTime
+		//);
 	}
-
 
 }
 

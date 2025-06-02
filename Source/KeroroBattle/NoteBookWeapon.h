@@ -19,6 +19,7 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	virtual void PlaySound(int32 ComboIndex) override;
 
 	void InitEffect(class AKeroroCharacter* kero);
 	void ActivateMagicCircle();
@@ -53,16 +54,23 @@ protected:
 	UParticleSystem* MagicCircleEffect3;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+	FTimerHandle DamageTickHandle;
+
+	UPROPERTY()
+	USoundBase* FinalEffectSound;
+
+	bool bIsMagicCircleActive = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
 	float TraceDistance = 4000.f;
 
 	UPROPERTY(EditDefaultsOnly,Category = "Effect")
 	float EffectRemainTime = 3.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effect")
-	float DamageTickInterval = 0.5;
+	float DamageTickInterval = 0.5f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effect")
-	FTimerHandle DamageTickHandle;
+	float AttackRadius = 350.0f;
 
-	bool bIsMagicCircleActive = false;
 };
