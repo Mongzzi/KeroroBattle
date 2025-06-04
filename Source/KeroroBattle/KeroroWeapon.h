@@ -23,7 +23,7 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	virtual void PlayEffect();
+	virtual void PlayEffect(class AKeroroCharacter* Character);
 	virtual void PlaySound(int32 ComboIndex);
 	virtual void Throw(const FVector& Direction, float Force);
 	virtual void ReturnToHand(class AKeroroCharacter* Character);

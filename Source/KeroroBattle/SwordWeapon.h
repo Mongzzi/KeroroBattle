@@ -17,7 +17,7 @@ class KEROROBATTLE_API ASwordWeapon : public AKeroroWeapon
 public:
 	ASwordWeapon();
 
-	virtual void PlayEffect()override;
+	virtual void PlayEffect(class AKeroroCharacter* Character)override;
 
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	USoundBase* BombSound;

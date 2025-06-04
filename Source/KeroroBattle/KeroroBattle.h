@@ -26,3 +26,15 @@ enum class EWeaponType : uint8
 	NOTEBOOK	 UMETA(DisplayName = "NOTEBOOK"),
 	MAX			 UMETA(Hidden) // 순환 계산용
 };
+
+UENUM(BlueprintType)
+enum class EAssetType : uint8
+{
+	StaticMesh			UMETA(DisplayName = "StaticMesh"),
+	SkeletalMesh		UMETA(DisplayName = "SkeletalMesh"),
+	NiagaraSystem		UMETA(DisplayName = "NiagaraSystem"),
+	SoundWave			UMETA(DisplayName = "SoundWave"),
+	Texture2D			UMETA(DisplayName = "Texture2D"),
+	ParticleSystem		UMETA(DisplayName = "ParticleSystem"),
+	MAX					UMETA(Hidden) // 순환 계산용
+};

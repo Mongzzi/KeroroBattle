@@ -30,6 +30,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PostInitializeComponents() override;
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 public:
 	// 나이아가라 시스템
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
@@ -135,7 +136,7 @@ private:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KeroroType)
-	EKeroroType CurrentKeroroType = EKeroroType::Keroro;
+	EKeroroType CurrentKeroroType = EKeroroType::Dororo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat)
 	float RunSpeed;

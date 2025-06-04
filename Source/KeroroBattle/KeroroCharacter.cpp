@@ -72,9 +72,12 @@ AKeroroCharacter::AKeroroCharacter()
 	LoadSounds(EKeroroType::Tamama);
 
 	// 얼굴 표정
-	FaceTexturePaths.SetNum(2);
+	FaceTexturePaths.SetNum(5);
 	FaceTexturePaths[0] = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/Keroro_Model/keroro/face2.face2")));
 	FaceTexturePaths[1] = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/Keroro_Model/keroro/face3.face3")));
+	FaceTexturePaths[2] = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/Keroro_Model/tamama/face1.face1")));
+	FaceTexturePaths[3] = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/Keroro_Model/tamama/face2.face2")));
+	FaceTexturePaths[4] = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/Keroro_Model/tamama/face3.face3")));
 
 	// HP바 추가
 	HPBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
@@ -122,6 +125,7 @@ AKeroroCharacter::AKeroroCharacter()
 void AKeroroCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+	UE_LOG(LogTemp, Warning, TEXT("post called"));
 
 	// (스켈레탈메시,애님인스턴스 로드 후 설정),(몽타주 델리게이트 바인딩)
 	LoadAssetandSetting(CurrentKeroroType);
@@ -283,11 +287,13 @@ void AKeroroCharacter::PlayEffect()
 {
 	if (WeaponType == EWeaponType::SWORD)
 	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSSWordEffect,
-			GetActorLocation() + GetActorForwardVector() * 100.0f, // 캐릭터 앞 방향으로 100 유닛 이동
-			GetActorRotation(),
-			FVector(2.0f)
-		);
+		//UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSSWordEffect,
+		//	GetActorLocation() + GetActorForwardVector() * 100.0f, // 캐릭터 앞 방향으로 100 유닛 이동
+		//	GetActorRotation(),
+		//	FVector(2.0f)
+		//);
+
+		Cast<ASwordWeapon>(Weapon)->PlayEffect(this);
 	}
 	else if (WeaponType == EWeaponType::RIFLE)
 	{
@@ -406,7 +412,6 @@ void AKeroroCharacter::AttackEndComboState()
 
 void AKeroroCharacter::AttackCheck()
 {
-
 	switch (WeaponType)
 	{
 	case EWeaponType::FIST:
@@ -480,8 +485,6 @@ void AKeroroCharacter::AttackCheck_Keroball()
 		FVector ThrowDir = ControlRot.Vector();
 		Weapon->Throw(ThrowDir, 500.0f);
 	}
-	UE_LOG(LogTemp, Warning, TEXT("change face"));
-	ChangeFaceTexture(1);
 }
 
 void AKeroroCharacter::AttackCheck_Fist()
@@ -565,8 +568,8 @@ void AKeroroCharacter::StopRun()
 
 void AKeroroCharacter::LoadAssetandSetting(EKeroroType type)
 {
-	USkeletalMesh* NewMesh = nullptr;
 
+	USkeletalMesh* NewMesh = nullptr;
 	CurrentKeroroType = type;
 
 	switch (type)

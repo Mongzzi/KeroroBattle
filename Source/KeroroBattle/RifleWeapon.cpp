@@ -28,9 +28,6 @@ ARifleWeapon::ARifleWeapon()
 
 }
 
-void ARifleWeapon::PlayEffect()
-{
-}
 
 void ARifleWeapon::PlaySound(int32 ComboIndex)
 {
