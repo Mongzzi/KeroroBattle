@@ -8,6 +8,26 @@
 #include "KeroroGameInstance.generated.h"
 
 
+
+USTRUCT(BlueprintType)
+struct FKRAssetData: public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	FKRAssetData();
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category= Asset)
+	EKeroroType KeroroType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Asset)
+	EAssetType AssetType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Asset)
+	FSoftObjectPath AssetPath;
+
+};
+
 USTRUCT(BlueprintType)
 struct FKRStatData : public FTableRowBase
 {

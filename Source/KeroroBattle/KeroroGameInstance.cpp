@@ -39,3 +39,8 @@ FCardData::FCardData()
 {
 	CardID = 1;
 }
+
+FKRAssetData::FKRAssetData()
+{
+
+}
