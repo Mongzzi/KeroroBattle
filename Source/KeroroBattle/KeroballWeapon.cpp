@@ -30,7 +30,7 @@ AKeroballWeapon::AKeroballWeapon()
 		NSEffect = NS.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<USoundWave> SOUND(TEXT("/Game/keroro_asset/bomb.bomb"));
+	static ConstructorHelpers::FObjectFinder<USoundWave> SOUND(TEXT("/Game/Keroro_Sound/weapon/keroball/bomb.bomb"));
 	if (SOUND.Succeeded())
 	{
 		BombSound = SOUND.Object;

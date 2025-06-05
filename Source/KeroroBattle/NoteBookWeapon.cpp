@@ -47,7 +47,7 @@ ANoteBookWeapon::ANoteBookWeapon()
 		MagicCircleEffect3 = NS_Magic3.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<USoundWave> SOUND(TEXT("/Game/Vefects/Free_Fire/Shared/Audio/SFX_FireBig_L.SFX_FireBig_L"));
+	static ConstructorHelpers::FObjectFinder<USoundWave> SOUND(TEXT("/Game/Keroro_Sound/weapon/notebook/FireWallSound.FireWallSound"));
 	if (SOUND.Succeeded())
 	{
 		FinalEffectSound = SOUND.Object;

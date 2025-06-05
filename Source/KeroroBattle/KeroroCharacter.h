@@ -71,7 +71,7 @@ public:
 	void AttackCheck_Keroball();
 	void AttackCheck_Fist();
 	void SpawnToHand();
-	void ChangeFaceTexture(int32 n);
+	void ChangeFaceTexture(EKeroroType KeroroType, EFaceType FaceType);
 	void HandleComboInput();
 	void StartNewAttack();
 	bool GetIsAttacking() { return IsAttacking; };

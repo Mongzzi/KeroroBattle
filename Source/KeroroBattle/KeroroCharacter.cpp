@@ -6,6 +6,7 @@
 #include "KeroroPlayerController.h"
 #include "KeroroAnimInstance.h"
 #include "KeroroWeapon.h"
+#include "KeroroGameInstance.h"
 #include "KeroballWeapon.h"
 #include "SwordWeapon.h"
 #include "FistWeapon.h"
@@ -25,6 +26,7 @@
 #include "NiagaraComponent.h"
 #include "DrawDebugHelpers.h"	// 디버그 드로잉 기능 사용하기위한 헤더
 #include "Engine/DamageEvents.h"
+#include "Engine/StreamableManager.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -72,12 +74,13 @@ AKeroroCharacter::AKeroroCharacter()
 	LoadSounds(EKeroroType::Tamama);
 
 	// 얼굴 표정
-	FaceTexturePaths.SetNum(5);
-	FaceTexturePaths[0] = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/Keroro_Model/keroro/face2.face2")));
-	FaceTexturePaths[1] = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/Keroro_Model/keroro/face3.face3")));
-	FaceTexturePaths[2] = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/Keroro_Model/tamama/face1.face1")));
-	FaceTexturePaths[3] = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/Keroro_Model/tamama/face2.face2")));
-	FaceTexturePaths[4] = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/Keroro_Model/tamama/face3.face3")));
+	FaceTexturePaths.SetNum(6);
+	FaceTexturePaths[0] = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/Keroro_Model/keroro/KeroroFaceDefault.KeroroFaceDefault")));
+	FaceTexturePaths[1] = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/Keroro_Model/keroro/KeroroFaceFatal.KeroroFaceFatal")));
+	FaceTexturePaths[2] = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/Keroro_Model/keroro/KeroroFaceHappy.KeroroFaceHappy")));
+	FaceTexturePaths[3] = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/Keroro_Model/keroro/KeroroFaceSad.KeroroFaceSad")));
+	FaceTexturePaths[4] = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/Keroro_Model/keroro/KeroroFaceSuper.KeroroFaceSuper")));
+	FaceTexturePaths[5] = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/Keroro_Model/keroro/KururuFaceAnger.KururuFaceAnger")));
 
 	// HP바 추가
 	HPBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
@@ -218,6 +221,8 @@ void AKeroroCharacter::Attack()
 			StartNewAttack();
 		}
 	}
+	int RandomIndex = FMath::RandRange(0, 5);
+	ChangeFaceTexture(CurrentKeroroType, static_cast<EFaceType>(RandomIndex));
 }
 
 void AKeroroCharacter::HandleComboInput()
@@ -539,14 +544,30 @@ void AKeroroCharacter::SpawnToHand()
 	}
 }
 
-void AKeroroCharacter::ChangeFaceTexture(int32 n)
+void AKeroroCharacter::ChangeFaceTexture(EKeroroType KeroroType, EFaceType FaceType)
 {
-	if (!FaceMaterialInstance || !FaceTexturePaths.IsValidIndex(n - 1)) return;
+	if (!FaceMaterialInstance) return;
 
-	UTexture2D* LoadedTexture = FaceTexturePaths[n - 1].LoadSynchronous();
+	UKeroroGameInstance* GI = Cast<UKeroroGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (!GI)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("GameInstance is null"));
+		return;
+	}
+
+	FSoftObjectPath AssetPath = GI->GetFaceAssetPath(KeroroType, FaceType);
+	if (!AssetPath.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Invalid face asset path"));
+		return;
+	}
+
+	// StreamableManager를 이용한 동기 로드
+	UTexture2D* LoadedTexture = GI->GetStreamableManager().LoadSynchronous<UTexture2D>(AssetPath);
 	if (LoadedTexture)
 	{
 		FaceMaterialInstance->SetTextureParameterValue(FName("FaceTexture"), LoadedTexture);
+		UE_LOG(LogTemp, Log, TEXT("Face texture success"));
 	}
 }
 
@@ -633,22 +654,22 @@ void AKeroroCharacter::LoadSounds(EKeroroType type)
 	{
 
 		// 사운드 추가
-		static ConstructorHelpers::FObjectFinder<USoundWave> TAMASOUND1(TEXT("/Game/keroro_asset/tamama1.tamama1"));
+		static ConstructorHelpers::FObjectFinder<USoundWave> TAMASOUND1(TEXT("/Game/Keroro_Sound/tamama/tamama1.tamama1"));
 		if (TAMASOUND1.Succeeded())
 		{
 			TamamaSounds.Add(TAMASOUND1.Object);
 		}
-		static ConstructorHelpers::FObjectFinder<USoundWave> TAMASOUND2(TEXT("/Game/keroro_asset/tamama2.tamama2"));
+		static ConstructorHelpers::FObjectFinder<USoundWave> TAMASOUND2(TEXT("/Game/Keroro_Sound/tamama/tamama2.tamama2"));
 		if (TAMASOUND2.Succeeded())
 		{
 			TamamaSounds.Add(TAMASOUND2.Object);
 		}
-		static ConstructorHelpers::FObjectFinder<USoundWave> TAMASOUND3(TEXT("/Game/keroro_asset/tamama3.tamama3"));
+		static ConstructorHelpers::FObjectFinder<USoundWave> TAMASOUND3(TEXT("/Game/Keroro_Sound/tamama/tamama3.tamama3"));
 		if (TAMASOUND3.Succeeded())
 		{
 			TamamaSounds.Add(TAMASOUND3.Object);
 		}
-		static ConstructorHelpers::FObjectFinder<USoundWave> TAMASOUND4(TEXT("/Game/keroro_asset/tamama4.tamama4"));
+		static ConstructorHelpers::FObjectFinder<USoundWave> TAMASOUND4(TEXT("/Game/Keroro_Sound/tamama/tamama4.tamama4"));
 		if (TAMASOUND4.Succeeded())
 		{
 			TamamaSounds.Add(TAMASOUND4.Object);

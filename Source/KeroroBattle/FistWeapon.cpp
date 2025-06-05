@@ -18,22 +18,22 @@ AFistWeapon::AFistWeapon()
 		NSEffect = FIST.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<USoundWave>SOUND1(TEXT("/Game/keroro_asset/punch.punch"));
+	static ConstructorHelpers::FObjectFinder<USoundWave>SOUND1(TEXT("/Game/Keroro_Sound/weapon/fist/punch.punch"));
 	if (SOUND1.Succeeded())
 	{
 		FistComboAttackSounds.Add(SOUND1.Object);
 	}
-	static ConstructorHelpers::FObjectFinder<USoundWave>SOUND2(TEXT("/Game/keroro_asset/punch.punch"));
+	static ConstructorHelpers::FObjectFinder<USoundWave>SOUND2(TEXT("/Game/Keroro_Sound/weapon/fist/punch2.punch2"));
 	if (SOUND2.Succeeded())
 	{
 		FistComboAttackSounds.Add(SOUND2.Object);
 	}
-	static ConstructorHelpers::FObjectFinder<USoundWave>SOUND3(TEXT("/Game/keroro_asset/punch.punch"));
+	static ConstructorHelpers::FObjectFinder<USoundWave>SOUND3(TEXT("/Game/Keroro_Sound/weapon/fist/punch3.punch3"));
 	if (SOUND3.Succeeded())
 	{
 		FistComboAttackSounds.Add(SOUND3.Object);
 	}
-	static ConstructorHelpers::FObjectFinder<USoundWave>SOUND4(TEXT("/Game/keroro_asset/punch.punch"));
+	static ConstructorHelpers::FObjectFinder<USoundWave>SOUND4(TEXT("/Game/Keroro_Sound/weapon/fist/punch4.punch4"));
 	if (SOUND4.Succeeded())
 	{
 		FistComboAttackSounds.Add(SOUND4.Object);

@@ -5,23 +5,24 @@
 #include "KeroroBattle.h"
 #include "Engine/DataTable.h"
 #include "Engine/GameInstance.h"
+#include "Engine/StreamableManager.h"
 #include "KeroroGameInstance.generated.h"
 
 
 
 USTRUCT(BlueprintType)
-struct FKRAssetData: public FTableRowBase
+struct FKRFaceAssetData : public FTableRowBase
 {
 	GENERATED_BODY()
 
 public:
-	FKRAssetData();
+	FKRFaceAssetData();
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category= Asset)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Asset)
 	EKeroroType KeroroType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Asset)
-	EAssetType AssetType;
+	EFaceType FaceType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Asset)
 	FSoftObjectPath AssetPath;
@@ -39,15 +40,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data)
 	int32 Level;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category=Data)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data)
 	float MaxHp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data)
 	float MaxMP;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data)
 	float AttackPower;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data)
 	int32 DropExp;
 
@@ -98,10 +99,19 @@ public:
 	virtual void Init() override;
 	FKRStatData* GetKRStatData(int Level);
 	FCardData* GetCardData(int CardID);
+	FSoftObjectPath GetFaceAssetPath(EKeroroType KeroroType, EFaceType FaceType);
+	FStreamableManager& GetStreamableManager();
+
+private:
+	FStreamableManager StreamableManager;
 
 private:
 	UPROPERTY()
 	UDataTable* KRStatTable;
+
+	UPROPERTY()
 	UDataTable* CardTable;
 
+	UPROPERTY()
+	UDataTable* FaceAssetTable;
 };

@@ -28,13 +28,13 @@ enum class EWeaponType : uint8
 };
 
 UENUM(BlueprintType)
-enum class EAssetType : uint8
+enum class EFaceType : uint8
 {
-	StaticMesh			UMETA(DisplayName = "StaticMesh"),
-	SkeletalMesh		UMETA(DisplayName = "SkeletalMesh"),
-	NiagaraSystem		UMETA(DisplayName = "NiagaraSystem"),
-	SoundWave			UMETA(DisplayName = "SoundWave"),
-	Texture2D			UMETA(DisplayName = "Texture2D"),
-	ParticleSystem		UMETA(DisplayName = "ParticleSystem"),
-	MAX					UMETA(Hidden) // 순환 계산용
+	Default			UMETA(DisplayName = "Default"),
+	Sad				UMETA(DisplayName = "Sad"),
+	Happy			UMETA(DisplayName = "Happy"),
+	Fatal			UMETA(DisplayName = "Fatal"),
+	Super			UMETA(DisplayName = "Super"),
+	Anger			UMETA(DisplayName = "Anger"),
+	MAX				UMETA(Hidden) // 순환 계산용
 };

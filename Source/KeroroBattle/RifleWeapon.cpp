@@ -20,7 +20,7 @@ ARifleWeapon::ARifleWeapon()
 
 	}
 
-	static ConstructorHelpers::FObjectFinder<USoundWave> SOUND(TEXT("/Game/MuzzleFlash/Demo/FPWeapon/Audio/FirstPersonTemplateWeaponFire02.FirstPersonTemplateWeaponFire02"));
+	static ConstructorHelpers::FObjectFinder<USoundWave> SOUND(TEXT("/Game/Keroro_Sound/weapon/rifle/RifleFireSound.RifleFireSound"));
 	if (SOUND.Succeeded())
 	{
 		RifleFireSound = SOUND.Object;
