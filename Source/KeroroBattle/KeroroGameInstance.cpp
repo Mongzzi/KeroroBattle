@@ -15,7 +15,11 @@ UKeroroGameInstance::UKeroroGameInstance()
 	static ConstructorHelpers::FObjectFinder<UDataTable>FADT(TEXT("/Game/GameData/FaceAssetData.FaceAssetData"));
 	if (FADT.Succeeded()) FaceAssetTable = FADT.Object;
 
+	static ConstructorHelpers::FObjectFinder<UDataTable>FSDT(TEXT("/Game/GameData/SoundAssetData.SoundAssetData"));
+	if (FSDT.Succeeded())KRSoundAssetTable = FSDT.Object;
+
 }
+
 
 void UKeroroGameInstance::Init()
 {
@@ -66,7 +70,7 @@ FSoftObjectPath UKeroroGameInstance::GetFaceAssetPath(EKeroroType KeroroType, EF
 	FString RowNameStr = KeroroTypeName + TEXT("Face") + FaceTypeName;
 	FName RowName(*RowNameStr);
 
-	FKRFaceAssetData* FoundRow = FaceAssetTable->FindRow<FKRFaceAssetData>(RowName,TEXT(""));
+	FKRFaceAssetData* FoundRow = FaceAssetTable->FindRow<FKRFaceAssetData>(RowName, TEXT(""));
 
 	if (FoundRow)
 	{
@@ -74,6 +78,36 @@ FSoftObjectPath UKeroroGameInstance::GetFaceAssetPath(EKeroroType KeroroType, EF
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Face asset not found ----- %s"), *RowNameStr);
+	return FSoftObjectPath();
+}
+
+FSoftObjectPath UKeroroGameInstance::GetVoiceSoundAssetPath(EKeroroType KeroroType, int32 index)
+{
+	if (!KRSoundAssetTable)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("KRSoundAssetTable is null"));
+		return FSoftObjectPath();
+	}
+
+	FString KeroroTypeName;
+	switch (KeroroType)
+	{
+	case EKeroroType::Keroro: KeroroTypeName = TEXT("Keroro"); break;
+	case EKeroroType::Tamama: KeroroTypeName = TEXT("Tamama"); break;
+	case EKeroroType::Giroro: KeroroTypeName = TEXT("Giroro"); break;
+	case EKeroroType::Kururu: KeroroTypeName = TEXT("Kururu"); break;
+	case EKeroroType::Dororo: KeroroTypeName = TEXT("Dororo"); break;
+	}
+
+	FString RowNameStr = KeroroTypeName + TEXT("AttackSound") + FString::FromInt(index);
+	FName RowName(*RowNameStr);
+
+	FKRSoundAssetData* FoundRow = KRSoundAssetTable->FindRow<FKRSoundAssetData>(RowName, TEXT(""));
+	if (FoundRow)
+	{
+		return FoundRow->AssetPath;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Sound asset not found ----- %s"), *RowNameStr);
 	return FSoftObjectPath();
 }
 
@@ -95,4 +129,8 @@ FCardData::FCardData()
 FKRFaceAssetData::FKRFaceAssetData()
 {
 
+}
+
+FKRSoundAssetData::FKRSoundAssetData()
+{
 }

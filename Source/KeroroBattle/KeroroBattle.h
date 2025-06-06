@@ -38,3 +38,11 @@ enum class EFaceType : uint8
 	Anger			UMETA(DisplayName = "Anger"),
 	MAX				UMETA(Hidden) // 순환 계산용
 };
+
+UENUM(BlueprintType)
+enum class ESoundType : uint8
+{
+	ComboAttack				UMETA(DisplayName = "ComboAttack"),
+	Die						UMETA(DisplayName = "Die"),
+	MAX						UMETA(Hidden) // 순환 계산용
+};

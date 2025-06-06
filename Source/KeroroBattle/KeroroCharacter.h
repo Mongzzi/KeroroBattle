@@ -54,7 +54,6 @@ public:
 	void BindCharacterEvents();
 	void UnbindCharacterEvents();
 	void LoadAssetandSetting(EKeroroType type);
-	void LoadSounds(EKeroroType type);
 
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
@@ -72,9 +71,12 @@ public:
 	void AttackCheck_Fist();
 	void SpawnToHand();
 	void ChangeFaceTexture(EKeroroType KeroroType, EFaceType FaceType);
+	void ChangeFaceTexture(EFaceType FaceType);
 	void HandleComboInput();
 	void StartNewAttack();
+	void PlayKRSound(ESoundType SoundType=ESoundType::ComboAttack,int num=0);
 	bool GetIsAttacking() { return IsAttacking; };
+	
 
 public:
 	EKeroroType GetKeroroCharacterType() { return CurrentKeroroType; }
@@ -145,13 +147,15 @@ public:
 	float WalkSpeed;
 
 public:
+	UPROPERTY()
+	int32 NumVoices = 4;
+
 	UPROPERTY(EditAnywhere, Category = Sound)
-	TArray<USoundBase*> TamamaSounds;
+	TArray<USoundBase*> VoiceSounds;
+
+	UPROPERTY(EditAnywhere, Category = Face)
+	TArray<UTexture2D*> FaceTextures;
 
 	UPROPERTY()
 	UMaterialInstanceDynamic* FaceMaterialInstance;
-
-	UPROPERTY(EditAnywhere, Category = Face)
-	TArray<TSoftObjectPtr<UTexture2D>> FaceTexturePaths;
-
 };
