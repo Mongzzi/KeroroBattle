@@ -73,6 +73,23 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data)
 	int32 NextExp;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data)
+	float MaxMoveSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data)
+	float CritChanceRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data)
+	float AttackSpeedRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data)
+	float SkillCooldownRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data)
+	float EvasionRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data)
+	float DefenseRate;
 };
 
 USTRUCT(BlueprintType)
