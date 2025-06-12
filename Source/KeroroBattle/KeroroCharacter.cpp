@@ -193,21 +193,19 @@ void AKeroroCharacter::Die()
 void AKeroroCharacter::Attack()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Attack succed"));
-	if (WeaponType == EWeaponType::NOTEBOOK)
+	//if (WeaponType == EWeaponType::NOTEBOOK)
+	//{
+	//	Cast<ANoteBookWeapon>(Weapon)->ActivateFinalEffect();
+	//	KRAnim->PlayAttackMontage();
+	//}
+
+	if (IsAttacking) // 애니메이션(몽타주) 재생중인가
 	{
-		Cast<ANoteBookWeapon>(Weapon)->ActivateFinalEffect();
-		KRAnim->PlayAttackMontage();
+		HandleComboInput();
 	}
 	else
 	{
-		if (IsAttacking) // 애니메이션(몽타주) 재생중인가
-		{
-			HandleComboInput();
-		}
-		else
-		{
-			StartNewAttack();
-		}
+		StartNewAttack();
 	}
 	int RandomIndex = FMath::RandRange(0, 5);
 	ChangeFaceTexture(static_cast<EFaceType>(RandomIndex));
@@ -239,11 +237,20 @@ void AKeroroCharacter::StartNewAttack()
 	IsAttacking = true;
 }
 
-void AKeroroCharacter::PlayKRSound(ESoundType SoundType,int num)
+void AKeroroCharacter::PlayVoiceSound()
 {
-	if (SoundType == ESoundType::ComboAttack)
+	if (Cast<AKeroroPlayerController>(GetController()))
 	{
-		if (VoiceSounds.IsValidIndex(CurrentCombo - 1))
+		if (WeaponType == EWeaponType::RIFLE)
+		{
+			int RandomIndex = FMath::RandRange(0, 10);	//0~3 유효 4~10 무효 , 무효시 아무소리안나게 너무시끄러움..
+			if (VoiceSounds.IsValidIndex(RandomIndex))
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, VoiceSounds[RandomIndex], GetActorLocation());
+				return;
+			}
+		}
+		else if (VoiceSounds.IsValidIndex(CurrentCombo - 1))
 		{
 			UGameplayStatics::PlaySoundAtLocation(this, VoiceSounds[CurrentCombo - 1], GetActorLocation());
 		}
@@ -350,8 +357,12 @@ void AKeroroCharacter::BindCharacterEvents()
 			});
 		// 공격 이펙트 바인딩
 		KRAnim->OnEffectCreateCheck.AddUObject(this, &AKeroroCharacter::PlayEffect);
+
 		// 공격 충돌 체크 바인딩
 		KRAnim->OnAttackHitCheck.AddUObject(this, &AKeroroCharacter::AttackCheck);
+
+		// 캐릭터 보이스 체크 바인딩
+		KRAnim->OnVoiceCheck.AddUObject(this, &AKeroroCharacter::PlayVoiceSound);
 
 		// 무기 다시생성
 		if (WeaponType == EWeaponType::KEROBALL)
@@ -430,8 +441,11 @@ void AKeroroCharacter::AttackCheck()
 	case EWeaponType::SWORD:
 		AttackCheck_Sword();
 		break;
+	case EWeaponType::NOTEBOOK:
+		AttackCheck_NoteBook();
+		break;
 	}
-	PlayKRSound();
+
 }
 
 void AKeroroCharacter::AttackCheck_Sword()
@@ -525,6 +539,14 @@ void AKeroroCharacter::AttackCheck_Fist()
 			);
 			Weapon->PlaySound(CurrentCombo);
 		}
+	}
+}
+
+void AKeroroCharacter::AttackCheck_NoteBook()
+{
+	if (WeaponType == EWeaponType::NOTEBOOK)
+	{
+		Cast<ANoteBookWeapon>(Weapon)->ActivateFinalEffect();
 	}
 }
 

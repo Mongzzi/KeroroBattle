@@ -429,7 +429,10 @@ void AKeroroPlayerController::StopRun()
 void AKeroroPlayerController::Attack()
 {
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter());
-	kero->Attack();
+	if (IsValid(kero))
+	{
+		kero->Attack();
+	}
 }
 
 

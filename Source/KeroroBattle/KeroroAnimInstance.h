@@ -9,6 +9,7 @@
 DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnEffectCreateCheckDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnVoiceCheckDeleGate);
 
 /**
  *
@@ -29,6 +30,7 @@ public:
 	FOnNextAttackCheckDelegate OnNextAttackCheck;
 	FOnAttackHitCheckDelegate OnAttackHitCheck;
 	FOnEffectCreateCheckDelegate OnEffectCreateCheck;
+	FOnVoiceCheckDeleGate OnVoiceCheck;
 	
 	void SetDeadAnim();
 	void SetWeaponType(EWeaponType type);
@@ -42,6 +44,9 @@ private:
 
 	UFUNCTION()
 	void AnimNotify_EffectCreateCheck();
+
+	UFUNCTION()
+	void AnimNotify_VoiceCheck();
 
 	FName GetAttackMontageSectionName(int32 Section);
 

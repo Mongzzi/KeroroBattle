@@ -69,12 +69,13 @@ public:
 	void AttackCheck_Rifle();
 	void AttackCheck_Keroball();
 	void AttackCheck_Fist();
+	void AttackCheck_NoteBook();
 	void SpawnToHand();
 	void ChangeFaceTexture(EKeroroType KeroroType, EFaceType FaceType);
 	void ChangeFaceTexture(EFaceType FaceType);
 	void HandleComboInput();
 	void StartNewAttack();
-	void PlayKRSound(ESoundType SoundType=ESoundType::ComboAttack,int num=0);
+	void PlayVoiceSound();
 	bool GetIsAttacking() { return IsAttacking; };
 	
 
