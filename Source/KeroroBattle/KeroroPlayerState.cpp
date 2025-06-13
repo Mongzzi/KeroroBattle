@@ -13,6 +13,16 @@ AKeroroPlayerState::AKeroroPlayerState()
 	CurrentGold = 0;
 	CurrentExp = 0;
 	KilledEnemyNum = 0;
+
+	// Ä«µå ½ºÅÈ
+	MaxHP_Enhanced = 0.0f;
+	MaxMP_Enhanced = 0.0f;
+	MaxMoveSpeed_Enhanced = 0.0f;
+	CritChanceRate_Enhanced = 0.0f;
+	AttackSpeedRate_Enhanced = 0.0f;
+	SkillCooldownRate_Enhanced = 0.0f;
+	EvasionRate_Enhanced = 0.0f;
+	DefenseRate_Enhanced = 0.0f;
 }
 
 void AKeroroPlayerState::PostInitializeComponents()

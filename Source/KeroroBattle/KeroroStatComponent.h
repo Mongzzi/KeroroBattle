@@ -2,19 +2,19 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "KeroroBattle.h"
 #include "Components/ActorComponent.h"
 #include "KeroroStatComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnHPIsZeroDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnHPIsChangedDeleGate);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class KEROROBATTLE_API UKeroroStatComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UKeroroStatComponent();
 
@@ -24,6 +24,7 @@ protected:
 	virtual void InitializeComponent() override;
 
 public:
+	void UpdateStatCardEnhanced(class AKeroroPlayerState* PlayerState);
 	void SetLevel(int32 lv);
 	void SetDamage(float dm);
 	void SetHP(float hp);
@@ -33,8 +34,6 @@ public:
 	FOnHPIsZeroDelegate OnHpIsZero;
 	FOnHPIsChangedDeleGate OnHpIsChanged;
 
-public:
-	//void UpdateEnhanced();
 
 private:
 	struct FKRStatData* StatData;
@@ -44,16 +43,18 @@ public:
 	int32 Level;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float CurrentHP;
+	float CurrentHp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float CurrentMP;
+	float CurrentMp;
+
+	// --------------------------레벨에 따라 스탯 데이터 테이블로 부터 받아와야하는 정보 ----------------------
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float MaxHP;
+	float MaxHp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float MaxMP;
+	float MaxMp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	float AttackPower;
@@ -84,53 +85,36 @@ public:
 
 	// --------------------------------------- 아래로는 카드로 얻은 추가 스탯 ------------------------------------------------------------------------------
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float HealPower;
+	float HealPowerRate;
+	float HealPowerRate_Default = 0.0f;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	float HealPowerOnKill;
+	float HealPowerOnKill_Default;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	float ExpGainRate;
+	float ExpGainRate_Default;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	float GoldGainRate;
+	float GoldGainRate_Default;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	int32 ProjectileCount;
+	int32 ProjectileCount_Default;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	float ProjectileScale;
+	float ProjectileScale_Default;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	float InvincibilityTime;
+	float InvincibilityTime_Default;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float CritDamage;
-
-	//--------------------------------------- 스탯데이터 + a 항목------------------------------------------------------------------------------
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float MaxHP_Enhanced;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float MaxMP_Enhanced;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float MaxMoveSpeed_Enhanced;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float CritChanceRate_Enhanced;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float AttackSpeedRate_Enhanced;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float SkillCooldownRate_Enhanced;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float EvasionRate_Enhanced;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float DefenseRate_Enhanced;
+	float CritDamageRate;
+	float CritDamageRate_Default;
 
 };

@@ -27,6 +27,26 @@ class KEROROBATTLE_API AKeroroPlayerState : public APlayerState
 protected:
 	virtual void BeginPlay() override;
 
+public:
+	FOnLevelChanged OnLevelChanged;
+	FOnGoldChanged OnGoldChanged;
+	FOnExpChanged OnExpChanged;
+	FOnKillNumChanged OnKillNumChanged;
+
+public:
+	EKeroroType GetCurrentCharacterType() const { return CurrentKeroro; }
+	void SetCurrentCharacterType(EKeroroType type) { CurrentKeroro = type; }
+	EKeroroType SetNextCharacterType();
+
+	float GetExpRatio() const;
+	bool AddExp(int32 exp);
+	void AddGold(int32 gold);
+	void AddKillEnemyNum();
+	void SetLevel(int32 lv);
+
+private:
+	struct FKRStatData* StatData;
+
 protected:
 	// 현재 케로로 캐릭터
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Keroro")
@@ -53,23 +73,57 @@ public:
 	UPROPERTY(Transient, BlueprintReadOnly, Category = "Keroro")
 	int32 KilledEnemyNum;
 
+	
 public:
-	FOnLevelChanged OnLevelChanged;
-	FOnGoldChanged OnGoldChanged;
-	FOnExpChanged OnExpChanged;
-	FOnKillNumChanged OnKillNumChanged;
+	// --------------------------------------- 아래로는 카드로 얻을 수 있는 스탯 (발사체 제외)------------------------------------------------------------------------------
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float HealPowerRate_Enhanced;
 
-public:
-	EKeroroType GetCurrentCharacterType() const { return CurrentKeroro; }
-	void SetCurrentCharacterType(EKeroroType type) { CurrentKeroro = type; }
-	EKeroroType SetNextCharacterType();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float HealPowerOnKill_Enhanced;
 
-	float GetExpRatio() const;
-	bool AddExp(int32 exp);
-	void AddGold(int32 gold);
-	void AddKillEnemyNum();
-	void SetLevel(int32 lv);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float ExpGainRate_Enhanced;
 
-private:
-	struct FKRStatData* StatData;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float GoldGainRate_Enhanced;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	int32 ProjectileCount_Enhanced;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float ProjectileScale_Enhanced;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float InvincibilityTime_Enhanced;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float CritDamageRate_Enhanced;
+
+	//--------------------------------------- 스탯데이터 + a 항목------------------------------------------------------------------------------
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float MaxHP_Enhanced;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float MaxMP_Enhanced;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float MaxMoveSpeed_Enhanced;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float CritChanceRate_Enhanced;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float AttackSpeedRate_Enhanced;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float SkillCooldownRate_Enhanced;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float EvasionRate_Enhanced;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float DefenseRate_Enhanced;
+
 };

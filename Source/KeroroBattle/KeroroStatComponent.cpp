@@ -3,6 +3,8 @@
 
 #include "KeroroStatComponent.h"
 #include "KeroroGameInstance.h"
+#include "KeroroPlayerState.h"
+#include "KeroroCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
@@ -12,8 +14,32 @@ UKeroroStatComponent::UKeroroStatComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
+
 	Level = 1;
 
+	HealPowerRate = 0.0f;
+	HealPowerRate_Default = 0.0f;
+
+	HealPowerOnKill = 0.0f;
+	HealPowerOnKill_Default = 0.0f;
+
+	ExpGainRate = 1.0f;
+	ExpGainRate_Default = 1.0f;
+
+	GoldGainRate = 1.0f;
+	GoldGainRate_Default = 1.0f;
+
+	ProjectileCount = 1;
+	ProjectileCount_Default = 1;
+
+	ProjectileScale = 1.0f;
+	ProjectileScale_Default = 1.0f;
+
+	InvincibilityTime = 0.0f;
+	InvincibilityTime_Default = 0.0f;
+
+	CritDamageRate = 1.5f;
+	CritDamageRate_Default = 1.5f;
 }
 
 
@@ -30,6 +56,44 @@ void UKeroroStatComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 	SetLevel(Level);
+}
+
+void UKeroroStatComponent::UpdateStatCardEnhanced(AKeroroPlayerState* PlayerState)
+{
+	if (!PlayerState)
+	{
+		UE_LOG(LogTemp, Error, TEXT("PS is nullptr"));
+		return;
+	}
+
+	if (!StatData)
+	{
+		UE_LOG(LogTemp, Error, TEXT("StatData is nullptr"));
+		return;
+	}
+	// 스탯데이터테이블 존재 스탯
+	AttackPower = StatData->AttackPower;
+	DropExp = StatData->DropExp;
+	NextExp = StatData->NextExp;
+
+	MaxHp = StatData->MaxHp + PlayerState->MaxHP_Enhanced;
+	MaxMp = StatData->MaxMP + PlayerState->MaxMP_Enhanced;
+	AttackSpeedRate = StatData->AttackSpeedRate + PlayerState->AttackSpeedRate_Enhanced;
+	MaxMoveSpeed = StatData->MaxMoveSpeed + PlayerState->MaxMoveSpeed_Enhanced;
+	CritChanceRate = StatData->CritChanceRate + PlayerState->CritChanceRate_Enhanced;
+	SkillCooldownRate = StatData->SkillCooldownRate + PlayerState->SkillCooldownRate_Enhanced;
+	EvasionRate = PlayerState->EvasionRate_Enhanced;
+	DefenseRate += PlayerState->DefenseRate_Enhanced;
+
+	// 스탯데이터테이블 존재 x 스탯
+	CritDamageRate = CritDamageRate_Default + PlayerState->CritDamageRate_Enhanced;
+	ExpGainRate = ExpGainRate_Default + PlayerState->ExpGainRate_Enhanced;
+	GoldGainRate = GoldGainRate_Default + PlayerState->GoldGainRate_Enhanced;
+	ProjectileCount = ProjectileCount_Default + PlayerState->ProjectileCount_Enhanced;
+	ProjectileScale = ProjectileScale_Default + PlayerState->ProjectileScale_Enhanced;
+	InvincibilityTime = InvincibilityTime_Default + PlayerState->InvincibilityTime_Enhanced;
+	HealPowerRate = HealPowerRate_Default + PlayerState->HealPowerRate_Enhanced;
+	HealPowerOnKill = HealPowerOnKill_Default + PlayerState->HealPowerOnKill_Enhanced;
 }
 
 // 처음초기화 그리고 레벨업할 시 호출 예정
@@ -52,7 +116,22 @@ void UKeroroStatComponent::SetLevel(int32 lv)
 	{
 		Level = lv;
 		SetHP(StatData->MaxHp);
-		AttackPower = StatData->AttackPower;
+		AKeroroCharacter* kero = GetOwner<AKeroroCharacter>();
+		if (kero)
+		{
+			AKeroroPlayerState* PS = kero->GetPlayerState<AKeroroPlayerState>();
+			if (PS)
+			{
+				// 카드 수치 반영해서 스탯 업데이트
+				UpdateStatCardEnhanced(PS);
+			}
+			else {
+				UE_LOG(LogTemp, Error, TEXT("PS is nullptr in stat component"));
+			}
+		}
+		else {
+			UE_LOG(LogTemp, Error, TEXT("kero is nullptr in stat component"));
+		}
 	}
 }
 
@@ -63,14 +142,14 @@ void UKeroroStatComponent::SetDamage(float dm)
 		//UE_LOG(LogTemp, Error, TEXT("Stat Damage is nullptr - in setdamage"));
 		return;
 	}
-	SetHP(FMath::Clamp<float>(CurrentHP - dm, 0.0f, StatData->MaxHp));
+	SetHP(FMath::Clamp<float>(CurrentHp - dm, 0.0f, StatData->MaxHp));
 }
 
 void UKeroroStatComponent::SetHP(float hp)
 {
-	CurrentHP = hp;
+	CurrentHp = hp;
 	OnHpIsChanged.Broadcast();
-	if (CurrentHP <= 0.0f)
+	if (CurrentHp <= 0.0f)
 	{
 		OnHpIsZero.Broadcast();
 	}
@@ -83,12 +162,11 @@ float UKeroroStatComponent::GetHpRatio()
 		UE_LOG(LogTemp, Error, TEXT("Stat Data is nullptr - in GetHpRatio"));
 		return 0.0f;
 	}
-	return (CurrentHP / StatData->MaxHp);
+	return (CurrentHp / StatData->MaxHp);
 }
 
 int32 UKeroroStatComponent::GetDropExp()
 {
 	return StatData->DropExp;
 }
-
 

@@ -127,11 +127,20 @@ void AKeroroCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AKeroroPlayerState* PS = GetPlayerState<AKeroroPlayerState>();
+	if (PS && KRStat)
+	{
+		KRStat->UpdateStatCardEnhanced(PS);
+		UE_LOG(LogTemp, Warning, TEXT("KRStat + Card Succeced"));
+	}
+
 	// HP¹Ù À§Á¬
 	auto HpBarWidget = Cast<UKeroroHPBarWidget>(HPBar->GetUserWidgetObject());
 	if (HpBarWidget != nullptr)
 	{
 		HpBarWidget->BindKRStat(KRStat);
+		UE_LOG(LogTemp, Warning, TEXT("Bind KRStat Succeced"));
+
 	}
 
 }
