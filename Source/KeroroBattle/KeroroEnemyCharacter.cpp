@@ -75,6 +75,10 @@ void AKeroroEnemyCharacter::BeginPlay()
 	{
 		HpBarWidget->BindKRStat(EnemyStat);
 	}
+	if (EnemyStat)
+	{
+		EnemyStat->SetLevel(1);
+	}
 }
 
 // Called every frame

@@ -53,6 +53,7 @@ public:
 	UPROPERTY()
 	class UKeroroHUDWidget* KRHUDWidget;
 
+	void UpdateStatCardEnhanced();
 	void UpdateStatWidget();
 	void UpdateHPWidget();
 	void UpdateGoldWidget();

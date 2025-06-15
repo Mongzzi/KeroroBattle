@@ -100,22 +100,22 @@ struct FCardData : public FTableRowBase
 public:
 	FCardData();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CardData)
 	int32 CardID;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CardData)
 	FText CardName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CardData)
 	FText Description;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
-	FName CardType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CardData)
+	ECardType CardType;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CardData)
 	float CardValue;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CardData)
 	FSoftObjectPath ImagePath;
 };
 

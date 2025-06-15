@@ -14,7 +14,7 @@
 void UKeroroHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	UE_LOG(LogTemp, Error, TEXT(" in NativeConstruct"));
+	//UE_LOG(LogTemp, Error, TEXT(" in NativeConstruct"));
 
 
 	if (APlayerController* PC = GetOwningPlayer())
@@ -59,7 +59,7 @@ void UKeroroHUDWidget::UpdateLevelWidget()
 
 	if (LevelText)
 	{
-		UE_LOG(LogTemp, Error, TEXT(" in level updated"));
+		//UE_LOG(LogTemp, Error, TEXT(" in level updated"));
 
 		LevelText->SetText(FText::FromString(TEXT("LV ") + FString::FromInt(CurrentKRStat->Level)));
 	}

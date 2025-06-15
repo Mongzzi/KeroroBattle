@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "KeroroBattle.h"
 #include "Blueprint/UserWidget.h"
 #include "LevelupCardWidget.generated.h"
 
@@ -18,6 +18,7 @@ class KEROROBATTLE_API ULevelupCardWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+
 	virtual void NativeConstruct() override;
 
 	UFUNCTION(BlueprintCallable)
@@ -30,7 +31,12 @@ public:
 	FOnCardSelected OnCardSelected;
 
 public:
-	int32 CardIndex = 0;
+	UPROPERTY()
+	int32 CardIndex;
+
+	UPROPERTY(BlueprintReadOnly,Category=Card)
+	ECardType CardType = ECardType::MAX;
+	float CardValue;
 
 protected:
 

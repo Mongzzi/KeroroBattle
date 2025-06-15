@@ -39,7 +39,6 @@ void AKeroroPlayerState::BeginPlay()
 	// 함수안에서 바인딩된 함수들 호출
 	// 현재 태그중인 캐릭터들 스탯 업데이트
 	// hud 레벨 부분 업데이트
-	UE_LOG(LogTemp, Error, TEXT("setlevel in playerstate beginplay"));
 }
 
 EKeroroType AKeroroPlayerState::SetNextCharacterType()
@@ -74,7 +73,7 @@ bool AKeroroPlayerState::AddExp(int32 exp)
 	if (DidLevelUp) {
 		OnLevelChanged.Broadcast();
 	}
-	UE_LOG(LogTemp, Error, TEXT("EXP = %d"),CurrentExp);
+	//UE_LOG(LogTemp, Error, TEXT("EXP = %d"),CurrentExp);
 
 	return DidLevelUp;
 }
@@ -83,7 +82,7 @@ void AKeroroPlayerState::AddGold(int32 gold)
 {
 	CurrentGold += gold;
 	OnGoldChanged.Broadcast();
-	UE_LOG(LogTemp, Error, TEXT("Gold = %d"), CurrentGold);
+	//UE_LOG(LogTemp, Error, TEXT("Gold = %d"), CurrentGold);
 }
 
 float AKeroroPlayerState::GetExpRatio() const

@@ -86,7 +86,7 @@ void ADropGold::OnCharacterBeginOverlap(UPrimitiveComponent* OverlappedComponent
 
 	if (kero)
 	{
-		UE_LOG(LogTemp, Error, TEXT("gold is overlap"));
+		//UE_LOG(LogTemp, Error, TEXT("gold is overlap"));
 
 		AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(kero->GetPlayerState());
 		if (PS)

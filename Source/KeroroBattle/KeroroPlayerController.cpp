@@ -79,6 +79,26 @@ void AKeroroPlayerController::BeginPlay()
 	UpdateStatWidget();
 }
 
+void AKeroroPlayerController::UpdateStatCardEnhanced()
+{
+
+	AKeroroPlayerState* PS = GetPlayerState<AKeroroPlayerState>();
+	if (!PS) {
+		UE_LOG(LogTemp, Error, TEXT("PS in Playercontrollerr nullptr"));
+		return;
+	}
+
+	AKeroroCharacter* Kero = Cast<AKeroroCharacter>(GetCharacter());
+	if (Kero)
+	{
+		if (Kero->KRStat)
+		{
+			Kero->KRStat->UpdateStatCardEnhanced(PS);
+		}
+	}
+
+}
+
 // 처음초기화용
 void AKeroroPlayerController::UpdateStatWidget()
 {

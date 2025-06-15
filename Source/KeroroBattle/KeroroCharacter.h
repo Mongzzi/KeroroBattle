@@ -30,6 +30,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PostInitializeComponents() override;
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual void PossessedBy(AController* NewController) override;
 
 public:
 	// 나이아가라 시스템
@@ -77,7 +78,7 @@ public:
 	void StartNewAttack();
 	void PlayVoiceSound();
 	bool GetIsAttacking() { return IsAttacking; };
-	
+
 
 public:
 	EKeroroType GetKeroroCharacterType() { return CurrentKeroroType; }

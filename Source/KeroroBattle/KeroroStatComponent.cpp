@@ -5,6 +5,7 @@
 #include "KeroroGameInstance.h"
 #include "KeroroPlayerState.h"
 #include "KeroroCharacter.h"
+#include "KeroroEnemyCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
@@ -47,6 +48,7 @@ UKeroroStatComponent::UKeroroStatComponent()
 void UKeroroStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	//SetLevel(Level);
 }
 
 // 계속 크래쉬나던이유 setlevel에서 데이터 가져오는데 beginplay에서
@@ -55,20 +57,19 @@ void UKeroroStatComponent::BeginPlay()
 void UKeroroStatComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
-	SetLevel(Level);
 }
 
 void UKeroroStatComponent::UpdateStatCardEnhanced(AKeroroPlayerState* PlayerState)
 {
 	if (!PlayerState)
 	{
-		UE_LOG(LogTemp, Error, TEXT("PS is nullptr"));
+		UE_LOG(LogTemp, Error, TEXT("PS is nullptr in UpdateStatCardEnhanced"));
 		return;
 	}
 
 	if (!StatData)
 	{
-		UE_LOG(LogTemp, Error, TEXT("StatData is nullptr"));
+		UE_LOG(LogTemp, Error, TEXT("StatData is nullptr in UpdateStatCardEnhanced"));
 		return;
 	}
 	// 스탯데이터테이블 존재 스탯
@@ -78,6 +79,9 @@ void UKeroroStatComponent::UpdateStatCardEnhanced(AKeroroPlayerState* PlayerStat
 
 	MaxHp = StatData->MaxHp + PlayerState->MaxHP_Enhanced;
 	MaxMp = StatData->MaxMP + PlayerState->MaxMP_Enhanced;
+	//CurrentHp = MaxHp;
+	//CurrentMp = MaxMp;
+
 	AttackSpeedRate = StatData->AttackSpeedRate + PlayerState->AttackSpeedRate_Enhanced;
 	MaxMoveSpeed = StatData->MaxMoveSpeed + PlayerState->MaxMoveSpeed_Enhanced;
 	CritChanceRate = StatData->CritChanceRate + PlayerState->CritChanceRate_Enhanced;
@@ -94,10 +98,30 @@ void UKeroroStatComponent::UpdateStatCardEnhanced(AKeroroPlayerState* PlayerStat
 	InvincibilityTime = InvincibilityTime_Default + PlayerState->InvincibilityTime_Enhanced;
 	HealPowerRate = HealPowerRate_Default + PlayerState->HealPowerRate_Enhanced;
 	HealPowerOnKill = HealPowerOnKill_Default + PlayerState->HealPowerOnKill_Enhanced;
+
+	UE_LOG(LogTemp, Warning, TEXT("===== PlayerState Stat Enhancement ====="));
+	UE_LOG(LogTemp, Warning, TEXT("MaxHP_Enhanced: %f"), PlayerState->MaxHP_Enhanced);
+	//UE_LOG(LogTemp, Warning, TEXT("MaxMP_Enhanced: %f"), PlayerState->MaxMP_Enhanced);
+	//UE_LOG(LogTemp, Warning, TEXT("AttackSpeedRate_Enhanced: %f"), PlayerState->AttackSpeedRate_Enhanced);
+	//UE_LOG(LogTemp, Warning, TEXT("MaxMoveSpeed_Enhanced: %f"), PlayerState->MaxMoveSpeed_Enhanced);
+	//UE_LOG(LogTemp, Warning, TEXT("CritChanceRate_Enhanced: %f"), PlayerState->CritChanceRate_Enhanced);
+	//UE_LOG(LogTemp, Warning, TEXT("SkillCooldownRate_Enhanced: %f"), PlayerState->SkillCooldownRate_Enhanced);
+	//UE_LOG(LogTemp, Warning, TEXT("EvasionRate_Enhanced: %f"), PlayerState->EvasionRate_Enhanced);
+	//UE_LOG(LogTemp, Warning, TEXT("DefenseRate_Enhanced: %f"), PlayerState->DefenseRate_Enhanced);
+	//UE_LOG(LogTemp, Warning, TEXT("CritDamageRate_Enhanced: %f"), PlayerState->CritDamageRate_Enhanced);
+	//UE_LOG(LogTemp, Warning, TEXT("ExpGainRate_Enhanced: %f"), PlayerState->ExpGainRate_Enhanced);
+	//UE_LOG(LogTemp, Warning, TEXT("GoldGainRate_Enhanced: %f"), PlayerState->GoldGainRate_Enhanced);
+	//UE_LOG(LogTemp, Warning, TEXT("ProjectileCount_Enhanced: %d"), PlayerState->ProjectileCount_Enhanced);
+	//UE_LOG(LogTemp, Warning, TEXT("ProjectileScale_Enhanced: %f"), PlayerState->ProjectileScale_Enhanced);
+	//UE_LOG(LogTemp, Warning, TEXT("InvincibilityTime_Enhanced: %f"), PlayerState->InvincibilityTime_Enhanced);
+	//UE_LOG(LogTemp, Warning, TEXT("HealPowerRate_Enhanced: %f"), PlayerState->HealPowerRate_Enhanced);
+	//UE_LOG(LogTemp, Warning, TEXT("HealPowerOnKill_Enhanced: %f"), PlayerState->HealPowerOnKill_Enhanced);
+	
 }
 
 // 처음초기화 그리고 레벨업할 시 호출 예정
 // 레벨초기화 해줄때 hud 업데이트도 델리게이트로 할 예정
+// 적 캐릭터도 해당 스탯컴포넌트 사용중이라 주의 필요 , 추후 적 전용 스탯컴포넌트 생성 예정
 void UKeroroStatComponent::SetLevel(int32 lv)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Set level in statcomp"));
@@ -105,44 +129,56 @@ void UKeroroStatComponent::SetLevel(int32 lv)
 	auto KRGameInstance = Cast<UKeroroGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	if (KRGameInstance != nullptr)
 	{
-		StatData = KRGameInstance->GetKRStatData(lv);
+		Level = lv;
+		StatData = KRGameInstance->GetKRStatData(Level);
 	}
 	else
 	{
+		UE_LOG(LogTemp, Error, TEXT("KRGameInstance is nullptr in stat component"));
 		return;
 	}
 
 	if (StatData != nullptr)
 	{
-		Level = lv;
-		SetHP(StatData->MaxHp);
 		AKeroroCharacter* kero = GetOwner<AKeroroCharacter>();
-		if (kero)
+		if (kero)	// 플레이어 캐릭터일때
 		{
 			AKeroroPlayerState* PS = kero->GetPlayerState<AKeroroPlayerState>();
 			if (PS)
 			{
-				// 카드 수치 반영해서 스탯 업데이트
+				// 플레이어스테이트에서 관리 중인 카드 수치 반영해서 스탯 업데이트
 				UpdateStatCardEnhanced(PS);
 			}
 			else {
 				UE_LOG(LogTemp, Error, TEXT("PS is nullptr in stat component"));
 			}
 		}
-		else {
-			UE_LOG(LogTemp, Error, TEXT("kero is nullptr in stat component"));
+		else {	// 적 캐릭터일때
+			AKeroroEnemyCharacter* enemy = GetOwner<AKeroroEnemyCharacter>();
+			if (enemy)
+			{
+				MaxHp = StatData->MaxHp;	// 플레이어는 UpdateStatCardEnhanced 통해서 해주고있음 // 적캐릭터는 카드강화 업데이트를 안해주기때문에 임시로 체력만 설정
+				AttackPower = StatData->AttackPower;
+				MaxMoveSpeed = StatData->MaxMoveSpeed;
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("kero is nullptr in stat component"));
+			}
 		}
 	}
+	SetHP(MaxHp);
 }
 
 void UKeroroStatComponent::SetDamage(float dm)
 {
-	if (StatData == nullptr)
+	
+	if (MaxHp == 0)
 	{
-		//UE_LOG(LogTemp, Error, TEXT("Stat Damage is nullptr - in setdamage"));
-		return;
+		UE_LOG(LogTemp, Error, TEXT("Stat Damage is failed"));
+		//return;
 	}
-	SetHP(FMath::Clamp<float>(CurrentHp - dm, 0.0f, StatData->MaxHp));
+	SetHP(FMath::Clamp<float>(CurrentHp - dm, 0.0f, MaxHp));
 }
 
 void UKeroroStatComponent::SetHP(float hp)
@@ -157,12 +193,7 @@ void UKeroroStatComponent::SetHP(float hp)
 
 float UKeroroStatComponent::GetHpRatio()
 {
-	if (StatData == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Stat Data is nullptr - in GetHpRatio"));
-		return 0.0f;
-	}
-	return (CurrentHp / StatData->MaxHp);
+	return (CurrentHp / MaxHp);
 }
 
 int32 UKeroroStatComponent::GetDropExp()

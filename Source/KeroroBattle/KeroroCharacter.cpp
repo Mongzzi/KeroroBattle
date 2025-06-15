@@ -116,7 +116,7 @@ AKeroroCharacter::AKeroroCharacter()
 void AKeroroCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	UE_LOG(LogTemp, Warning, TEXT("post called"));
+	//UE_LOG(LogTemp, Warning, TEXT("post called"));
 
 	// (스켈레탈메시,애님인스턴스 로드 후 설정),(몽타주 델리게이트 바인딩)
 	LoadAssetandSetting(CurrentKeroroType);
@@ -130,8 +130,9 @@ void AKeroroCharacter::BeginPlay()
 	AKeroroPlayerState* PS = GetPlayerState<AKeroroPlayerState>();
 	if (PS && KRStat)
 	{
-		KRStat->UpdateStatCardEnhanced(PS);
-		UE_LOG(LogTemp, Warning, TEXT("KRStat + Card Succeced"));
+		KRStat->SetLevel(PS->CurrentLevel);
+		//KRStat->UpdateStatCardEnhanced(PS);
+		//UE_LOG(LogTemp, Warning, TEXT("KRStat + Card Succeced"));
 	}
 
 	// HP바 위젯
@@ -139,8 +140,7 @@ void AKeroroCharacter::BeginPlay()
 	if (HpBarWidget != nullptr)
 	{
 		HpBarWidget->BindKRStat(KRStat);
-		UE_LOG(LogTemp, Warning, TEXT("Bind KRStat Succeced"));
-
+		//UE_LOG(LogTemp, Warning, TEXT("Bind KRStat Succeced"));
 	}
 
 }
@@ -178,6 +178,11 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 		Die();
 	}
 	return FinalDamage;
+}
+
+void AKeroroCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
 }
 
 void AKeroroCharacter::Die()
@@ -486,6 +491,13 @@ void AKeroroCharacter::AttackCheck_Sword()
 			}
 		}
 	}
+
+	//if (KRStat) {
+	//	float a = KRStat->MaxHp;
+	//	float b = KRStat->CurrentHp;
+	//	UE_LOG(LogTemp, Warning, TEXT("=========================CURRENT HP = %f============================"), b);
+	//	UE_LOG(LogTemp, Warning, TEXT("=========================MAX HP = %f============================"), a);
+	//}
 }
 
 void AKeroroCharacter::AttackCheck_Rifle()

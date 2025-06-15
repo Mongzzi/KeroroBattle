@@ -4,9 +4,11 @@
 #include "LevelupCardWidget.h"
 #include "KeroroPlayerController.h"
 #include "KeroroGameInstance.h"
+#include "KeroroPlayerState.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
 #include "Components/Button.h"
+
 
 void ULevelupCardWidget::NativeConstruct()
 {
@@ -48,19 +50,30 @@ void ULevelupCardWidget::PlayAnotherSelectCardAnimation()
 
 void ULevelupCardWidget::SetCardInfo()
 {
-	int32 num = FMath::RandRange(1, 68);  // 카드 ID 랜덤
+	int32 CardID = FMath::RandRange(1, 68);  // 카드 ID 랜덤	 카드 타입에따라 4개씩 존재 즉 17개 종류
 	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
-	FCardData* CardData = PC->GetGameInstance<UKeroroGameInstance>()->GetCardData(num);
+	FCardData* CardData = PC->GetGameInstance<UKeroroGameInstance>()->GetCardData(CardID);
 
-	if (CardTitle)
-		CardTitle->SetText(CardData->CardName);
+	if (CardData)
+	{
+		if (CardTitle)
+			CardTitle->SetText(CardData->CardName);
 
-	if (CardDescription)
-		CardDescription->SetText(CardData->Description);
+		if (CardDescription)
+			CardDescription->SetText(CardData->Description);
+	
+		UTexture2D* Image = LoadObject<UTexture2D>(nullptr, *CardData->ImagePath.ToString());
+		if (CardImage && Image)
+		{
+			CardImage->SetBrushFromTexture(Image);
+		}
 
-	UTexture2D* Image = LoadObject<UTexture2D>(nullptr, *CardData->ImagePath.ToString());
-	if (CardImage && Image)
-		CardImage->SetBrushFromTexture(Image);
+		CardType = CardData->CardType;
+		CardValue = CardData->CardValue;
+	}
+	else {
+		UE_LOG(LogTemp,Error,TEXT("ssssssssss"))
+	}
 }
 
 void ULevelupCardWidget::OnSelectButtonClicked()
@@ -72,5 +85,52 @@ void ULevelupCardWidget::OnSelectButtonClicked()
 	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
 
 	// 여기서 카드 타입, 카드 값에 따라 플레이어 스탯 정보 업데이트해줘야함
+	AKeroroPlayerState* PS = PC->GetPlayerState<AKeroroPlayerState>();
+	if (PS)
+	{
+		switch (CardType)
+		{
+		case ECardType::MaxHP:
+			PS->MaxHP_Enhanced += CardValue;
+			break;
+		case ECardType::MaxMP:
+			break;
+		case ECardType::AttackSpeed:
+			break;
+		case ECardType::MoveSpeed:
+			break;
+		case ECardType::CriticalChance:
+			break;
+		case ECardType::CriticalDamage:
+			break;
+		case ECardType::EXPBoost:
+			break;
+		case ECardType::GoldBoost:
+			break;
+		case ECardType::CooldownReduction:
+			break;
+		case ECardType::ProjectileCount:
+			break;
+		case ECardType::ProjectileSize:
+			break;
+		case ECardType::Evasion:
+			break;
+		case ECardType::InvincibilityTime:
+			break;
+		case ECardType::Armor:
+			break;
+		case ECardType::HealAmount:
+			break;
+		case ECardType::HealOnKill:
+			break;
+		case ECardType::ShieldRegen:
+			break;
+		case ECardType::MAX:
+			break;
+		default:
+			break;
+		}
+	}
+	PC->UpdateStatCardEnhanced();
 	PC->SetGameMode();
 }
