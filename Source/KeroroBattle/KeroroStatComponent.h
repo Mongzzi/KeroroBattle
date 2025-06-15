@@ -25,7 +25,7 @@ protected:
 
 public:
 	void UpdateStatCardEnhanced(class AKeroroPlayerState* PlayerState);
-	void SetLevel(int32 lv);
+	void SetLevel(int32 lv,class AKeroroPlayerState* PlayerState = nullptr);
 	void SetDamage(float dm);
 	void SetHP(float hp);
 	float GetHpRatio();

@@ -116,13 +116,13 @@ void UKeroroStatComponent::UpdateStatCardEnhanced(AKeroroPlayerState* PlayerStat
 	//UE_LOG(LogTemp, Warning, TEXT("InvincibilityTime_Enhanced: %f"), PlayerState->InvincibilityTime_Enhanced);
 	//UE_LOG(LogTemp, Warning, TEXT("HealPowerRate_Enhanced: %f"), PlayerState->HealPowerRate_Enhanced);
 	//UE_LOG(LogTemp, Warning, TEXT("HealPowerOnKill_Enhanced: %f"), PlayerState->HealPowerOnKill_Enhanced);
-	
+
 }
 
 // 처음초기화 그리고 레벨업할 시 호출 예정
 // 레벨초기화 해줄때 hud 업데이트도 델리게이트로 할 예정
 // 적 캐릭터도 해당 스탯컴포넌트 사용중이라 주의 필요 , 추후 적 전용 스탯컴포넌트 생성 예정
-void UKeroroStatComponent::SetLevel(int32 lv)
+void UKeroroStatComponent::SetLevel(int32 lv, AKeroroPlayerState* PlayerState)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Set level in statcomp"));
 
@@ -143,7 +143,16 @@ void UKeroroStatComponent::SetLevel(int32 lv)
 		AKeroroCharacter* kero = GetOwner<AKeroroCharacter>();
 		if (kero)	// 플레이어 캐릭터일때
 		{
-			AKeroroPlayerState* PS = kero->GetPlayerState<AKeroroPlayerState>();
+			AKeroroPlayerState* PS;
+			if (PlayerState == nullptr)
+			{
+				PS = kero->GetPlayerState<AKeroroPlayerState>();
+
+			}
+			else 
+			{
+				PS = PlayerState;
+			}
 			if (PS)
 			{
 				// 플레이어스테이트에서 관리 중인 카드 수치 반영해서 스탯 업데이트
@@ -152,6 +161,7 @@ void UKeroroStatComponent::SetLevel(int32 lv)
 			else {
 				UE_LOG(LogTemp, Error, TEXT("PS is nullptr in stat component"));
 			}
+
 		}
 		else {	// 적 캐릭터일때
 			AKeroroEnemyCharacter* enemy = GetOwner<AKeroroEnemyCharacter>();
@@ -172,7 +182,7 @@ void UKeroroStatComponent::SetLevel(int32 lv)
 
 void UKeroroStatComponent::SetDamage(float dm)
 {
-	
+
 	if (MaxHp == 0)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Stat Damage is failed"));

@@ -128,11 +128,14 @@ void AKeroroCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	AKeroroPlayerState* PS = GetPlayerState<AKeroroPlayerState>();
-	if (PS && KRStat)
+	if (PS)
 	{
 		KRStat->SetLevel(PS->CurrentLevel);
 		//KRStat->UpdateStatCardEnhanced(PS);
 		//UE_LOG(LogTemp, Warning, TEXT("KRStat + Card Succeced"));
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("KRStat + Card failed"));
 	}
 
 	// HP¹Ù À§Á¬
