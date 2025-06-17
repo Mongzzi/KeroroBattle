@@ -133,10 +133,17 @@ public:
 	UPROPERTY()
 	class UKeroroAnimInstance* KRAnim;
 
+	// 플레이어 스테이트
+	UPROPERTY()
+	class AKeroroPlayerState* KRPlayerState;
+
 private:
 	// 플레이어 컨트롤러
 	UPROPERTY()
 	class AKeroroPlayerController* KRPlayerContoller;
+
+
+
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KeroroType)

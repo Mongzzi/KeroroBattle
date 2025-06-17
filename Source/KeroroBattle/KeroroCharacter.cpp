@@ -122,21 +122,37 @@ void AKeroroCharacter::PostInitializeComponents()
 	LoadAssetandSetting(CurrentKeroroType);
 }
 
+void AKeroroCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	if (KRPlayerState==nullptr)
+	{
+		KRPlayerState = Cast<AKeroroPlayerState>(NewController->PlayerState);
+		if (KRPlayerState)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("KRPlayerState is valid in PossessedBy"));
+
+			KRStat->SetLevel(KRPlayerState->CurrentLevel);
+		}
+
+	}
+}
+
 // Called when the game starts or when spawned
 void AKeroroCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AKeroroPlayerState* PS = GetPlayerState<AKeroroPlayerState>();
-	if (PS)
-	{
-		KRStat->SetLevel(PS->CurrentLevel);
-		//KRStat->UpdateStatCardEnhanced(PS);
-		//UE_LOG(LogTemp, Warning, TEXT("KRStat + Card Succeced"));
-	}
-	else {
-		UE_LOG(LogTemp, Warning, TEXT("KRStat + Card failed"));
-	}
+	//AKeroroPlayerState* PS = GetPlayerState<AKeroroPlayerState>();
+	//if (KRPlayerState)
+	//{
+	//	KRStat->SetLevel(KRPlayerState->CurrentLevel);
+	//	//KRStat->UpdateStatCardEnhanced(PS);
+	//	//UE_LOG(LogTemp, Warning, TEXT("KRStat + Card Succeced"));
+	//}
+	//else {
+	//	UE_LOG(LogTemp, Warning, TEXT("KRStat + Card failed"));
+	//}
 
 	// HP¹Ù À§Á¬
 	auto HpBarWidget = Cast<UKeroroHPBarWidget>(HPBar->GetUserWidgetObject());
@@ -181,11 +197,6 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 		Die();
 	}
 	return FinalDamage;
-}
-
-void AKeroroCharacter::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
 }
 
 void AKeroroCharacter::Die()

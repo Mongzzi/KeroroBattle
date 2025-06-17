@@ -200,7 +200,7 @@ void AKeroroPlayerController::TagCharacter()
 			NewCharacter->CurrentKeroroType = NextType;
 			UGameplayStatics::FinishSpawningActor(NewCharacter, SpawnTransform);
 
-			NewCharacter->KRStat->SetLevel(KRPlayerState->CurrentLevel,KRPlayerState);
+			//NewCharacter->KRStat->SetLevel(KRPlayerState->CurrentLevel,KRPlayerState);
 			CharacterMap.Add(NextType, NewCharacter);
 		}
 	}
