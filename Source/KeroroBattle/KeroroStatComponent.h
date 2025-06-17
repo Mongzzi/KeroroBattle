@@ -94,14 +94,6 @@ public:
 	float HealPowerOnKill;
 	float HealPowerOnKill_Default;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	//float ExpGainRate;
-	//float ExpGainRate_Default;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	//float GoldGainRate;
-	//float GoldGainRate_Default;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	int32 ProjectileCount;
 	int32 ProjectileCount_Default;

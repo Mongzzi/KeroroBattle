@@ -50,7 +50,7 @@ void ULevelupCardWidget::PlayAnotherSelectCardAnimation()
 
 void ULevelupCardWidget::SetCardInfo()
 {
-	int32 CardID = FMath::RandRange(29, 32);  // 카드 ID 랜덤	 카드 타입에따라 4개씩 존재 즉 17개 종류
+	int32 CardID = FMath::RandRange(9, 12);  // 카드 ID 랜덤	 카드 타입에따라 4개씩 존재 즉 17개 종류
 	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
 	FCardData* CardData = PC->GetGameInstance<UKeroroGameInstance>()->GetCardData(CardID);
 

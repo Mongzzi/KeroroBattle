@@ -2,6 +2,8 @@
 
 
 #include "KeroroAnimInstance.h"
+#include "KeroroCharacter.h"
+#include "KeroroStatComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Animation/AnimMontage.h"
@@ -13,6 +15,7 @@ UKeroroAnimInstance::UKeroroAnimInstance()
 	IsInAir = false;
 	IsDead = false;
 	bIsRunning = false;
+	AnimationRunSpeed = 1.0f;
 	WeaponType = EWeaponType::SWORD;
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> SWORD_ATTACK_MONTAGE(TEXT("/Game/Animation/KR_Montage_Sword.KR_Montage_Sword"));
@@ -42,7 +45,7 @@ UKeroroAnimInstance::UKeroroAnimInstance()
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> NOTEBOOK_ATTACK_MONTAGE(TEXT("/Game/Animation/KR_Montage_NoteBook.KR_Montage_NoteBook"));
 	if (NOTEBOOK_ATTACK_MONTAGE.Succeeded())
 	{
-		NoteBookAttackMontage= NOTEBOOK_ATTACK_MONTAGE.Object;
+		NoteBookAttackMontage = NOTEBOOK_ATTACK_MONTAGE.Object;
 	}
 
 }
@@ -70,12 +73,28 @@ void UKeroroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 void UKeroroAnimInstance::PlayAttackMontage()
 {
 	if (IsDead) return;
+
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(TryGetPawnOwner());
+	if (kero)
+	{
+		if (kero->KRStat)
+		{
+			AnimationRunSpeed = kero->KRStat->AttackSpeedRate;
+		}
+		else {
+			UE_LOG(LogTemp, Error, TEXT("KRStat null in PlayAttackMontage"));
+		}
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("kero null in PlayAttackMontage"));
+	}
+
+
 	if (UAnimMontage* Montage = GetAnimMontage())
 	{
 		if (!Montage_IsPlaying(Montage))
 		{
-			Montage_Play(Montage, 1.0f);
-
+			Montage_Play(Montage, AnimationRunSpeed);
 		}
 	}
 }
