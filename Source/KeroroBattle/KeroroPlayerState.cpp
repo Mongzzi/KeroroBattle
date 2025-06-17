@@ -15,6 +15,9 @@ AKeroroPlayerState::AKeroroPlayerState()
 	KilledEnemyNum = 0;
 
 	// Ä«µå ½ºÅÈ
+	ExpGainRate = 1.0f;
+	GoldGainRate = 1.0f;
+
 	MaxHP_Enhanced = 0.0f;
 	MaxMP_Enhanced = 0.0f;
 	MaxMoveSpeed_Enhanced = 0.0f;

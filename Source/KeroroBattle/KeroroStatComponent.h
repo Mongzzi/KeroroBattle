@@ -30,6 +30,7 @@ public:
 	void SetHP(float hp);
 	float GetHpRatio();
 	int32 GetDropExp();
+	int32 GetDropGold();
 
 	FOnHPIsZeroDelegate OnHpIsZero;
 	FOnHPIsChangedDeleGate OnHpIsChanged;
@@ -93,13 +94,13 @@ public:
 	float HealPowerOnKill;
 	float HealPowerOnKill_Default;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float ExpGainRate;
-	float ExpGainRate_Default;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	//float ExpGainRate;
+	//float ExpGainRate_Default;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float GoldGainRate;
-	float GoldGainRate_Default;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	//float GoldGainRate;
+	//float GoldGainRate_Default;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	int32 ProjectileCount;

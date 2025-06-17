@@ -15,11 +15,13 @@ public:
 	// Sets default values for this actor's properties
 	ADropGold();
 	virtual void OnConstruction(const FTransform& Transform);
+	void SetGoldMount(int32 goldmount) { DropGoldMount = goldmount; };
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;
+	
 
 public:	
 	// Called every frame
@@ -36,7 +38,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Effect)
 	class UNiagaraSystem* NSEffect;
-
+	int32 DropGoldMount;
+	
+	
 private:
 	UFUNCTION()
 	void OnCharacterBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

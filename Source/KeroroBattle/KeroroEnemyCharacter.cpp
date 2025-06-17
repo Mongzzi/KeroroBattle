@@ -151,12 +151,18 @@ void AKeroroEnemyCharacter::Die()
 			{
 				AKeroroCharacter* KR = Cast<AKeroroCharacter>(PC->GetCharacter());
 				int32 DropExp = EnemyStat->GetDropExp();
+				int32 FinalDropExp = static_cast<int32>(DropExp * PS->ExpGainRate);
+				
+				//UE_LOG(LogTemp, Error, TEXT("EXP = %d  ExpGainRate = %f "), FinalDropExp, PS->ExpGainRate);
 				// 여기서 타겟 , 경험치구슬 속도 , 경험치 수치 정해주고 구슬이 캐릭터에 닿으면 addexp호출
-				ExpObj->SetTargetAndSpeedAndExp(KR, 1.5f, DropExp);
+				ExpObj->SetTargetAndSpeedAndExp(KR, 1.5f, FinalDropExp);
 			}
 
 			// 골드 오브젝트 생성
-			ADropGold* GoldObj = GetWorld()->SpawnActor<ADropGold>(ADropGold::StaticClass(), GetActorLocation(), FRotator::ZeroRotator);
+			FTransform SpawnTransform = FTransform(FRotator::ZeroRotator, GetActorLocation());
+			ADropGold* GoldObj = GetWorld()->SpawnActorDeferred<ADropGold>(ADropGold::StaticClass(), SpawnTransform);
+			GoldObj->SetGoldMount(EnemyStat->GetDropGold());
+			UGameplayStatics::FinishSpawningActor(GoldObj, SpawnTransform);
 		}
 	}
 }

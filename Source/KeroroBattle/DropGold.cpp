@@ -46,7 +46,6 @@ ADropGold::ADropGold()
 	{
 		NSEffect = NS.Object;
 	}
-
 }
 
 // 에디터에서 트리거박스 크기 직접 수정하기 위함
@@ -91,7 +90,8 @@ void ADropGold::OnCharacterBeginOverlap(UPrimitiveComponent* OverlappedComponent
 		AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(kero->GetPlayerState());
 		if (PS)
 		{
-			PS->AddGold(100); // 임시 골드 수치
+			PS->AddGold(static_cast<int32>(DropGoldMount*PS->GoldGainRate)); // 임시 골드 수치
+			UE_LOG(LogTemp, Error, TEXT("kero get gold %d gold ,  Gold Get Rate = %f"), static_cast<int32>(DropGoldMount * PS->GoldGainRate),PS->GoldGainRate);
 		}
 
 		UNiagaraComponent* TempEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(

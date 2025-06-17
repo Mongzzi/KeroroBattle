@@ -50,7 +50,7 @@ void ULevelupCardWidget::PlayAnotherSelectCardAnimation()
 
 void ULevelupCardWidget::SetCardInfo()
 {
-	int32 CardID = FMath::RandRange(1, 68);  // 카드 ID 랜덤	 카드 타입에따라 4개씩 존재 즉 17개 종류
+	int32 CardID = FMath::RandRange(29, 32);  // 카드 ID 랜덤	 카드 타입에따라 4개씩 존재 즉 17개 종류
 	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
 	FCardData* CardData = PC->GetGameInstance<UKeroroGameInstance>()->GetCardData(CardID);
 
@@ -94,36 +94,52 @@ void ULevelupCardWidget::OnSelectButtonClicked()
 			PS->MaxHP_Enhanced += CardValue;
 			break;
 		case ECardType::MaxMP:
+			PS->MaxMP_Enhanced += CardValue;
 			break;
 		case ECardType::AttackSpeed:
+			PS->AttackSpeedRate_Enhanced += CardValue;
 			break;
 		case ECardType::MoveSpeed:
+			PS->AttackSpeedRate_Enhanced += CardValue;
 			break;
 		case ECardType::CriticalChance:
+			PS->CritChanceRate_Enhanced += CardValue;
 			break;
 		case ECardType::CriticalDamage:
+			PS->CritDamageRate_Enhanced += CardValue;
 			break;
 		case ECardType::EXPBoost:
+			PS->ExpGainRate += CardValue;
 			break;
 		case ECardType::GoldBoost:
+			PS->GoldGainRate+= CardValue;
 			break;
 		case ECardType::CooldownReduction:
+			PS->SkillCooldownRate_Enhanced += CardValue;
 			break;
 		case ECardType::ProjectileCount:
+			PS->ProjectileCount_Enhanced += CardValue;
 			break;
 		case ECardType::ProjectileSize:
+			PS->ProjectileScale_Enhanced += CardValue;
 			break;
 		case ECardType::Evasion:
+			PS->EvasionRate_Enhanced+= CardValue;
 			break;
 		case ECardType::InvincibilityTime:
+			PS->InvincibilityTime_Enhanced += CardValue;
 			break;
 		case ECardType::Armor:
+			PS->DefenseRate_Enhanced += CardValue;
 			break;
 		case ECardType::HealAmount:
+			PS->HealPowerRate_Enhanced += CardValue;
 			break;
 		case ECardType::HealOnKill:
+			PS->HealPowerOnKill_Enhanced += CardValue;
 			break;
 		case ECardType::ShieldRegen:
+			UE_LOG(LogTemp, Warning, TEXT("Shield Regen Card Success"));
 			break;
 		case ECardType::MAX:
 			break;
