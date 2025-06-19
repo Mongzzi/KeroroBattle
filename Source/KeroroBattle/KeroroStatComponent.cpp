@@ -231,12 +231,22 @@ int32 UKeroroStatComponent::GetDropGold()
 
 void UKeroroStatComponent::StartHeal()
 {
-	GetWorld()->GetTimerManager().SetTimer(HealTimerHandle, [this](){
-		CurrentHp = FMath::Min(CurrentHp + MaxHp * HealPowerRate, MaxHp);
+	GetWorld()->GetTimerManager().SetTimer(HealTimerHandle, [this]() {
+		CurrentHp = FMath::Clamp(CurrentHp + MaxHp * HealPowerRate, 0.0f, MaxHp);
 		UE_LOG(LogTemp, Log, TEXT("Auto heal amount : %f, current hp = %f"), MaxHp * HealPowerRate, CurrentHp);
 		OnHpIsChanged.Broadcast();
-		}, 
-		HealIntervalTime, 
+		},
+		HealIntervalTime,
 		true);
+}
+
+void UKeroroStatComponent::AttackHeal()
+{
+	if (HealPowerOnKill > 0.0f)
+	{
+		CurrentHp = FMath::Clamp(CurrentHp + MaxHp * HealPowerOnKill, 0.0f, MaxHp);
+		UE_LOG(LogTemp, Log, TEXT("Attack heal amount : %f, current hp = %f"), MaxHp * HealPowerOnKill, CurrentHp);
+		OnHpIsChanged.Broadcast();
+	}
 }
 

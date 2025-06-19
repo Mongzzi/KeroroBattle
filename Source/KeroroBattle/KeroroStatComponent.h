@@ -41,8 +41,10 @@ public:
 
 public:
 	FTimerHandle HealTimerHandle;
-	void StartHeal();
 	float HealIntervalTime;
+	
+	void StartHeal();
+	void AttackHeal();
 
 private:
 	struct FKRStatData* StatData;

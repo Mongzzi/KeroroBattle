@@ -504,6 +504,10 @@ void AKeroroCharacter::AttackCheck_Sword()
 				//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *HitActor->GetName());
 			}
 		}
+		if (KRStat)
+		{
+			KRStat->AttackHeal();
+		}
 	}
 
 	//if (KRStat) {
@@ -573,6 +577,11 @@ void AKeroroCharacter::AttackCheck_Fist()
 				FVector(1.0f)
 			);
 			Weapon->PlaySound(CurrentCombo);
+
+		}
+		if (KRStat)
+		{
+			KRStat->AttackHeal();
 		}
 	}
 }
