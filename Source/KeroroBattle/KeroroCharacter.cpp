@@ -133,6 +133,7 @@ void AKeroroCharacter::PossessedBy(AController* NewController)
 			UE_LOG(LogTemp, Warning, TEXT("KRPlayerState is valid in PossessedBy"));
 
 			KRStat->SetLevel(KRPlayerState->CurrentLevel);
+			KRStat->StartHeal();
 		}
 
 	}
@@ -142,17 +143,6 @@ void AKeroroCharacter::PossessedBy(AController* NewController)
 void AKeroroCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//AKeroroPlayerState* PS = GetPlayerState<AKeroroPlayerState>();
-	//if (KRPlayerState)
-	//{
-	//	KRStat->SetLevel(KRPlayerState->CurrentLevel);
-	//	//KRStat->UpdateStatCardEnhanced(PS);
-	//	//UE_LOG(LogTemp, Warning, TEXT("KRStat + Card Succeced"));
-	//}
-	//else {
-	//	UE_LOG(LogTemp, Warning, TEXT("KRStat + Card failed"));
-	//}
 
 	// HP바 위젯
 	auto HpBarWidget = Cast<UKeroroHPBarWidget>(HPBar->GetUserWidgetObject());
@@ -196,7 +186,7 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 	}
 
 	float FinalDamage = Damage * (1.0f - KRStat->DefenseRate);
-	UE_LOG(LogTemp, Error, TEXT("in damage = %f, final Damage = %f"), Damage, FinalDamage);
+	//UE_LOG(LogTemp, Error, TEXT("in damage = %f, final Damage = %f"), Damage, FinalDamage);
 	KRStat->SetDamage(FinalDamage);
 
 	// 체력이 0이하가 되면 die함수 호출

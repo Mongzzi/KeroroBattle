@@ -32,9 +32,17 @@ public:
 	int32 GetDropExp();
 	int32 GetDropGold();
 
+
+
+
 	FOnHPIsZeroDelegate OnHpIsZero;
 	FOnHPIsChangedDeleGate OnHpIsChanged;
 
+
+public:
+	FTimerHandle HealTimerHandle;
+	void StartHeal();
+	float HealIntervalTime;
 
 private:
 	struct FKRStatData* StatData;
@@ -84,7 +92,7 @@ public:
 	// --------------------------------------- 아래로는 카드로 얻은 추가 스탯 ------------------------------------------------------------------------------
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	float HealPowerRate;
-	float HealPowerRate_Default = 0.0f;
+	float HealPowerRate_Default;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)

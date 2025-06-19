@@ -18,8 +18,8 @@ UKeroroStatComponent::UKeroroStatComponent()
 
 	Level = 1;
 
-	HealPowerRate = 0.0f;
-	HealPowerRate_Default = 0.0f;
+	HealPowerRate = 0.03f;
+	HealPowerRate_Default = 0.03f;
 
 	HealPowerOnKill = 0.0f;
 	HealPowerOnKill_Default = 0.0f;
@@ -35,6 +35,9 @@ UKeroroStatComponent::UKeroroStatComponent()
 
 	CritDamageRate = 1.5f;
 	CritDamageRate_Default = 1.5f;
+
+	// 데이터 테이블 없는 항목
+	HealIntervalTime = 5.0f;
 }
 
 
@@ -224,5 +227,16 @@ int32 UKeroroStatComponent::GetDropGold()
 		return 30;
 	}
 	return 0;
+}
+
+void UKeroroStatComponent::StartHeal()
+{
+	GetWorld()->GetTimerManager().SetTimer(HealTimerHandle, [this](){
+		CurrentHp = FMath::Min(CurrentHp + MaxHp * HealPowerRate, MaxHp);
+		UE_LOG(LogTemp, Log, TEXT("Auto heal amount : %f, current hp = %f"), MaxHp * HealPowerRate, CurrentHp);
+		OnHpIsChanged.Broadcast();
+		}, 
+		HealIntervalTime, 
+		true);
 }
 
