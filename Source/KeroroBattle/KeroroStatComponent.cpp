@@ -73,7 +73,7 @@ void UKeroroStatComponent::UpdateStatCardEnhanced(AKeroroPlayerState* PlayerStat
 	//CurrentHp = MaxHp;
 	//CurrentMp = MaxMp;
 
-	AttackSpeedRate = StatData->AttackSpeedRate + PlayerState->AttackSpeedRate_Enhanced;
+	
 	MaxMoveSpeed = StatData->MaxMoveSpeed + PlayerState->MaxMoveSpeed_Enhanced;
 	CritChanceRate = StatData->CritChanceRate + PlayerState->CritChanceRate_Enhanced;
 	SkillCooldownRate = StatData->SkillCooldownRate + PlayerState->SkillCooldownRate_Enhanced;

@@ -3,6 +3,7 @@
 
 #include "KeroroAnimInstance.h"
 #include "KeroroCharacter.h"
+#include "KeroroPlayerState.h"
 #include "KeroroStatComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/PawnMovementComponent.h"
@@ -60,12 +61,28 @@ void UKeroroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		if (IsValid(Pawn))
 		{
 			CurrentPawnSpeed = Pawn->GetVelocity().Size();
+
+			if (KRPlayerState == nullptr)
+			{
+				AKeroroCharacter* kero = Cast<AKeroroCharacter>(Pawn);
+				if (kero)
+				{
+					AKeroroPlayerState* PS = kero->GetPlayerState<AKeroroPlayerState>();
+					if (PS)
+					{
+						KRPlayerState = PS;
+						UE_LOG(LogTemp, Error, TEXT("Set PS Success"));
+
+					}
+				}
+			}
 		}
 		auto Character = Cast<ACharacter>(Pawn);
 		if (Character)
 		{
 			IsInAir = Character->GetMovementComponent()->IsFalling();
 		}
+
 	}
 
 }
@@ -74,26 +91,18 @@ void UKeroroAnimInstance::PlayAttackMontage()
 {
 	if (IsDead) return;
 
-	AKeroroCharacter* kero = Cast<AKeroroCharacter>(TryGetPawnOwner());
-	if (kero)
-	{
-		if (kero->KRStat)
-		{
-			AnimationRunSpeed = kero->KRStat->AttackSpeedRate;
-		}
-		else {
-			UE_LOG(LogTemp, Error, TEXT("KRStat null in PlayAttackMontage"));
-		}
-	}
-	else {
-		UE_LOG(LogTemp, Error, TEXT("kero null in PlayAttackMontage"));
-	}
 
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(TryGetPawnOwner());
+	if (kero && KRPlayerState)
+	{
+		AnimationRunSpeed = KRPlayerState->AttackSpeedRate;
+	}
 
 	if (UAnimMontage* Montage = GetAnimMontage())
 	{
 		if (!Montage_IsPlaying(Montage))
 		{
+			UE_LOG(LogTemp, Error, TEXT("AnimationRunSpeed %f"), AnimationRunSpeed);
 			Montage_Play(Montage, AnimationRunSpeed);
 		}
 	}

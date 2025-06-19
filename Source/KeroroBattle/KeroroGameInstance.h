@@ -80,9 +80,6 @@ public:
 	float CritChanceRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data)
-	float AttackSpeedRate;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data)
 	float SkillCooldownRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data)

@@ -34,6 +34,9 @@ public:
 	
 	void SetDeadAnim();
 	void SetWeaponType(EWeaponType type);
+	
+private:
+	class AKeroroPlayerState* KRPlayerState;
 
 private:
 	UFUNCTION()
@@ -49,6 +52,7 @@ private:
 	void AnimNotify_VoiceCheck();
 
 	FName GetAttackMontageSectionName(int32 Section);
+
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn)

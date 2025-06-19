@@ -73,9 +73,6 @@ public:
 	float CritChanceRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float AttackSpeedRate;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	float SkillCooldownRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)

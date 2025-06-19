@@ -632,7 +632,7 @@ void AKeroroCharacter::ChangeFaceTexture(EFaceType FaceType)
 	if (FaceTextures.IsValidIndex(index))
 	{
 		FaceMaterialInstance->SetTextureParameterValue(FName("FaceTexture"), FaceTextures[index]);
-		UE_LOG(LogTemp, Log, TEXT("Face texture success"));
+		//UE_LOG(LogTemp, Log, TEXT("Face texture success"));
 	}
 }
 
