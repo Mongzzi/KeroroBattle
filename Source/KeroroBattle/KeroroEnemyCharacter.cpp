@@ -108,8 +108,20 @@ float AKeroroEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& 
 	if (bIsDead || EnemyStat == nullptr)
 		return 0.0f;
 
+
+	float RandEvasion = FMath::FRand();
+	//UE_LOG(LogTemp, Error, TEXT("evation rate = %f, "), EnemyStat->EvasionRate);
+
+	if (RandEvasion < EnemyStat->EvasionRate) {
+		UE_LOG(LogTemp, Error, TEXT("evasion attack~~"));
+		return 0.0f;
+	}
+
+	float FinalDamage = DamageAmount * (1.0f - EnemyStat->DefenseRate);
+	//UE_LOG(LogTemp, Error, TEXT("in damage = %f, final Damage = %f"), DamageAmount, FinalDamage);
+
 	// 받은 데미지만큼 체력 감소
-	EnemyStat->SetDamage(DamageAmount);
+	EnemyStat->SetDamage(FinalDamage);
 
 	// 체력이 0이하가 되면 die함수 호출
 	if (EnemyStat->GetHpRatio() <= 0.0f)
@@ -152,7 +164,7 @@ void AKeroroEnemyCharacter::Die()
 				AKeroroCharacter* KR = Cast<AKeroroCharacter>(PC->GetCharacter());
 				int32 DropExp = EnemyStat->GetDropExp();
 				int32 FinalDropExp = static_cast<int32>(DropExp * PS->ExpGainRate);
-				
+
 				//UE_LOG(LogTemp, Error, TEXT("EXP = %d  ExpGainRate = %f "), FinalDropExp, PS->ExpGainRate);
 				// 여기서 타겟 , 경험치구슬 속도 , 경험치 수치 정해주고 구슬이 캐릭터에 닿으면 addexp호출
 				ExpObj->SetTargetAndSpeedAndExp(KR, 1.5f, FinalDropExp);
@@ -210,7 +222,7 @@ void AKeroroEnemyCharacter::AttackCheck()
 		if (IsValid(HitResult.GetActor()) && Cast<AKeroroCharacter>(HitResult.GetActor()))
 		{
 			FDamageEvent DamageEvent;
-			HitResult.GetActor()->TakeDamage(EnemyStat->AttackPower * 2, DamageEvent, GetController(), this);
+			HitResult.GetActor()->TakeDamage(EnemyStat->AttackPower, DamageEvent, GetController(), this);
 			//UE_LOG(LogTemp, Warning, TEXT(" hitted : %s"), *HitResult.GetActor()->GetName());
 
 		}

@@ -125,7 +125,7 @@ void AKeroroCharacter::PostInitializeComponents()
 void AKeroroCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	if (KRPlayerState==nullptr)
+	if (KRPlayerState == nullptr)
 	{
 		KRPlayerState = Cast<AKeroroPlayerState>(NewController->PlayerState);
 		if (KRPlayerState)
@@ -186,7 +186,17 @@ void AKeroroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	float FinalDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	if (KRStat == nullptr) return 0.0f;
+
+	float RandEvasion = FMath::FRand();
+
+	if (RandEvasion < KRStat->EvasionRate) {
+		UE_LOG(LogTemp, Error, TEXT("evasion attack~~"));
+		return 0.0f;
+	}
+
+	float FinalDamage = Damage * (1.0f - KRStat->DefenseRate);
+	UE_LOG(LogTemp, Error, TEXT("in damage = %f, final Damage = %f"), Damage, FinalDamage);
 	KRStat->SetDamage(FinalDamage);
 
 	// 체력이 0이하가 되면 die함수 호출
@@ -500,7 +510,7 @@ void AKeroroCharacter::AttackCheck_Sword()
 			if (IsValid(HitActor) && Cast<AKeroroEnemyCharacter>(Hit.GetActor()))
 			{
 				FDamageEvent DamageEvent;
-				HitActor->TakeDamage(KRStat->AttackPower * 5, DamageEvent, GetController(), this);
+				HitActor->TakeDamage(KRStat->AttackPower, DamageEvent, GetController(), this);
 				//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *HitActor->GetName());
 			}
 		}
@@ -564,7 +574,7 @@ void AKeroroCharacter::AttackCheck_Fist()
 		if (IsValid(HitActor) && HitActor->IsA(AKeroroEnemyCharacter::StaticClass()))
 		{
 			FDamageEvent DamageEvent;
-			HitActor->TakeDamage(KRStat->AttackPower * 5, DamageEvent, GetController(), this);
+			HitActor->TakeDamage(KRStat->AttackPower, DamageEvent, GetController(), this);
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 				GetWorld(),
 				NSFistHitEffect,

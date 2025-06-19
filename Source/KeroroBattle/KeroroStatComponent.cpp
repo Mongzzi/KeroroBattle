@@ -73,40 +73,40 @@ void UKeroroStatComponent::UpdateStatCardEnhanced(AKeroroPlayerState* PlayerStat
 	//CurrentHp = MaxHp;
 	//CurrentMp = MaxMp;
 
-	
+
 	MaxMoveSpeed = StatData->MaxMoveSpeed + PlayerState->MaxMoveSpeed_Enhanced;
 	CritChanceRate = StatData->CritChanceRate + PlayerState->CritChanceRate_Enhanced;
 	SkillCooldownRate = StatData->SkillCooldownRate + PlayerState->SkillCooldownRate_Enhanced;
-	EvasionRate = PlayerState->EvasionRate_Enhanced;
-	DefenseRate += PlayerState->DefenseRate_Enhanced;
+	EvasionRate = StatData->EvasionRate + PlayerState->EvasionRate_Enhanced;
+	DefenseRate = StatData->DefenseRate + PlayerState->DefenseRate_Enhanced;
 
 	// 스탯데이터테이블 존재 x 스탯
 	CritDamageRate = CritDamageRate_Default + PlayerState->CritDamageRate_Enhanced;
-	//ExpGainRate = ExpGainRate_Default + PlayerState->ExpGainRate_Enhanced;
-	//GoldGainRate = GoldGainRate_Default + PlayerState->GoldGainRate_Enhanced;
 	ProjectileCount = ProjectileCount_Default + PlayerState->ProjectileCount_Enhanced;
 	ProjectileScale = ProjectileScale_Default + PlayerState->ProjectileScale_Enhanced;
 	InvincibilityTime = InvincibilityTime_Default + PlayerState->InvincibilityTime_Enhanced;
 	HealPowerRate = HealPowerRate_Default + PlayerState->HealPowerRate_Enhanced;
 	HealPowerOnKill = HealPowerOnKill_Default + PlayerState->HealPowerOnKill_Enhanced;
 
-	//UE_LOG(LogTemp, Warning, TEXT("===== PlayerState Stat Enhancement ====="));
-	//UE_LOG(LogTemp, Warning, TEXT("MaxHP_Enhanced: %f"), PlayerState->MaxHP_Enhanced);
-	//UE_LOG(LogTemp, Warning, TEXT("MaxMP_Enhanced: %f"), PlayerState->MaxMP_Enhanced);
-	//UE_LOG(LogTemp, Warning, TEXT("AttackSpeedRate_Enhanced: %f"), PlayerState->AttackSpeedRate_Enhanced);
-	//UE_LOG(LogTemp, Warning, TEXT("MaxMoveSpeed_Enhanced: %f"), PlayerState->MaxMoveSpeed_Enhanced);
-	//UE_LOG(LogTemp, Warning, TEXT("CritChanceRate_Enhanced: %f"), PlayerState->CritChanceRate_Enhanced);
-	//UE_LOG(LogTemp, Warning, TEXT("SkillCooldownRate_Enhanced: %f"), PlayerState->SkillCooldownRate_Enhanced);
-	//UE_LOG(LogTemp, Warning, TEXT("EvasionRate_Enhanced: %f"), PlayerState->EvasionRate_Enhanced);
-	//UE_LOG(LogTemp, Warning, TEXT("DefenseRate_Enhanced: %f"), PlayerState->DefenseRate_Enhanced);
-	//UE_LOG(LogTemp, Warning, TEXT("CritDamageRate_Enhanced: %f"), PlayerState->CritDamageRate_Enhanced);
-	////UE_LOG(LogTemp, Warning, TEXT("ExpGainRate_Enhanced: %f"), PlayerState->ExpGainRate_Enhanced);
-	////UE_LOG(LogTemp, Warning, TEXT("GoldGainRate_Enhanced: %f"), PlayerState->GoldGainRate_Enhanced);
-	//UE_LOG(LogTemp, Warning, TEXT("ProjectileCount_Enhanced: %d"), PlayerState->ProjectileCount_Enhanced);
-	//UE_LOG(LogTemp, Warning, TEXT("ProjectileScale_Enhanced: %f"), PlayerState->ProjectileScale_Enhanced);
-	//UE_LOG(LogTemp, Warning, TEXT("InvincibilityTime_Enhanced: %f"), PlayerState->InvincibilityTime_Enhanced);
-	//UE_LOG(LogTemp, Warning, TEXT("HealPowerRate_Enhanced: %f"), PlayerState->HealPowerRate_Enhanced);
-	//UE_LOG(LogTemp, Warning, TEXT("HealPowerOnKill_Enhanced: %f"), PlayerState->HealPowerOnKill_Enhanced);
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("===== PlayerState Stat Enhancement ====="));
+		//UE_LOG(LogTemp, Warning, TEXT("MaxHP_Enhanced: %f"), PlayerState->MaxHP_Enhanced);
+		//UE_LOG(LogTemp, Warning, TEXT("MaxMP_Enhanced: %f"), PlayerState->MaxMP_Enhanced);
+		//UE_LOG(LogTemp, Warning, TEXT("AttackSpeedRate_Enhanced: %f"), PlayerState->AttackSpeedRate_Enhanced);
+		//UE_LOG(LogTemp, Warning, TEXT("MaxMoveSpeed_Enhanced: %f"), PlayerState->MaxMoveSpeed_Enhanced);
+		//UE_LOG(LogTemp, Warning, TEXT("CritChanceRate_Enhanced: %f"), PlayerState->CritChanceRate_Enhanced);
+		//UE_LOG(LogTemp, Warning, TEXT("SkillCooldownRate_Enhanced: %f"), PlayerState->SkillCooldownRate_Enhanced);
+		//UE_LOG(LogTemp, Warning, TEXT("EvasionRate_Enhanced: %f"), PlayerState->EvasionRate_Enhanced);
+		//UE_LOG(LogTemp, Warning, TEXT("DefenseRate_Enhanced: %f"), PlayerState->DefenseRate_Enhanced);
+		//UE_LOG(LogTemp, Warning, TEXT("CritDamageRate_Enhanced: %f"), PlayerState->CritDamageRate_Enhanced);
+		////UE_LOG(LogTemp, Warning, TEXT("ExpGainRate_Enhanced: %f"), PlayerState->ExpGainRate_Enhanced);
+		////UE_LOG(LogTemp, Warning, TEXT("GoldGainRate_Enhanced: %f"), PlayerState->GoldGainRate_Enhanced);
+		//UE_LOG(LogTemp, Warning, TEXT("ProjectileCount_Enhanced: %d"), PlayerState->ProjectileCount_Enhanced);
+		//UE_LOG(LogTemp, Warning, TEXT("ProjectileScale_Enhanced: %f"), PlayerState->ProjectileScale_Enhanced);
+		//UE_LOG(LogTemp, Warning, TEXT("InvincibilityTime_Enhanced: %f"), PlayerState->InvincibilityTime_Enhanced);
+		//UE_LOG(LogTemp, Warning, TEXT("HealPowerRate_Enhanced: %f"), PlayerState->HealPowerRate_Enhanced);
+		//UE_LOG(LogTemp, Warning, TEXT("HealPowerOnKill_Enhanced: %f"), PlayerState->HealPowerOnKill_Enhanced);
+	}
 
 }
 
@@ -159,9 +159,17 @@ void UKeroroStatComponent::SetLevel(int32 lv, AKeroroPlayerState* PlayerState)
 			AKeroroEnemyCharacter* enemy = GetOwner<AKeroroEnemyCharacter>();
 			if (enemy)
 			{
-				MaxHp = StatData->MaxHp;	// 플레이어는 UpdateStatCardEnhanced 통해서 해주고있음 // 적캐릭터는 카드강화 업데이트를 안해주기때문에 임시로 체력만 설정
 				AttackPower = StatData->AttackPower;
+				DropExp = StatData->DropExp;
+				NextExp = StatData->NextExp;
+
+				MaxHp = StatData->MaxHp;
+				MaxMp = StatData->MaxMP;
 				MaxMoveSpeed = StatData->MaxMoveSpeed;
+				CritChanceRate = StatData->CritChanceRate;
+				SkillCooldownRate = StatData->SkillCooldownRate;
+				EvasionRate = StatData->EvasionRate;
+				DefenseRate = StatData->DefenseRate;
 			}
 			else
 			{
