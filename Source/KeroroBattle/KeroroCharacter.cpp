@@ -683,17 +683,19 @@ void AKeroroCharacter::ChangeFaceTexture(EFaceType FaceType)
 
 void AKeroroCharacter::StartRun()
 {
-	if (KRAnim != nullptr) {
+	if (KRAnim != nullptr && KRStat != nullptr) {
 		KRAnim->bIsRunning = true;
-		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = KRStat->MaxMoveSpeed;
+		//UE_LOG(LogTemp, Log, TEXT("Current Move Speed = %f"),GetCharacterMovement()->MaxWalkSpeed);
 	}
 }
 
 void AKeroroCharacter::StopRun()
 {
-	if (KRAnim != nullptr) {
+	if (KRAnim != nullptr && KRStat != nullptr) {
 		KRAnim->bIsRunning = false;
 		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+		//UE_LOG(LogTemp, Log, TEXT("Current Move Speed = %f"), GetCharacterMovement()->MaxWalkSpeed);
 	}
 }
 

@@ -18,6 +18,8 @@ UKeroroStatComponent::UKeroroStatComponent()
 
 	Level = 1;
 
+
+
 	HealPowerRate = 0.03f;
 	HealPowerRate_Default = 0.03f;
 
