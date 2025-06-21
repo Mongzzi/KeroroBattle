@@ -4,6 +4,7 @@
 #include "KeroballWeapon.h"
 #include "KeroroCharacter.h"
 #include "KeroroEnemyCharacter.h"
+#include "KeroroStatComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
@@ -63,7 +64,6 @@ void AKeroballWeapon::Explode()
 
 	TArray<FHitResult> HitResults;
 	float DamageRadius = 300.0f;
-	float DamageAmount = 300.0f;
 
 	bool bHit = GetWorld()->SweepMultiByChannel(
 		HitResults,
@@ -76,12 +76,28 @@ void AKeroballWeapon::Explode()
 
 	if (bHit)
 	{
+		AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetInstigator());
+		if (kero == nullptr) return;
+
+		UKeroroStatComponent* kero_stat = kero->KRStat;
+		if (kero_stat == nullptr) return;
+
+		float Damage = kero_stat->AttackPower;
+		float Rand = FMath::FRand();
+
+		if (Rand < kero_stat->CritChanceRate)
+		{
+			Damage *= kero_stat->CritDamageRate;
+			UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f /// Critical Chance Rate = %f"),
+				Damage, kero_stat->AttackPower, kero_stat->CritDamageRate, kero_stat->CritChanceRate);
+		}
+
 		for (auto& Hit : HitResults)
 		{
 			AActor* HitActor = Hit.GetActor();
 			if (HitActor && HitActor->IsA(AKeroroEnemyCharacter::StaticClass()))
 			{
-				UGameplayStatics::ApplyDamage(HitActor, DamageAmount, GetInstigatorController(), this, UDamageType::StaticClass());
+				UGameplayStatics::ApplyDamage(HitActor, Damage, GetInstigatorController(), this, UDamageType::StaticClass());
 				GetWorldTimerManager().ClearTimer(ExplodeTimerHandle);
 			}
 		}
@@ -89,7 +105,7 @@ void AKeroballWeapon::Explode()
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSEffect, GetActorLocation(), FRotator::ZeroRotator, FVector(3.0f));
 	if (BombSound)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, BombSound, GetActorLocation(),3.0f);
+		UGameplayStatics::PlaySoundAtLocation(this, BombSound, GetActorLocation(), 3.0f);
 	}
 	Destroy();
 }

@@ -3,6 +3,8 @@
 
 #include "RifleBullet.h"
 #include "KeroroEnemyCharacter.h"
+#include "KeroroCharacter.h"
+#include "KeroroStatComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -73,7 +75,22 @@ void ARifleBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 {
 	if (OtherActor && Cast<AKeroroEnemyCharacter>(OtherActor))
 	{
-		UGameplayStatics::ApplyDamage(OtherActor, BulletDamage, GetInstigatorController(), this, nullptr);
+		AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetInstigator());
+		if (kero == nullptr) return;
+
+		UKeroroStatComponent* kero_stat = kero->KRStat;
+		if (kero_stat == nullptr) return;
+
+		float Damage = kero_stat->AttackPower;
+		float Rand = FMath::FRand();
+		if (Rand < kero_stat->CritChanceRate)
+		{
+			Damage *= kero_stat->CritDamageRate;
+			UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f /// Critical Chance Rate = %f"),
+				Damage, kero_stat->AttackPower, kero_stat->CritDamageRate, kero_stat->CritChanceRate);
+		}
+
+		UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigatorController(), this, nullptr);
 
 		if (HitEffect)
 		{

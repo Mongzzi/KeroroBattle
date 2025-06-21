@@ -3,6 +3,7 @@
 
 #include "NoteBookWeapon.h"
 #include "KeroroCharacter.h"
+#include "KeroroStatComponent.h"
 #include "Engine/DamageEvents.h"
 #include "KeroroStatComponent.h"
 #include "KeroroEnemyCharacter.h"
@@ -83,7 +84,7 @@ void ANoteBookWeapon::PlaySound(int32 ComboIndex)
 					AudioComp->Stop();
 				}
 				},
-				EffectRemainTime,false);
+				EffectRemainTime, false);
 		}
 	}
 }
@@ -206,13 +207,29 @@ void ANoteBookWeapon::AttackCheck_NoteBook()
 
 	if (bHit)
 	{
+		AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetInstigator());
+		if (kero == nullptr) return;
+
+		UKeroroStatComponent* kero_stat = kero->KRStat;
+		if (kero_stat == nullptr) return;
+
+		float Damage = kero_stat->AttackPower;
+		float Rand = FMath::FRand();
+
+		if (Rand < kero_stat->CritChanceRate)
+		{
+			Damage *= kero_stat->CritDamageRate;
+			UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f /// Critical Chance Rate = %f"),
+				Damage, kero_stat->AttackPower, kero_stat->CritDamageRate, kero_stat->CritChanceRate);
+		}
+
 		for (const FHitResult& Hit : HitResults)
 		{
 			AActor* HitActor = Hit.GetActor();
 			if (IsValid(HitActor) && Cast<AKeroroEnemyCharacter>(Hit.GetActor()))
 			{
 				FDamageEvent DamageEvent;
-				HitActor->TakeDamage(10.0f, DamageEvent, OwnerKero->GetController(), this);
+				HitActor->TakeDamage(Damage/3, DamageEvent, OwnerKero->GetController(), this);
 				//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *HitActor->GetName());
 			}
 		}
@@ -230,7 +247,6 @@ void ANoteBookWeapon::AttackCheck_NoteBook()
 	}
 
 }
-
 
 void ANoteBookWeapon::DeactivateMagicCircle()
 {

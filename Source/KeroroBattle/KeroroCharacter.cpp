@@ -292,23 +292,27 @@ void AKeroroCharacter::SetWeapon()
 		Weapon->Destroy();
 	}
 
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	SpawnParams.Instigator = this;
+
 	switch (WeaponType)
 	{
 	case EWeaponType::FIST:
-		Weapon = GetWorld()->SpawnActor<AFistWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+		Weapon = GetWorld()->SpawnActor<AFistWeapon>(FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 		Cast<AFistWeapon>(Weapon)->InitEffect(this);
 		break;
 	case EWeaponType::KEROBALL:
-		Weapon = GetWorld()->SpawnActor<AKeroballWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+		Weapon = GetWorld()->SpawnActor<AKeroballWeapon>(FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 		break;
 	case EWeaponType::RIFLE:
-		Weapon = GetWorld()->SpawnActor<ARifleWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+		Weapon = GetWorld()->SpawnActor<ARifleWeapon>(FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 		break;
 	case EWeaponType::SWORD:
-		Weapon = GetWorld()->SpawnActor<ASwordWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+		Weapon = GetWorld()->SpawnActor<ASwordWeapon>(FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 		break;
 	case EWeaponType::NOTEBOOK:
-		Weapon = GetWorld()->SpawnActor<ANoteBookWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+		Weapon = GetWorld()->SpawnActor<ANoteBookWeapon>(FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 		Cast<ANoteBookWeapon>(Weapon)->InitEffect(this);
 		break;
 	}
@@ -499,9 +503,16 @@ void AKeroroCharacter::AttackCheck_Sword()
 			AActor* HitActor = Hit.GetActor();
 			if (IsValid(HitActor) && Cast<AKeroroEnemyCharacter>(Hit.GetActor()))
 			{
+				float FinalDamage = KRStat->AttackPower;
+				float Rand = FMath::FRand();
+				if (Rand < KRStat->CritChanceRate)
+				{
+					FinalDamage *= KRStat->CritDamageRate;
+					UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f"), FinalDamage, KRStat->AttackPower, KRStat->CritDamageRate);
+				}
+
 				FDamageEvent DamageEvent;
-				HitActor->TakeDamage(KRStat->AttackPower, DamageEvent, GetController(), this);
-				//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *HitActor->GetName());
+				HitActor->TakeDamage(FinalDamage, DamageEvent, GetController(), this);
 			}
 		}
 		if (KRStat)
@@ -602,8 +613,18 @@ void AKeroroCharacter::AttackCheck_Fist()
 		AActor* HitActor = HitResult.GetActor();
 		if (IsValid(HitActor) && HitActor->IsA(AKeroroEnemyCharacter::StaticClass()))
 		{
+
+			float FinalDamage = KRStat->AttackPower;
+			float Rand = FMath::FRand();
+			if (Rand < KRStat->CritChanceRate)
+			{
+				FinalDamage *= KRStat->CritDamageRate;
+				UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f"), FinalDamage, KRStat->AttackPower, KRStat->CritDamageRate);
+			}
+
 			FDamageEvent DamageEvent;
-			HitActor->TakeDamage(KRStat->AttackPower, DamageEvent, GetController(), this);
+			HitActor->TakeDamage(FinalDamage*3, DamageEvent, GetController(), this);
+
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 				GetWorld(),
 				NSFistHitEffect,

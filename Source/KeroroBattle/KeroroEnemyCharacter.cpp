@@ -222,7 +222,16 @@ void AKeroroEnemyCharacter::AttackCheck()
 		if (IsValid(HitResult.GetActor()) && Cast<AKeroroCharacter>(HitResult.GetActor()))
 		{
 			FDamageEvent DamageEvent;
-			HitResult.GetActor()->TakeDamage(EnemyStat->AttackPower, DamageEvent, GetController(), this);
+
+			float FinalDamage = EnemyStat->AttackPower;
+			float Rand = FMath::FRand();
+			if (Rand < EnemyStat->CritChanceRate)
+			{
+				FinalDamage *= EnemyStat->CritDamageRate;
+				UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f"), FinalDamage, EnemyStat->AttackPower, EnemyStat->CritDamageRate);
+			}
+
+			HitResult.GetActor()->TakeDamage(FinalDamage, DamageEvent, GetController(), this);
 			//UE_LOG(LogTemp, Warning, TEXT(" hitted : %s"), *HitResult.GetActor()->GetName());
 
 		}

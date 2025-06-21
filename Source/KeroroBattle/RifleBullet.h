@@ -38,9 +38,6 @@ protected:
 	class UNiagaraSystem* HitEffect;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Bullet")
-	float BulletDamage = 10.0f;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Bullet")
 	float BulletSpeed = 3000.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Bullet")
