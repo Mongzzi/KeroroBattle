@@ -53,6 +53,16 @@ void UKeroroStatComponent::InitializeComponent()
 	Super::InitializeComponent();
 }
 
+void UKeroroStatComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (GetWorld())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(HealTimerHandle);
+	}
+}
+
 void UKeroroStatComponent::UpdateStatCardEnhanced(AKeroroPlayerState* PlayerState)
 {
 	if (!PlayerState)
