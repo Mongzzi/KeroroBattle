@@ -19,7 +19,7 @@ ARifleBullet::ARifleBullet()
 	// ÄÝ¸®Àü
 	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("COLLISION"));
 	Collision->InitSphereRadius(10.0f);
-	Collision->SetCollisionProfileName(TEXT("BlockAllDynamic"));
+	Collision->SetCollisionProfileName(TEXT("Bullet"));
 	RootComponent = Collision;
 	Collision->OnComponentHit.AddDynamic(this, &ARifleBullet::OnHit);
 

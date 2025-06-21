@@ -520,15 +520,50 @@ void AKeroroCharacter::AttackCheck_Sword()
 
 void AKeroroCharacter::AttackCheck_Rifle()
 {
-	FRotator MuzzleRotation = GetControlRotation();
-	MuzzleRotation.Pitch = 0.0f;
-	FVector MuzzleOffset = FVector(100.f, 0.0f, 25.0f);
-	FVector MuzzleLocation = GetActorLocation() + MuzzleRotation.RotateVector(MuzzleOffset);
+	if (!KRStat)
+	{
+		UE_LOG(LogTemp, Error, TEXT("KRStat in null in AttackCheck_Rifle"));
+		return;
+	}
+
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	//SpawnParams.Owner = this;
 	SpawnParams.Instigator = this;
-	GetWorld()->SpawnActor<ARifleBullet>(ARifleBullet::StaticClass(), MuzzleLocation, MuzzleRotation, SpawnParams);
+
+	int32  BulletNum = KRStat->ProjectileCount;
+	float BulletScale = KRStat->ProjectileScale;
+
+	float MaxAngle = 45.0f;
+	float BaseYaw = GetControlRotation().Yaw;
+	float AddYaw = (BulletNum > 1) ? (MaxAngle * 2.0f) / (BulletNum - 1) : 0.0f;
+
+	TArray<int> BulletSequence;	// 불릿 스폰 순서 담는 컨테이너 좌우 좌우 반복하며 생성
+	BulletSequence.Add(0); // 중앙부터 시작
+	for (int i = 1; i <= BulletNum / 2; i++)
+	{
+		if (BulletSequence.Num() < BulletNum) BulletSequence.Add(i);
+		if (BulletSequence.Num() < BulletNum) BulletSequence.Add(-i);
+	}
+
+	for (int i = 0; i < BulletSequence.Num(); i++)
+	{
+		int Adjust = BulletSequence[i];
+		float YawOffset = Adjust * AddYaw;
+
+		FRotator MuzzleRotation = GetControlRotation();
+		MuzzleRotation.Pitch = 0.0f;
+		MuzzleRotation.Yaw = BaseYaw + YawOffset;
+
+		FVector MuzzleOffset = FVector(100.f, 0.0f, 25.0f);
+		FVector MuzzleLocation = GetActorLocation() + MuzzleRotation.RotateVector(MuzzleOffset);
+
+
+		ARifleBullet* Bullet = GetWorld()->SpawnActor<ARifleBullet>(ARifleBullet::StaticClass(), MuzzleLocation, MuzzleRotation, SpawnParams);
+		Bullet->SetActorScale3D(FVector(BulletScale));
+	}
+
+
+	// 총기 발사 사운드
 	Weapon->PlaySound(CurrentCombo);
 }
 
@@ -598,6 +633,7 @@ void AKeroroCharacter::SpawnToHand()
 {
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Instigator = this;
+
 	Weapon = GetWorld()->SpawnActor<AKeroballWeapon>(FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 	TArray<FName> SocketNames = Weapon->GetSocketNames();
 	if (SocketNames.IsValidIndex(0))

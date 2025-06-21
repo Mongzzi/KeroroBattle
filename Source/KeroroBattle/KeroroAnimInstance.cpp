@@ -102,7 +102,7 @@ void UKeroroAnimInstance::PlayAttackMontage()
 	{
 		if (!Montage_IsPlaying(Montage))
 		{
-			UE_LOG(LogTemp, Error, TEXT("AnimationRunSpeed %f"), AnimationRunSpeed);
+			//UE_LOG(LogTemp, Error, TEXT("AnimationRunSpeed %f"), AnimationRunSpeed);
 			Montage_Play(Montage, AnimationRunSpeed);
 		}
 	}
