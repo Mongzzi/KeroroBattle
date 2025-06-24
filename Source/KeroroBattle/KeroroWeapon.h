@@ -24,7 +24,7 @@ protected:
 
 public:
 	virtual void PlayEffect(class AKeroroCharacter* Character);
-	//virtual void PlayHitEffect(FVector );
+	virtual void PlayHitEffect(FVector HitLocation, FRotator HitRotator,FVector Scale);
 	virtual void PlayHitSound(int32 CurrentCombo = 0);
 	virtual void PlaySound(int32 ComboIndex);
 	virtual void Throw(const FVector& Direction, float Force);

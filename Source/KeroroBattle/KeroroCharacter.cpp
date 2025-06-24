@@ -54,20 +54,11 @@ AKeroroCharacter::AKeroroCharacter()
 	KRStat = CreateDefaultSubobject<UKeroroStatComponent>(TEXT("KRSTAT"));
 
 	// 나이아가라 이펙트 추가
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NE(TEXT("/Game/Knife_light/VFX/NE_attack02.NE_attack02"));
-	if (NE.Succeeded())
-	{
-		NSSWordEffect = NE.Object;
-	}
+
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NE2(TEXT("/Game/MuzzleFlash/MuzzleFlash/Niagara/NS_MuzzleFlash.NS_MuzzleFlash"));
 	if (NE2.Succeeded())
 	{
 		NSRifleEffect = NE2.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NE3(TEXT("/Game/Vefects/Zap_VFX/VFX/Zap/Particles/NS_Zap_03_Yellow.NS_Zap_03_Yellow"));
-	if (NE3.Succeeded())
-	{
-		NSFistHitEffect = NE3.Object;
 	}
 
 	// HP바 추가
@@ -293,6 +284,14 @@ void AKeroroCharacter::PlayHitSound(int32 Combo)
 	}
 }
 
+void AKeroroCharacter::PlayHitEffect(FVector HitLocation, FRotator HitRotator, FVector Scale)
+{
+	if (Weapon)
+	{
+		Weapon->PlayHitEffect(HitLocation, HitRotator, Scale);
+	}
+}
+
 void AKeroroCharacter::PlayWeaponSound()
 {
 	if (Weapon)
@@ -346,12 +345,6 @@ void AKeroroCharacter::PlayEffect()
 {
 	if (WeaponType == EWeaponType::SWORD)
 	{
-		//UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSSWordEffect,
-		//	GetActorLocation() + GetActorForwardVector() * 100.0f, // 캐릭터 앞 방향으로 100 유닛 이동
-		//	GetActorRotation(),
-		//	FVector(2.0f)
-		//);
-
 		Cast<ASwordWeapon>(Weapon)->PlayEffect(this);
 	}
 	else if (WeaponType == EWeaponType::RIFLE)
@@ -529,9 +522,9 @@ void AKeroroCharacter::AttackCheck_Sword()
 					FinalDamage *= KRStat->CritDamageRate;
 					UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f"), FinalDamage, KRStat->AttackPower, KRStat->CritDamageRate);
 				}
-
 				FDamageEvent DamageEvent;
 				HitActor->TakeDamage(FinalDamage, DamageEvent, GetController(), this);
+				PlayHitEffect(Hit.ImpactPoint, Hit.ImpactNormal.Rotation(),FVector(0.5f));
 			}
 		}
 		if (KRStat)
@@ -643,16 +636,10 @@ void AKeroroCharacter::AttackCheck_Fist()
 			}
 
 			FDamageEvent DamageEvent;
-			HitActor->TakeDamage(FinalDamage*3, DamageEvent, GetController(), this);
+			HitActor->TakeDamage(FinalDamage * 3, DamageEvent, GetController(), this);
 
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-				GetWorld(),
-				NSFistHitEffect,
-				HitResult.ImpactPoint,
-				HitResult.ImpactNormal.Rotation(),
-				FVector(1.0f)
-			);
-			Weapon->PlayHitSound(CurrentCombo);
+			PlayHitEffect(HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
+			PlayHitSound(CurrentCombo);
 
 		}
 		if (KRStat)

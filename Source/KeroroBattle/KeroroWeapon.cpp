@@ -30,6 +30,10 @@ void AKeroroWeapon::PlayEffect(AKeroroCharacter* Character)
 {
 }
 
+void AKeroroWeapon::PlayHitEffect(FVector HitLocation, FRotator HitRotator,FVector Scale)
+{
+}
+
 void AKeroroWeapon::PlayHitSound(int32 CurrentCombo)
 {
 }

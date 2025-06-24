@@ -18,8 +18,9 @@ public:
 	ASwordWeapon();
 
 	virtual void PlayEffect(class AKeroroCharacter* Character) override;
+	virtual void PlayHitEffect(FVector HitLocation, FRotator HitRotator,FVector Scale) override;
 	virtual void PlayHitSound(int32 CurrentCombo) override;
-	virtual void PlaySound(int32 ComboIndex);
+	virtual void PlaySound(int32 ComboIndex) override;
 
 	UPROPERTY(EditAnywhere, Category = Sound)
 	TArray<USoundWave*> AttackSound;
@@ -29,5 +30,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Effect)
 	class UNiagaraSystem* NSEffect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Effect)
+	class UNiagaraSystem* HitEffect;
 
 };

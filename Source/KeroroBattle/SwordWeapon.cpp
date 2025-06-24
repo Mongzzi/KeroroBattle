@@ -27,6 +27,12 @@ ASwordWeapon::ASwordWeapon()
 		NSEffect = SWORDTRAIL.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem>HITEFFECT(TEXT("/Game/MixedVFX/Particles/Slashes/NS_VampireSlash.NS_VampireSlash"));
+	if (HITEFFECT.Succeeded())
+	{
+		HitEffect = HITEFFECT.Object;
+	}
+
 	static ConstructorHelpers::FObjectFinder<USoundWave>SWORDSOUND13(TEXT("/Script/Engine.SoundWave'/Game/Keroro_Sound/dororo/sword_13.sword_13'"));
 	if (SWORDSOUND13.Succeeded())
 	{
@@ -79,6 +85,17 @@ void ASwordWeapon::PlayEffect(AKeroroCharacter* Character)
 		//		}
 		//	}, 1.5f, false);
 	}
+}
+
+void ASwordWeapon::PlayHitEffect(FVector HitLocation, FRotator HitRotator,FVector Scale)
+{
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		GetWorld(),
+		HitEffect,
+		HitLocation,
+		HitRotator,
+		Scale
+	);
 }
 
 void ASwordWeapon::PlayHitSound(int32 CurrentCombo)

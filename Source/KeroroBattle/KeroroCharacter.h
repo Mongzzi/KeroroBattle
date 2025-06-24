@@ -35,13 +35,7 @@ public:
 public:
 	// 나이아가라 시스템
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
-	class UNiagaraSystem* NSSWordEffect;
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
 	class UNiagaraSystem* NSRifleEffect;
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
-	class UNiagaraSystem* NSFistHitEffect;
 
 	// 이펙트 생성
 	UFUNCTION()
@@ -78,6 +72,7 @@ public:
 	void StartNewAttack();
 	void PlayVoiceSound();
 	void PlayHitSound(int32 Combo=0);
+	void PlayHitEffect(FVector HitLocation, FRotator HitRotator,FVector Scale = FVector(1.0f));
 	void PlayWeaponSound();
 	bool GetIsAttacking() { return IsAttacking; };
 
@@ -144,12 +139,9 @@ private:
 	UPROPERTY()
 	class AKeroroPlayerController* KRPlayerContoller;
 
-
-
-
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KeroroType)
-	EKeroroType CurrentKeroroType = EKeroroType::Dororo;
+	EKeroroType CurrentKeroroType = EKeroroType::Tamama;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat)
 	float RunSpeed;
