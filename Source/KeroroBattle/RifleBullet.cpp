@@ -54,6 +54,18 @@ ARifleBullet::ARifleBullet()
 		HitEffect = HITEFFECT.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<USoundWave>HITSOUND(TEXT("/Game/Keroro_Sound/giroro/bullet_hit1.bullet_hit1"));
+	if (HITSOUND.Succeeded())
+	{
+		HitSounds.Add(HITSOUND.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundWave>HITSOUND2(TEXT("/Game/Keroro_Sound/giroro/bullet_hit2.bullet_hit2"));
+	if (HITSOUND2.Succeeded())
+	{
+		HitSounds.Add(HITSOUND2.Object);
+	}
+
 	// 발사체 이동 컴포넌트
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("PROJECTILE"));
 	ProjectileMovement->InitialSpeed = BulletSpeed;
@@ -102,6 +114,13 @@ void ARifleBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 				FVector(10.0f)
 			);
 		}
+
+		if (HitSounds[0] && HitSounds[1])
+		{
+			int RandInt = FMath::RandRange(0, 1);
+			UGameplayStatics::PlaySoundAtLocation(this, HitSounds[RandInt], GetActorLocation(), 1.0f);
+		}
+
 	}
 	Destroy();
 }

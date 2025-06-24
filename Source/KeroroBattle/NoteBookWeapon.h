@@ -19,6 +19,8 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void PlayHitSound(int32 CurrentCombo) override;
 	virtual void PlaySound(int32 ComboIndex) override;
 
 	void InitEffect(class AKeroroCharacter* kero);

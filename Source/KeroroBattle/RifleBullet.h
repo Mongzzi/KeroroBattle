@@ -34,11 +34,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Effect")
 	class UNiagaraSystem* BulletEffect;
 
+	UPROPERTY(EditAnywhere, Category = Sound)
+	TArray<USoundBase*> HitSounds;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Effect")
 	class UNiagaraSystem* HitEffect;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Bullet")
-	float BulletSpeed = 3000.0f;
+	float BulletSpeed = 6000.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Bullet")
 	float LifeSpanTime = 3.0f;

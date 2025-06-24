@@ -26,7 +26,31 @@ ASwordWeapon::ASwordWeapon()
 	{
 		NSEffect = SWORDTRAIL.Object;
 	}
-} 
+
+	static ConstructorHelpers::FObjectFinder<USoundWave>SWORDSOUND13(TEXT("/Script/Engine.SoundWave'/Game/Keroro_Sound/dororo/sword_13.sword_13'"));
+	if (SWORDSOUND13.Succeeded())
+	{
+		AttackSound.Add(SWORDSOUND13.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundWave>SWORDSOUND2(TEXT("/Script/Engine.SoundWave'/Game/Keroro_Sound/dororo/sword_2.sword_2'"));
+	if (SWORDSOUND2.Succeeded())
+	{
+		AttackSound.Add(SWORDSOUND2.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundWave>SWORDSOUND4(TEXT("/Script/Engine.SoundWave'/Game/Keroro_Sound/dororo/sword_4.sword_4'"));
+	if (SWORDSOUND2.Succeeded())
+	{
+		AttackSound.Add(SWORDSOUND4.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundWave>HITSOUND(TEXT("/Game/Keroro_Sound/dororo/sword_hit.sword_hit"));
+	if (HITSOUND.Succeeded())
+	{
+		HitSound=HITSOUND.Object;
+	}
+}
 
 void ASwordWeapon::PlayEffect(AKeroroCharacter* Character)
 {
@@ -54,5 +78,34 @@ void ASwordWeapon::PlayEffect(AKeroroCharacter* Character)
 		//			a->DestroyComponent();
 		//		}
 		//	}, 1.5f, false);
+	}
+}
+
+void ASwordWeapon::PlayHitSound(int32 CurrentCombo)
+{
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSound, GetActorLocation(), 1.0f);
+}
+
+
+// 콤보 인덱스 1~4 // 사운드 컨테이너 인덱스 0,1,2 순 저장
+void ASwordWeapon::PlaySound(int32 ComboIndex)
+{
+	int SoundIndex;
+
+	if (ComboIndex == 1 || ComboIndex == 3)
+	{
+		SoundIndex = 0;
+	}
+	else if (ComboIndex == 2)
+	{
+		SoundIndex = 1;
+	}
+	else {
+		SoundIndex = 2;
+	}
+
+	if (AttackSound[SoundIndex])
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, AttackSound[SoundIndex], GetActorLocation(), 1.7f);
 	}
 }

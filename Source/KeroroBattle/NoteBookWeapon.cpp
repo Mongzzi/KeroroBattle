@@ -68,6 +68,10 @@ void ANoteBookWeapon::Tick(float DeltaTime)
 
 }
 
+void ANoteBookWeapon::PlayHitSound(int32 CurrentCombo)
+{
+}
+
 void ANoteBookWeapon::PlaySound(int32 ComboIndex)
 {
 	if (FinalEffectSound)

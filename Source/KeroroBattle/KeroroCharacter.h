@@ -77,6 +77,8 @@ public:
 	void HandleComboInput();
 	void StartNewAttack();
 	void PlayVoiceSound();
+	void PlayHitSound(int32 Combo=0);
+	void PlayWeaponSound();
 	bool GetIsAttacking() { return IsAttacking; };
 
 
@@ -147,7 +149,7 @@ private:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KeroroType)
-	EKeroroType CurrentKeroroType = EKeroroType::Kururu;
+	EKeroroType CurrentKeroroType = EKeroroType::Dororo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat)
 	float RunSpeed;

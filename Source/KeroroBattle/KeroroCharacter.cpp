@@ -285,6 +285,22 @@ void AKeroroCharacter::PlayVoiceSound()
 	}
 }
 
+void AKeroroCharacter::PlayHitSound(int32 Combo)
+{
+	if (Weapon)
+	{
+		Weapon->PlayHitSound(Combo);
+	}
+}
+
+void AKeroroCharacter::PlayWeaponSound()
+{
+	if (Weapon)
+	{
+		Weapon->PlaySound(CurrentCombo);
+	}
+}
+
 void AKeroroCharacter::SetWeapon()
 {
 	if (Weapon)
@@ -395,6 +411,9 @@ void AKeroroCharacter::BindCharacterEvents()
 
 		// 캐릭터 보이스 체크 바인딩
 		KRAnim->OnVoiceCheck.AddUObject(this, &AKeroroCharacter::PlayVoiceSound);
+
+		// 무기 공격 사운드 바인딩
+		KRAnim->OnWeaponSoundCheck.AddUObject(this, &AKeroroCharacter::PlayWeaponSound);
 
 		// 무기 다시생성
 		if (WeaponType == EWeaponType::KEROBALL)
@@ -519,6 +538,7 @@ void AKeroroCharacter::AttackCheck_Sword()
 		{
 			KRStat->AttackHeal();
 		}
+		PlayHitSound();
 	}
 
 	//if (KRStat) {
@@ -546,7 +566,7 @@ void AKeroroCharacter::AttackCheck_Rifle()
 
 	float MaxAngle = 45.0f;
 	float BaseYaw = GetControlRotation().Yaw;
-	float AddYaw = (BulletNum > 1) ? (MaxAngle * 2.0f) / (BulletNum - 1) : 0.0f;
+	float AddYaw = (BulletNum > 1) ? (MaxAngle) / (BulletNum - 1) : 0.0f;
 
 	TArray<int> BulletSequence;	// 불릿 스폰 순서 담는 컨테이너 좌우 좌우 반복하며 생성
 	BulletSequence.Add(0); // 중앙부터 시작
@@ -632,7 +652,7 @@ void AKeroroCharacter::AttackCheck_Fist()
 				HitResult.ImpactNormal.Rotation(),
 				FVector(1.0f)
 			);
-			Weapon->PlaySound(CurrentCombo);
+			Weapon->PlayHitSound(CurrentCombo);
 
 		}
 		if (KRStat)

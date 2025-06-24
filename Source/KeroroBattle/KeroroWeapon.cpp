@@ -30,6 +30,10 @@ void AKeroroWeapon::PlayEffect(AKeroroCharacter* Character)
 {
 }
 
+void AKeroroWeapon::PlayHitSound(int32 CurrentCombo)
+{
+}
+
 void AKeroroWeapon::PlaySound(int32 ComboIndex)
 {
 }

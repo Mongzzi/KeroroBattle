@@ -7,7 +7,7 @@
 #include "SwordWeapon.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class KEROROBATTLE_API ASwordWeapon : public AKeroroWeapon
@@ -17,11 +17,17 @@ class KEROROBATTLE_API ASwordWeapon : public AKeroroWeapon
 public:
 	ASwordWeapon();
 
-	virtual void PlayEffect(class AKeroroCharacter* Character)override;
+	virtual void PlayEffect(class AKeroroCharacter* Character) override;
+	virtual void PlayHitSound(int32 CurrentCombo) override;
+	virtual void PlaySound(int32 ComboIndex);
 
-	UPROPERTY(EditAnywhere, Category = "Sound")
-	USoundBase* BombSound;
+	UPROPERTY(EditAnywhere, Category = Sound)
+	TArray<USoundWave*> AttackSound;
+
+	UPROPERTY(EditAnywhere,Category= Sound)
+	USoundBase* HitSound;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Effect)
 	class UNiagaraSystem* NSEffect;
+
 };

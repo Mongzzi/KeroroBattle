@@ -21,23 +21,25 @@ AFistWeapon::AFistWeapon()
 	static ConstructorHelpers::FObjectFinder<USoundWave>SOUND1(TEXT("/Game/Keroro_Sound/weapon/fist/punch.punch"));
 	if (SOUND1.Succeeded())
 	{
-		FistComboAttackSounds.Add(SOUND1.Object);
+		HitSounds.Add(SOUND1.Object);
 	}
 	static ConstructorHelpers::FObjectFinder<USoundWave>SOUND2(TEXT("/Game/Keroro_Sound/weapon/fist/punch2.punch2"));
 	if (SOUND2.Succeeded())
 	{
-		FistComboAttackSounds.Add(SOUND2.Object);
+		HitSounds.Add(SOUND2.Object);
 	}
 	static ConstructorHelpers::FObjectFinder<USoundWave>SOUND3(TEXT("/Game/Keroro_Sound/weapon/fist/punch3.punch3"));
 	if (SOUND3.Succeeded())
 	{
-		FistComboAttackSounds.Add(SOUND3.Object);
+		HitSounds.Add(SOUND3.Object);
 	}
 	static ConstructorHelpers::FObjectFinder<USoundWave>SOUND4(TEXT("/Game/Keroro_Sound/weapon/fist/punch4.punch4"));
 	if (SOUND4.Succeeded())
 	{
-		FistComboAttackSounds.Add(SOUND4.Object);
+		HitSounds.Add(SOUND4.Object);
 	}
+
+
 }
 
 void AFistWeapon::InitEffect(AKeroroCharacter* kero)
@@ -79,11 +81,11 @@ void AFistWeapon::InitEffect(AKeroroCharacter* kero)
 	}
 }
 
-void AFistWeapon::PlaySound(int32 ComboIndex)
+void AFistWeapon::PlayHitSound(int32 ComboIndex)
 {
 	if (FMath::IsWithinInclusive<int32>(ComboIndex, 1, 4))
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, FistComboAttackSounds[ComboIndex - 1], GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(this, HitSounds[ComboIndex - 1], GetActorLocation());
 	}
 }
 
