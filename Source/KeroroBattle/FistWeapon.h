@@ -17,6 +17,7 @@ class KEROROBATTLE_API AFistWeapon : public AKeroroWeapon
 public:
 	AFistWeapon();
 	void InitEffect(class AKeroroCharacter* kero);
+	virtual void PlayHitEffect(FVector HitLocation, FRotator HitRotator, FVector Scale) override;
 	virtual void PlayHitSound(int32 ComboIndex) override;
 
 protected:
@@ -27,8 +28,13 @@ protected:
 	TArray<USoundWave*> HitSounds;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Effect)
+	class UNiagaraSystem* HitEffect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Effect)
 	class UNiagaraSystem* NSEffect;
 
 	UPROPERTY(EditAnywhere, Category = Effect)
 	TArray<class UNiagaraComponent*> NCEffects;
+
+
 };

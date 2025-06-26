@@ -39,7 +39,11 @@ AFistWeapon::AFistWeapon()
 		HitSounds.Add(SOUND4.Object);
 	}
 
-
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NE3(TEXT("/Game/Vefects/Zap_VFX/VFX/Zap/Particles/NS_Zap_03_Yellow.NS_Zap_03_Yellow"));
+	if (NE3.Succeeded())
+	{
+		HitEffect = NE3.Object;
+	}
 }
 
 void AFistWeapon::InitEffect(AKeroroCharacter* kero)
@@ -79,6 +83,17 @@ void AFistWeapon::InitEffect(AKeroroCharacter* kero)
 		b->SetRelativeScale3D(FVector(0.5f));
 		NCEffects.Add(b);
 	}
+}
+
+void AFistWeapon::PlayHitEffect(FVector HitLocation, FRotator HitRotator, FVector Scale)
+{
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		GetWorld(),
+		HitEffect,
+		HitLocation,
+		HitRotator,
+		Scale
+	);
 }
 
 void AFistWeapon::PlayHitSound(int32 ComboIndex)
