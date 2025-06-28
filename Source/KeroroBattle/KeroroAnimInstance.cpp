@@ -144,6 +144,12 @@ void UKeroroAnimInstance::AnimNotify_WeaponSound()
 	OnWeaponSoundCheck.Broadcast();
 }
 
+void UKeroroAnimInstance::AnimNotify_HitDown()
+{
+	bIsHit = false;
+	UE_LOG(LogTemp, Error, TEXT("HitDown"));
+}
+
 FName UKeroroAnimInstance::GetAttackMontageSectionName(int32 Section)
 {
 	if (FMath::IsWithinInclusive<int32>(Section, 1, 4)) return FName(*FString::Printf(TEXT("Attack%d"), Section));

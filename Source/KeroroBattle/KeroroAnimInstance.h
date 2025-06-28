@@ -56,6 +56,9 @@ private:
 	UFUNCTION()
 	void AnimNotify_WeaponSound();
 
+	UFUNCTION()
+	void AnimNotify_HitDown();
+
 	FName GetAttackMontageSectionName(int32 Section);
 
 
@@ -68,6 +71,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn)
 	bool bIsRunning;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn)
+	bool bIsHit;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	EWeaponType WeaponType;

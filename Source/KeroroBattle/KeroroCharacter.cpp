@@ -177,16 +177,22 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 	}
 
 	float FinalDamage = Damage * (1.0f - KRStat->DefenseRate);
-	//UE_LOG(LogTemp, Error, TEXT("in damage = %f, final Damage = %f"), Damage, FinalDamage);
 	KRStat->SetDamage(FinalDamage);
 
-	// 체력이 0이하가 되면 die함수 호출
+	if (KRAnim)
+	{
+		// 애님 인스턴스에 피격 처리
+		KRAnim->bIsHit = true;
+		// bIsHit = false는 AnimNotify에서 처리 예정
+	}
+
 	if (KRStat->GetHpRatio() <= 0.0f)
 	{
 		SetActorEnableCollision(false);
 		SetLifeSpan(5.0f);
 		Die();
 	}
+
 	return FinalDamage;
 }
 
@@ -217,6 +223,11 @@ void AKeroroCharacter::Attack()
 	//	Cast<ANoteBookWeapon>(Weapon)->ActivateFinalEffect();
 	//	KRAnim->PlayAttackMontage();
 	//}
+	
+	if (KRAnim)
+	{
+		if (KRAnim->bIsHit) return;
+	}
 
 	if (IsAttacking) // 애니메이션(몽타주) 재생중인가
 	{
@@ -450,7 +461,7 @@ void AKeroroCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterru
 	IsAttacking = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true; // 입력 방향 따라 몸 회전
 	AttackEndComboState();
-	OnAttaackEnd.Broadcast();
+	//OnAttaackEnd.Broadcast();
 }
 
 void AKeroroCharacter::AttackStartComboState()
@@ -524,7 +535,7 @@ void AKeroroCharacter::AttackCheck_Sword()
 				}
 				FDamageEvent DamageEvent;
 				HitActor->TakeDamage(FinalDamage, DamageEvent, GetController(), this);
-				PlayHitEffect(Hit.ImpactPoint, Hit.ImpactNormal.Rotation(),FVector(0.5f));
+				PlayHitEffect(Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), FVector(0.5f));
 			}
 		}
 		if (KRStat)
@@ -711,6 +722,12 @@ void AKeroroCharacter::ChangeFaceTexture(EFaceType FaceType)
 
 void AKeroroCharacter::StartRun()
 {
+	if (KRAnim)
+	{
+		if (KRAnim->bIsHit)
+			return;
+	}
+
 	if (KRAnim != nullptr && KRStat != nullptr) {
 		KRAnim->bIsRunning = true;
 		GetCharacterMovement()->MaxWalkSpeed = KRStat->MaxMoveSpeed;
