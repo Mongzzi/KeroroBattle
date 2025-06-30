@@ -169,21 +169,13 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 {
 	if (KRStat == nullptr) return 0.0f;
 
-	float RandEvasion = FMath::FRand();
+	float FinalDamage = KRStat->SetFinalDamage(Damage);
 
-	if (RandEvasion < KRStat->EvasionRate) {
-		UE_LOG(LogTemp, Error, TEXT("evasion attack~~"));
-		return 0.0f;
-	}
-
-	float FinalDamage = Damage * (1.0f - KRStat->DefenseRate);
-	KRStat->SetDamage(FinalDamage);
-
-	if (KRAnim)
+	if (KRAnim && KRStat && FinalDamage > 0.0f)
 	{
-		// 애님 인스턴스에 피격 처리
 		KRAnim->bIsHit = true;
-		// bIsHit = false는 AnimNotify에서 처리 예정
+		ChangeFaceTexture(EFaceType::Anger);
+		// 여기에 피격 사운드 넣으면 좋을듯 추후 에셋 구하고 추가 진행
 	}
 
 	if (KRStat->GetHpRatio() <= 0.0f)
@@ -237,8 +229,9 @@ void AKeroroCharacter::Attack()
 	{
 		StartNewAttack();
 	}
-	int RandomIndex = FMath::RandRange(0, 5);
-	ChangeFaceTexture(static_cast<EFaceType>(RandomIndex));
+	
+	//int RandomIndex = FMath::RandRange(0, 5);
+	//ChangeFaceTexture(static_cast<EFaceType>(RandomIndex));
 }
 
 void AKeroroCharacter::HandleComboInput()

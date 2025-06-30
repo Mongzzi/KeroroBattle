@@ -32,8 +32,8 @@ UKeroroStatComponent::UKeroroStatComponent()
 	ProjectileScale = 1.0f;
 	ProjectileScale_Default = 1.0f;
 
-	InvincibilityTime = 0.0f;
-	InvincibilityTime_Default = 0.0f;
+	InvincibilityTime = 1.5f;
+	InvincibilityTime_Default =1.5f;
 
 	CritDamageRate = 1.5f;
 	CritDamageRate_Default = 1.5f;
@@ -196,7 +196,7 @@ void UKeroroStatComponent::SetLevel(int32 lv, AKeroroPlayerState* PlayerState)
 	SetHP(MaxHp);
 }
 
-void UKeroroStatComponent::SetDamage(float dm)
+void UKeroroStatComponent::SetDamage(float Damage)
 {
 
 	if (MaxHp == 0)
@@ -204,7 +204,34 @@ void UKeroroStatComponent::SetDamage(float dm)
 		UE_LOG(LogTemp, Error, TEXT("Stat Damage is failed"));
 		//return;
 	}
-	SetHP(FMath::Clamp<float>(CurrentHp - dm, 0.0f, MaxHp));
+	SetHP(FMath::Clamp<float>(CurrentHp - Damage, 0.0f, MaxHp));
+}
+
+float UKeroroStatComponent::SetFinalDamage(float Damage)
+{
+	if (bIsInvincible)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("invisible time ~~"));
+		return 0.0f;
+	}
+
+	// 회피 판정
+	if (FMath::FRand() < EvasionRate)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("evade ~~"));
+		return 0.0f;
+	}
+
+	// 방어율 적용
+	float FinalDamage = Damage * (1.0f - DefenseRate);
+
+	// 데미지 적용
+	SetDamage(FinalDamage);
+
+	// 무적 시간 시작
+	StartInvincibility();
+
+	return FinalDamage;
 }
 
 void UKeroroStatComponent::SetHP(float hp)
@@ -260,5 +287,26 @@ void UKeroroStatComponent::AttackHeal()
 		UE_LOG(LogTemp, Log, TEXT("Attack heal amount : %f, current hp = %f"), MaxHp * HealPowerOnKill, CurrentHp);
 		OnHpIsChanged.Broadcast();
 	}
+}
+
+void UKeroroStatComponent::StartInvincibility()
+{
+	bIsInvincible = true;
+
+	GetWorld()->GetTimerManager().SetTimer(
+		InvincibilityTimerHandle,
+		this,
+		&UKeroroStatComponent::EndInvincibility,
+		InvincibilityTime,
+		false
+	);
+
+	UE_LOG(LogTemp, Log, TEXT("invisible time start %f seconds"), InvincibilityTime);
+}
+
+void UKeroroStatComponent::EndInvincibility()
+{
+	bIsInvincible = false;
+	UE_LOG(LogTemp, Log, TEXT("invisible time end....."));
 }
 

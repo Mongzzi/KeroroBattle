@@ -27,7 +27,8 @@ protected:
 public:
 	void UpdateStatCardEnhanced(class AKeroroPlayerState* PlayerState);
 	void SetLevel(int32 lv,class AKeroroPlayerState* PlayerState = nullptr);
-	void SetDamage(float dm);
+	void SetDamage(float Damage);
+	float SetFinalDamage(float Damage);
 	void SetHP(float hp);
 	float GetHpRatio();
 	int32 GetDropExp();
@@ -40,12 +41,18 @@ public:
 	FOnHPIsChangedDeleGate OnHpIsChanged;
 
 
-public:
+private:
 	FTimerHandle HealTimerHandle;
 	float HealIntervalTime;
 	
+	FTimerHandle InvincibilityTimerHandle;
+	bool bIsInvincible = false;
+
+public:
 	void StartHeal();
 	void AttackHeal();
+	void StartInvincibility();
+	void EndInvincibility();
 
 private:
 	struct FKRStatData* StatData;
