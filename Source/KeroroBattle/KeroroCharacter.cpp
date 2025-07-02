@@ -61,6 +61,24 @@ AKeroroCharacter::AKeroroCharacter()
 		NSRifleEffect = NE2.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NE3(TEXT("/Game/KTP_Effect/Particles/Fly/Expolison_06_09.Expolison_06_09"));
+	if (NE3.Succeeded())
+	{
+		NSShieldEffect = NE3.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NE4(TEXT("/Game/MixedVFX/Particles/Slashes/SeparateParts/Hits/NS_LightningSlash_Hit.NS_LightningSlash_Hit"));
+	if (NE4.Succeeded())
+	{
+		NSGuardEffect = NE4.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NE5(TEXT("/Game/MixedVFX/Particles/Slashes/SeparateParts/Hits/NS_HolySlash_Hit.NS_HolySlash_Hit"));
+	if (NE5.Succeeded())
+	{
+		NSParryEffect = NE5.Object;
+	}
+
 	// HP바 추가
 	HPBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
 	HPBar->SetupAttachment(GetMesh());
@@ -174,6 +192,21 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 	{
 		//OnParrySuccess(DamageCauser); // 상대 튕기게
 		UE_LOG(LogTemp, Log, TEXT("Parry check in TakeDamage"));
+
+		DestroyShieldEffect();
+		NCParryEffect = UNiagaraFunctionLibrary::SpawnSystemAttached(
+			NSParryEffect,
+			GetMesh(),    
+			NAME_None,                 
+			FVector(0.0f, 20.0f, 100.0f),        
+			FRotator(0.0f, 90.0f, 0.0f),         
+			EAttachLocation::KeepRelativeOffset, 
+			true                         
+		);
+		NCGuardEffect->SetRelativeScale3D(FVector(10.0f));
+
+		// 카메라 쉐이크 추가 예정
+
 		return 0.0f; // 데미지 무효화
 	}
 
@@ -182,6 +215,19 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 	{
 		//OnGuardSuccess(DamageCauser); // 가드 이펙트
 		UE_LOG(LogTemp, Log, TEXT("Guard check in TakeDamage"));
+		DestroyShieldEffect();
+
+		NCGuardEffect = UNiagaraFunctionLibrary::SpawnSystemAttached(
+			NSGuardEffect,
+			GetMesh(),
+			NAME_None,
+			FVector(0.0f,20.0f,100.0f),    
+			FRotator(0.0f, 90.0f, 0.0f),    
+			EAttachLocation::KeepRelativeOffset,
+			true 
+		);
+		NCGuardEffect->SetRelativeScale3D(FVector(10.0f));
+
 		return 0.0f; // 데미지 무효화
 	}
 
@@ -232,7 +278,7 @@ void AKeroroCharacter::Attack()
 	//	Cast<ANoteBookWeapon>(Weapon)->ActivateFinalEffect();
 	//	KRAnim->PlayAttackMontage();
 	//}
-	
+
 	if (KRAnim)
 	{
 		if (KRAnim->bIsHit) return;
@@ -246,7 +292,7 @@ void AKeroroCharacter::Attack()
 	{
 		StartNewAttack();
 	}
-	
+
 	//int RandomIndex = FMath::RandRange(0, 5);
 	//ChangeFaceTexture(static_cast<EFaceType>(RandomIndex));
 }
@@ -692,7 +738,7 @@ void AKeroroCharacter::StartGuard()
 		if (KRAnim->bIsHit) return;
 	}
 
-	if (IsAttacking||!KRStat)
+	if (IsAttacking || !KRStat)
 	{
 		return;
 	}
@@ -708,7 +754,8 @@ void AKeroroCharacter::StartGuard()
 	IsParrying = true;
 
 	float ParryTime = KRStat->ParryTime;
-	float GuardTime = KRStat->GuardTime;
+	//float GuardTime = KRStat->GuardTime;
+	float GuardTime = 10.0f;
 	float GuardCoolTime = KRStat->GuardCoolTime;
 
 	UE_LOG(LogTemp, Log, TEXT("StartGuard"));
@@ -716,8 +763,7 @@ void AKeroroCharacter::StartGuard()
 	GetWorld()->GetTimerManager().SetTimer(ParryTimerHandle, this, &AKeroroCharacter::EndParry, ParryTime, false);
 	GetWorld()->GetTimerManager().SetTimer(GuardTimerHandle, this, &AKeroroCharacter::EndGuard, GuardTime, false);
 	GetWorld()->GetTimerManager().SetTimer(GuardCooldownTimer, this, &AKeroroCharacter::ResetGuardCooldown, GuardCoolTime, false);
-
-	//SpawnShieldEffect();
+	SpawnShieldEffect();
 }
 
 void AKeroroCharacter::EndParry()
@@ -733,7 +779,34 @@ void AKeroroCharacter::EndGuard()
 	IsParrying = false;
 	//UE_LOG(LogTemp, Log, TEXT("EndGuard"));
 
-	//DestroyShieldEffect();
+	DestroyShieldEffect();
+}
+
+void AKeroroCharacter::SpawnShieldEffect()
+{
+	if (NCShieldEffect)
+	{
+		DestroyShieldEffect();
+	}
+
+	NCShieldEffect = UNiagaraFunctionLibrary::SpawnSystemAttached(
+		NSShieldEffect,
+		GetMesh(),       
+		NAME_None,                     
+		FVector(0.0f, 100.f, 100.f),      
+		FRotator(0.0f,90.0f,0.0f),         
+		EAttachLocation::KeepRelativeOffset, 
+		true              
+}
+
+void AKeroroCharacter::DestroyShieldEffect()
+{
+	if (NCShieldEffect)
+	{
+		NCShieldEffect->Deactivate();
+		NCShieldEffect->DestroyComponent();
+		NCShieldEffect = nullptr;
+	}
 }
 
 

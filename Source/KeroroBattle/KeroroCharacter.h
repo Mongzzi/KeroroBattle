@@ -32,13 +32,6 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 public:
-	// 나이아가라 시스템
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
-	class UNiagaraSystem* NSRifleEffect;
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
-	class UNiagaraSystem* NSShieldEffect;
-
 	// 이펙트 생성
 	UFUNCTION()
 	void PlayEffect();
@@ -76,14 +69,16 @@ public:
 	void StartGuard();
 	void EndParry();
 	void EndGuard();
+	void SpawnShieldEffect();
+	void DestroyShieldEffect();
 	void SpawnToHand();
 	void ChangeFaceTexture(EKeroroType KeroroType, EFaceType FaceType);
 	void ChangeFaceTexture(EFaceType FaceType);
 	void HandleComboInput();
 	void StartNewAttack();
 	void PlayVoiceSound();
-	void PlayHitSound(int32 Combo=0);
-	void PlayHitEffect(FVector HitLocation, FRotator HitRotator,FVector Scale = FVector(1.0f));
+	void PlayHitSound(int32 Combo = 0);
+	void PlayHitEffect(FVector HitLocation, FRotator HitRotator, FVector Scale = FVector(1.0f));
 	void PlayWeaponSound();
 	bool GetIsAttacking() { return IsAttacking; };
 
@@ -180,4 +175,30 @@ public:
 
 	UPROPERTY()
 	UMaterialInstanceDynamic* FaceMaterialInstance;
+
+public:
+	// 나이아가라 시스템
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
+	class UNiagaraSystem* NSRifleEffect;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
+	class UNiagaraSystem* NSShieldEffect;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
+	class UNiagaraSystem* NSGuardEffect;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
+	class UNiagaraSystem* NSParryEffect;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
+
+	class UNiagaraComponent* NCShieldEffect;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
+
+	class UNiagaraComponent* NCGuardEffect;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
+
+	class UNiagaraComponent* NCParryEffect;
 };
