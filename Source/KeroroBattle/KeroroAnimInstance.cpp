@@ -15,6 +15,7 @@ UKeroroAnimInstance::UKeroroAnimInstance()
 	CurrentPawnSpeed = 0.0f;
 	IsInAir = false;
 	IsDead = false;
+	bIsGuarding = false;
 	bIsRunning = false;
 	AnimationRunSpeed = 1.0f;
 	WeaponType = EWeaponType::SWORD;
@@ -147,6 +148,12 @@ void UKeroroAnimInstance::AnimNotify_WeaponSound()
 void UKeroroAnimInstance::AnimNotify_HitDown()
 {
 	bIsHit = false;
+	//UE_LOG(LogTemp, Error, TEXT("HitDown"));
+}
+
+void UKeroroAnimInstance::AnimNotify_EndBlocking()
+{
+	bIsGuarding = false;
 	UE_LOG(LogTemp, Error, TEXT("HitDown"));
 }
 
@@ -184,6 +191,17 @@ void UKeroroAnimInstance::JumptoAttackMontageSection(int32 NewSection)
 		if (Montage_IsPlaying(MontageToPlay))
 		{
 			Montage_JumpToSection(GetAttackMontageSectionName(NewSection), MontageToPlay);
+		}
+	}
+}
+
+void UKeroroAnimInstance::StopAttackMontage()
+{
+	if (UAnimMontage* Montage = GetAnimMontage())
+	{
+		if (Montage_IsPlaying(Montage))
+		{
+			Montage_Stop(0.1f, Montage);
 		}
 	}
 }

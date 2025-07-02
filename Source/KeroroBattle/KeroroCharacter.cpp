@@ -185,7 +185,7 @@ void AKeroroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (KRStat == nullptr) return 0.0f;
+	if (KRStat == nullptr || KRAnim == nullptr) return 0.0f;
 
 	// 패링 체크 
 	if (IsParrying)
@@ -196,14 +196,15 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 		DestroyShieldEffect();
 		NCParryEffect = UNiagaraFunctionLibrary::SpawnSystemAttached(
 			NSParryEffect,
-			GetMesh(),    
-			NAME_None,                 
-			FVector(0.0f, 20.0f, 100.0f),        
-			FRotator(0.0f, 90.0f, 0.0f),         
-			EAttachLocation::KeepRelativeOffset, 
-			true                         
+			GetMesh(),
+			NAME_None,
+			FVector(0.0f, 20.0f, 100.0f),
+			FRotator(0.0f, 90.0f, 0.0f),
+			EAttachLocation::KeepRelativeOffset,
+			true
 		);
-		NCGuardEffect->SetRelativeScale3D(FVector(10.0f));
+
+		KRAnim->bIsGuarding = false;
 
 		// 카메라 쉐이크 추가 예정
 
@@ -221,12 +222,14 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 			NSGuardEffect,
 			GetMesh(),
 			NAME_None,
-			FVector(0.0f,20.0f,100.0f),    
-			FRotator(0.0f, 90.0f, 0.0f),    
+			FVector(0.0f, 20.0f, 100.0f),
+			FRotator(0.0f, 90.0f, 0.0f),
 			EAttachLocation::KeepRelativeOffset,
-			true 
+			true
 		);
-		NCGuardEffect->SetRelativeScale3D(FVector(10.0f));
+		KRAnim->bIsGuarding = false;
+
+		// 카메라 쉐이크 추가 예정
 
 		return 0.0f; // 데미지 무효화
 	}
@@ -738,7 +741,7 @@ void AKeroroCharacter::StartGuard()
 		if (KRAnim->bIsHit) return;
 	}
 
-	if (IsAttacking || !KRStat)
+	if (!KRStat)
 	{
 		return;
 	}
@@ -749,13 +752,18 @@ void AKeroroCharacter::StartGuard()
 		return;
 	}
 
+	// 콤보 공격 끝내기
+	OnAttackMontageEnded(nullptr, false);
+	KRAnim->StopAttackMontage();
+	KRAnim->bIsGuarding = true;
+
 	CanGuarding = false;
 	IsGuarding = true;
 	IsParrying = true;
 
 	float ParryTime = KRStat->ParryTime;
-	//float GuardTime = KRStat->GuardTime;
-	float GuardTime = 10.0f;
+	float GuardTime = KRStat->GuardTime;
+	//float GuardTime = 10.0f;
 	float GuardCoolTime = KRStat->GuardCoolTime;
 
 	UE_LOG(LogTemp, Log, TEXT("StartGuard"));
@@ -791,12 +799,12 @@ void AKeroroCharacter::SpawnShieldEffect()
 
 	NCShieldEffect = UNiagaraFunctionLibrary::SpawnSystemAttached(
 		NSShieldEffect,
-		GetMesh(),       
-		NAME_None,                     
-		FVector(0.0f, 100.f, 100.f),      
-		FRotator(0.0f,90.0f,0.0f),         
-		EAttachLocation::KeepRelativeOffset, 
-		true              
+		GetMesh(),
+		NAME_None,
+		FVector(0.0f, 100.f, 100.f),
+		FRotator(0.0f, 90.0f, 0.0f),
+		EAttachLocation::KeepRelativeOffset,
+		true);
 }
 
 void AKeroroCharacter::DestroyShieldEffect()

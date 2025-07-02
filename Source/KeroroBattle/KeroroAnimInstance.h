@@ -26,6 +26,7 @@ public:
 
 	void PlayAttackMontage();
 	void JumptoAttackMontageSection(int32 NewSection);
+	void StopAttackMontage();
 
 public:
 	FOnNextAttackCheckDelegate OnNextAttackCheck;
@@ -59,6 +60,9 @@ private:
 	UFUNCTION()
 	void AnimNotify_HitDown();
 
+	UFUNCTION()
+	void AnimNotify_EndBlocking();
+
 	FName GetAttackMontageSectionName(int32 Section);
 
 
@@ -74,6 +78,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn)
 	bool bIsHit;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn)
+	bool bIsGuarding;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	EWeaponType WeaponType;
