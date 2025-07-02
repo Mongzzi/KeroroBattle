@@ -28,7 +28,7 @@ public:
 	void UpdateStatCardEnhanced(class AKeroroPlayerState* PlayerState);
 	void SetLevel(int32 lv,class AKeroroPlayerState* PlayerState = nullptr);
 	void SetDamage(float Damage);
-	float SetFinalDamage(float Damage);
+	float SetFinalDamage();
 	void SetHP(float hp);
 	float GetHpRatio();
 	int32 GetDropExp();
@@ -124,5 +124,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	float CritDamageRate;
 	float CritDamageRate_Default;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float GuardTime;
+	float GuardTime_Default;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float ParryTime;
+	float ParryTime_Default;
 
 };

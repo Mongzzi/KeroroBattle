@@ -519,13 +519,8 @@ void AKeroroCharacter::AttackCheck_Sword()
 			AActor* HitActor = Hit.GetActor();
 			if (IsValid(HitActor) && Cast<AKeroroEnemyCharacter>(Hit.GetActor()))
 			{
-				float FinalDamage = KRStat->AttackPower;
-				float Rand = FMath::FRand();
-				if (Rand < KRStat->CritChanceRate)
-				{
-					FinalDamage *= KRStat->CritDamageRate;
-					UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f"), FinalDamage, KRStat->AttackPower, KRStat->CritDamageRate);
-				}
+				float FinalDamage = KRStat->SetFinalDamage();
+
 				FDamageEvent DamageEvent;
 				HitActor->TakeDamage(FinalDamage, DamageEvent, GetController(), this);
 				PlayHitEffect(Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), FVector(0.5f));
@@ -630,14 +625,7 @@ void AKeroroCharacter::AttackCheck_Fist()
 		AActor* HitActor = HitResult.GetActor();
 		if (IsValid(HitActor) && HitActor->IsA(AKeroroEnemyCharacter::StaticClass()))
 		{
-
-			float FinalDamage = KRStat->AttackPower;
-			float Rand = FMath::FRand();
-			if (Rand < KRStat->CritChanceRate)
-			{
-				FinalDamage *= KRStat->CritDamageRate;
-				UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f"), FinalDamage, KRStat->AttackPower, KRStat->CritDamageRate);
-			}
+			float FinalDamage = KRStat->SetFinalDamage();
 
 			FDamageEvent DamageEvent;
 			HitActor->TakeDamage(FinalDamage * 3, DamageEvent, GetController(), this);
@@ -659,6 +647,42 @@ void AKeroroCharacter::AttackCheck_NoteBook()
 	{
 		Cast<ANoteBookWeapon>(Weapon)->ActivateFinalEffect();
 	}
+}
+
+void AKeroroCharacter::StartGuard()
+{
+	if (!KRStat) return;
+	IsGuarding = true;
+	IsParrying = true; // 잠깐 패링 가능
+
+	float ParryTime = KRStat->ParryTime;
+	float GuardTime = KRStat->GuardTime;
+
+	UE_LOG(LogTemp, Log, TEXT("StartGuard"));
+
+	// 패링 가능한 시간 (아주 짧음, 예: 0.15초)
+	GetWorld()->GetTimerManager().SetTimer(ParryTimerHandle, this, &AKeroroCharacter::EndParry, ParryTime, false);
+
+	// 가드 유지 시간 (예: 1초 후 자동 해제)
+	GetWorld()->GetTimerManager().SetTimer(GuardTimerHandle, this, &AKeroroCharacter::EndGuard, GuardTime, false);
+
+	//SpawnShieldEffect();
+}
+
+void AKeroroCharacter::EndParry()
+{
+	IsParrying = false;
+	UE_LOG(LogTemp, Log, TEXT("EndParry"));
+
+}
+
+void AKeroroCharacter::EndGuard()
+{
+	IsGuarding = false;
+	IsParrying = false;
+	UE_LOG(LogTemp, Log, TEXT("EndGuard"));
+
+	//DestroyShieldEffect();
 }
 
 void AKeroroCharacter::SpawnToHand()

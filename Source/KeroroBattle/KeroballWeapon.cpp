@@ -82,22 +82,14 @@ void AKeroballWeapon::Explode()
 		UKeroroStatComponent* kero_stat = kero->KRStat;
 		if (kero_stat == nullptr) return;
 
-		float Damage = kero_stat->AttackPower;
-		float Rand = FMath::FRand();
-
-		if (Rand < kero_stat->CritChanceRate)
-		{
-			Damage *= kero_stat->CritDamageRate;
-			UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f /// Critical Chance Rate = %f"),
-				Damage, kero_stat->AttackPower, kero_stat->CritDamageRate, kero_stat->CritChanceRate);
-		}
+		float FinalDamage = kero_stat->SetFinalDamage();
 
 		for (auto& Hit : HitResults)
 		{
 			AActor* HitActor = Hit.GetActor();
 			if (HitActor && HitActor->IsA(AKeroroEnemyCharacter::StaticClass()))
 			{
-				UGameplayStatics::ApplyDamage(HitActor, Damage, GetInstigatorController(), this, UDamageType::StaticClass());
+				UGameplayStatics::ApplyDamage(HitActor, FinalDamage, GetInstigatorController(), this, UDamageType::StaticClass());
 				GetWorldTimerManager().ClearTimer(ExplodeTimerHandle);
 			}
 		}

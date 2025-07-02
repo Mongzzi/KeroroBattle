@@ -93,16 +93,10 @@ void ARifleBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 		UKeroroStatComponent* kero_stat = kero->KRStat;
 		if (kero_stat == nullptr) return;
 
-		float Damage = kero_stat->AttackPower;
-		float Rand = FMath::FRand();
-		if (Rand < kero_stat->CritChanceRate)
-		{
-			Damage *= kero_stat->CritDamageRate;
-			UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f /// Critical Chance Rate = %f"),
-				Damage, kero_stat->AttackPower, kero_stat->CritDamageRate, kero_stat->CritChanceRate);
-		}
+		float FinalDamage = kero_stat->SetFinalDamage();
 
-		UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigatorController(), this, nullptr);
+
+		UGameplayStatics::ApplyDamage(OtherActor, FinalDamage, GetInstigatorController(), this, nullptr);
 
 		if (HitEffect)
 		{

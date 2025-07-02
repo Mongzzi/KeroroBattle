@@ -38,7 +38,12 @@ UKeroroStatComponent::UKeroroStatComponent()
 	CritDamageRate = 1.5f;
 	CritDamageRate_Default = 1.5f;
 
-	// 데이터 테이블 없는 항목
+	GuardTime = 1.0f;
+	GuardTime_Default = 1.0f;
+
+	ParryTime = 0.15f;
+	ParryTime_Default = 0.15f;
+
 	HealIntervalTime = 5.0f;
 }
 
@@ -102,6 +107,9 @@ void UKeroroStatComponent::UpdateStatCardEnhanced(AKeroroPlayerState* PlayerStat
 	InvincibilityTime = InvincibilityTime_Default + PlayerState->InvincibilityTime_Enhanced;
 	HealPowerRate = HealPowerRate_Default + PlayerState->HealPowerRate_Enhanced;
 	HealPowerOnKill = HealPowerOnKill_Default + PlayerState->HealPowerOnKill_Enhanced;
+
+	GuardTime = GuardTime_Default + PlayerState->GuardTime_Enhanced;
+	ParryTime = ParryTime_Default + PlayerState->ParryTime_Enhanced;
 
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("===== PlayerState Stat Enhancement ====="));
@@ -207,7 +215,7 @@ void UKeroroStatComponent::SetDamage(float Damage)
 	SetHP(FMath::Clamp<float>(CurrentHp - Damage, 0.0f, MaxHp));
 }
 
-float UKeroroStatComponent::SetFinalDamage(float Damage)
+float UKeroroStatComponent::SetFinalDamage()
 {
 	if (bIsInvincible)
 	{
@@ -222,8 +230,18 @@ float UKeroroStatComponent::SetFinalDamage(float Damage)
 		return 0.0f;
 	}
 
+	float FinalDamage = AttackPower;
+
+	// 치명타 적용
+	float Rand = FMath::FRand();
+	if (Rand < CritChanceRate)
+	{
+		FinalDamage *= CritDamageRate;
+		UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f"), FinalDamage, AttackPower, CritDamageRate);
+	}
+
 	// 방어율 적용
-	float FinalDamage = Damage * (1.0f - DefenseRate);
+	FinalDamage = AttackPower * (1.0f - DefenseRate);
 
 	// 데미지 적용
 	SetDamage(FinalDamage);
