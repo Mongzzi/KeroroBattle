@@ -38,6 +38,16 @@ UKeroroStatComponent::UKeroroStatComponent()
 	CritDamageRate = 1.5f;
 	CritDamageRate_Default = 1.5f;
 
+	// 테스트용 시간 3~4초 정도 적당한듯 추후 변경해줘야함
+	GuardCoolTime = 0.3f;
+	GuardCollTime_Default = 0.3f;
+
+	GuardTime = 0.5f;
+	GuardTime_Default = 0.5f;
+
+	ParryTime = 0.15f;
+	ParryTime_Default = 0.15f;
+
 	// 데이터 테이블 없는 항목
 	HealIntervalTime = 5.0f;
 }
@@ -102,6 +112,11 @@ void UKeroroStatComponent::UpdateStatCardEnhanced(AKeroroPlayerState* PlayerStat
 	InvincibilityTime = InvincibilityTime_Default + PlayerState->InvincibilityTime_Enhanced;
 	HealPowerRate = HealPowerRate_Default + PlayerState->HealPowerRate_Enhanced;
 	HealPowerOnKill = HealPowerOnKill_Default + PlayerState->HealPowerOnKill_Enhanced;
+
+	GuardCoolTime = GuardCollTime_Default + PlayerState->GuardCoolTime_Enhanced;
+	GuardTime = GuardTime_Default + PlayerState->GuardTime_Enhanced;
+	ParryTime = ParryTime_Default + PlayerState->ParryTime_Enhanced;
+
 
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("===== PlayerState Stat Enhancement ====="));

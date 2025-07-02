@@ -26,6 +26,9 @@ AKeroroPlayerState::AKeroroPlayerState()
 	SkillCooldownRate_Enhanced = 0.0f;
 	EvasionRate_Enhanced = 0.0f;
 	DefenseRate_Enhanced = 0.0f;
+	GuardCoolTime_Enhanced = 0.0f;
+	GuardTime_Enhanced = 0.0f;
+	ParryTime_Enhanced = 0.0f;
 }
 
 void AKeroroPlayerState::PostInitializeComponents()

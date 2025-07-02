@@ -169,6 +169,22 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 {
 	if (KRStat == nullptr) return 0.0f;
 
+	// 패링 체크 
+	if (IsParrying)
+	{
+		//OnParrySuccess(DamageCauser); // 상대 튕기게
+		UE_LOG(LogTemp, Log, TEXT("Parry check in TakeDamage"));
+		return 0.0f; // 데미지 무효화
+	}
+
+	// 가드 체크
+	if (IsGuarding)
+	{
+		//OnGuardSuccess(DamageCauser); // 가드 이펙트
+		UE_LOG(LogTemp, Log, TEXT("Guard check in TakeDamage"));
+		return 0.0f; // 데미지 무효화
+	}
+
 	float FinalDamage = KRStat->SetFinalDamage(Damage);
 
 	if (KRAnim && KRStat && FinalDamage > 0.0f)
@@ -178,6 +194,7 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 		// 여기에 피격 사운드 넣으면 좋을듯 추후 에셋 구하고 추가 진행
 	}
 
+	// 플레이어 사망
 	if (KRStat->GetHpRatio() <= 0.0f)
 	{
 		SetActorEnableCollision(false);
@@ -660,6 +677,65 @@ void AKeroroCharacter::AttackCheck_NoteBook()
 		Cast<ANoteBookWeapon>(Weapon)->ActivateFinalEffect();
 	}
 }
+
+void AKeroroCharacter::ResetGuardCooldown()
+{
+	CanGuarding = true;
+	//UE_LOG(LogTemp, Log, TEXT("Guard cooldown finished!"));
+}
+
+void AKeroroCharacter::StartGuard()
+{
+
+	if (KRAnim)
+	{
+		if (KRAnim->bIsHit) return;
+	}
+
+	if (IsAttacking||!KRStat)
+	{
+		return;
+	}
+
+	if (!CanGuarding)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Guard is on cooldown"));
+		return;
+	}
+
+	CanGuarding = false;
+	IsGuarding = true;
+	IsParrying = true;
+
+	float ParryTime = KRStat->ParryTime;
+	float GuardTime = KRStat->GuardTime;
+	float GuardCoolTime = KRStat->GuardCoolTime;
+
+	UE_LOG(LogTemp, Log, TEXT("StartGuard"));
+
+	GetWorld()->GetTimerManager().SetTimer(ParryTimerHandle, this, &AKeroroCharacter::EndParry, ParryTime, false);
+	GetWorld()->GetTimerManager().SetTimer(GuardTimerHandle, this, &AKeroroCharacter::EndGuard, GuardTime, false);
+	GetWorld()->GetTimerManager().SetTimer(GuardCooldownTimer, this, &AKeroroCharacter::ResetGuardCooldown, GuardCoolTime, false);
+
+	//SpawnShieldEffect();
+}
+
+void AKeroroCharacter::EndParry()
+{
+	IsParrying = false;
+	//UE_LOG(LogTemp, Log, TEXT("EndParry"));
+
+}
+
+void AKeroroCharacter::EndGuard()
+{
+	IsGuarding = false;
+	IsParrying = false;
+	//UE_LOG(LogTemp, Log, TEXT("EndGuard"));
+
+	//DestroyShieldEffect();
+}
+
 
 void AKeroroCharacter::SpawnToHand()
 {

@@ -36,6 +36,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
 	class UNiagaraSystem* NSRifleEffect;
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
+	class UNiagaraSystem* NSShieldEffect;
+
 	// ÀÌÆåÆ® »ý¼º
 	UFUNCTION()
 	void PlayEffect();
@@ -52,6 +55,11 @@ public:
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
+private:
+	FTimerHandle ParryTimerHandle;
+	FTimerHandle GuardTimerHandle;
+	FTimerHandle GuardCooldownTimer;
+
 public:
 	void StartRun();
 	void StopRun();
@@ -64,6 +72,10 @@ public:
 	void AttackCheck_Keroball();
 	void AttackCheck_Fist();
 	void AttackCheck_NoteBook();
+	void ResetGuardCooldown();
+	void StartGuard();
+	void EndParry();
+	void EndGuard();
 	void SpawnToHand();
 	void ChangeFaceTexture(EKeroroType KeroroType, EFaceType FaceType);
 	void ChangeFaceTexture(EFaceType FaceType);
@@ -90,6 +102,16 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	bool IsComboInputOn;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool CanGuarding = true;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool IsGuarding = false;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool IsParrying = false;
+
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	int32 CurrentCombo;

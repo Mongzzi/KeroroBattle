@@ -138,8 +138,9 @@ void ULevelupCardWidget::OnSelectButtonClicked()
 		case ECardType::HealOnKill:
 			PS->HealPowerOnKill_Enhanced += CardValue;
 			break;
-		case ECardType::ShieldRegen:
-			UE_LOG(LogTemp, Warning, TEXT("Shield Regen Card Success"));
+		case ECardType::Shield:
+			PS->GuardTime_Enhanced += CardValue * 3.0f;
+			PS->ParryTime_Enhanced += CardValue;
 			break;
 		case ECardType::MAX:
 			break;

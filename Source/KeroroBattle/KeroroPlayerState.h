@@ -73,7 +73,7 @@ public:
 	UPROPERTY(Transient, BlueprintReadOnly, Category = "Keroro")
 	int32 KilledEnemyNum;
 
-	
+
 public:
 	// --------------------------------------- 아래로는 카드로 얻을 수 있는 스탯 (발사체 제외)------------------------------------------------------------------------------
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
@@ -126,4 +126,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	float DefenseRate_Enhanced;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float GuardCoolTime_Enhanced;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float GuardTime_Enhanced;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float ParryTime_Enhanced;
 };

@@ -35,6 +35,7 @@ private:
 	void StopRun();
 	void Attack();
 	void TagCharacter();
+	void Guard();
 	void OnPlayerLevelUpdated();
 	void OnMagicCircleActivated();
 
@@ -95,4 +96,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category= Input)
 	class UInputAction* MouseRight;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category = Input)
+	class UInputAction* Guarding;
 };

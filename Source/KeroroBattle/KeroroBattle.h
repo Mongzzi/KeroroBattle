@@ -67,6 +67,7 @@ enum class ECardType : uint8
 	Armor					UMETA(DisplayName = "Armor"),						// 방어력
 	HealAmount				UMETA(DisplayName = "HealAmount"),					// 체력회복
 	HealOnKill				UMETA(DisplayName = "HealOnKill"),					// 공격시 체력회복
-	ShieldRegen				UMETA(DisplayName = "ShieldRegen"),					// 쉴드 생성
+	Shield					UMETA(DisplayName = "Shield"),						// 쉴드(+패링) 시간
+	ShieldCoolTime			UMETA(DisplayName = "ShieldCoolTime"),				// 쉴드 쿨타임 시간
 	MAX						UMETA(Hidden)										// 순환 계산용
 };

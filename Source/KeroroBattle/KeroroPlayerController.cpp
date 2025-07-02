@@ -241,6 +241,15 @@ void AKeroroPlayerController::TagCharacter()
 	}
 }
 
+void AKeroroPlayerController::Guard()
+{
+	AKeroroCharacter* Kero = Cast<AKeroroCharacter>(GetCharacter());
+	if (Kero)
+	{
+		Kero->StartGuard();
+	}
+}
+
 
 void AKeroroPlayerController::Die()
 {
@@ -342,6 +351,10 @@ void AKeroroPlayerController::LoadInputActionAndMappingContext()
 
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_MOUSE_RIGHT(TEXT("/Game/Input/IA_MOUSE_RIGHT_BUTTON.IA_MOUSE_RIGHT_BUTTON"));
 	if (IA_MOUSE_RIGHT.Succeeded()) MouseRight = IA_MOUSE_RIGHT.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_GUARD(TEXT("/Game/Input/IA_Keroro_Guard.IA_Keroro_Guard"));
+	if (IA_GUARD.Succeeded()) Guarding = IA_GUARD.Object;
+
 }
 
 
@@ -365,6 +378,7 @@ void AKeroroPlayerController::SetupInputComponent()
 		Input->BindAction(Attacking, ETriggerEvent::Started, this, &AKeroroPlayerController::Attack);
 		Input->BindAction(Tag, ETriggerEvent::Started, this, &AKeroroPlayerController::TagCharacter);
 		Input->BindAction(MouseRight, ETriggerEvent::Started, this, &AKeroroPlayerController::OnMagicCircleActivated);
+		Input->BindAction(Guarding, ETriggerEvent::Started, this, &AKeroroPlayerController::Guard);
 	}
 }
 

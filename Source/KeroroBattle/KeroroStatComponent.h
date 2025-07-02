@@ -109,6 +109,8 @@ public:
 	float HealPowerOnKill;
 	float HealPowerOnKill_Default;
 
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	int32 ProjectileCount;
 	int32 ProjectileCount_Default;
@@ -124,5 +126,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	float CritDamageRate;
 	float CritDamageRate_Default;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float GuardTime;
+	float GuardTime_Default;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float ParryTime;
+	float ParryTime_Default;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float GuardCoolTime;
+	float GuardCollTime_Default;
 
 };
