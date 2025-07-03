@@ -47,12 +47,17 @@ public:
 	UPROPERTY()
 	TMap<EKeroroType, class AKeroroCharacter*> CharacterMap;
 
-
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<class UKeroroHUDWidget> KRHUDWidgetClass;
-	
+
 	UPROPERTY()
 	class UKeroroHUDWidget* KRHUDWidget;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<class UParringEffectWidget> KRParryWidgetClass;
+
+	UPROPERTY()
+	class UParringEffectWidget* KRParryWidget;
 
 	void UpdateStatCardEnhanced();
 	void UpdateStatWidget();
@@ -62,8 +67,11 @@ public:
 	void UpdateTimeWidget(float RemainTime);
 	void UpdateEXPWidget();
 	void UpdateKillWidget();
-	float GetGameStateRemainingTime();
+
 	void Die();
+	
+	void PlayParryWidgetEffect();
+	float GetGameStateRemainingTime();
 	
 	void SetUIMode();
 	void SetGameMode();

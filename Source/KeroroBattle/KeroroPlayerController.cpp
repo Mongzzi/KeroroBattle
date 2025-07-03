@@ -6,6 +6,7 @@
 #include "KeroroPlayerState.h"
 #include "KeroroStatComponent.h"
 #include "KeroroHUDWidget.h"
+#include "ParringEffectWidget.h"
 #include "KeroroGameState.h"
 #include "KeroroAIController.h"
 #include "NoteBookWeapon.h"
@@ -36,6 +37,11 @@ AKeroroPlayerController::AKeroroPlayerController()
 	if (WidgetClassFinder.Succeeded())
 	{
 		KRHUDWidgetClass = WidgetClassFinder.Class;
+	}
+	static ConstructorHelpers::FClassFinder<UParringEffectWidget> PARRYWIDGET(TEXT("/Game/Blueprints/KR_Parrying_Effect_Widget.KR_Parrying_Effect_Widget_C"));
+	if (PARRYWIDGET.Succeeded())
+	{
+		KRParryWidgetClass = PARRYWIDGET.Class;
 	}
 }
 
@@ -72,6 +78,7 @@ void AKeroroPlayerController::BeginPlay()
 	KRHUDWidget->AddToViewport();
 	KRHUDWidget->BindKRStat(KRCharacter->KRStat);
 	KRHUDWidget->BindPlayerState(KRPlayerState);
+
 
 
 	KRCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
@@ -146,6 +153,29 @@ void AKeroroPlayerController::UpdateEXPWidget()
 
 void AKeroroPlayerController::UpdateKillWidget()
 {
+}
+
+void AKeroroPlayerController::PlayParryWidgetEffect()
+{
+	if (!KRParryWidgetClass) return;
+
+	KRParryWidget = CreateWidget<UParringEffectWidget>(this, KRParryWidgetClass);
+	if (KRParryWidget)
+	{
+		KRParryWidget->AddToViewport(100);
+		KRParryWidget->PlayParryWidgetEffect();
+
+
+		FTimerHandle RemoveHandle;
+		GetWorld()->GetTimerManager().SetTimer(RemoveHandle, [this]()
+			{
+				if (KRParryWidget)
+				{
+					KRParryWidget->RemoveFromParent();
+					KRParryWidget = nullptr;
+				}
+			},0.4f,false);
+	}
 }
 
 float AKeroroPlayerController::GetGameStateRemainingTime()

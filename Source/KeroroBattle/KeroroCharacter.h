@@ -201,4 +201,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
 
 	class UNiagaraComponent* NCParryEffect;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
+	class UParticleSystem* PSParryEffect;
+
+	UPROPERTY()
+	UParticleSystemComponent* PCParryEffect;
+
 };
