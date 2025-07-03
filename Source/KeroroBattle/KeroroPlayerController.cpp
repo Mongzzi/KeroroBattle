@@ -43,6 +43,13 @@ AKeroroPlayerController::AKeroroPlayerController()
 	{
 		KRParryWidgetClass = PARRYWIDGET.Class;
 	}
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> aaa(TEXT("/Game/Blueprints/KR_Parrying_CameraShake.KR_Parrying_CameraShake_C"));
+	if (aaa.Succeeded())
+	{
+		KRParryCameraShakeClass = aaa.Class;
+	}
+	
+
 }
 
 void AKeroroPlayerController::OnPossess(APawn* PawnToPossess)
@@ -176,6 +183,13 @@ void AKeroroPlayerController::PlayParryWidgetEffect()
 				}
 			},0.4f,false);
 	}
+}
+
+void AKeroroPlayerController::PlayParryCameraShake()
+{
+	PlayerCameraManager->StartCameraShake(KRParryCameraShakeClass, 1.0f);
+	UE_LOG(LogTemp, Warning, TEXT("PlayParryCameraShake"));
+
 }
 
 float AKeroroPlayerController::GetGameStateRemainingTime()

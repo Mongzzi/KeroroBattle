@@ -72,7 +72,7 @@ AKeroroCharacter::AKeroroCharacter()
 	{
 		NSGuardEffect = NE4.Object;
 	}
-	
+
 	// 아래 사용 안하는중 일단 냅두긴함
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NE5(TEXT("/Game/Basic_VFX/Niagara/NS_Basic_13.NS_Basic_13"));
 	if (NE5.Succeeded())
@@ -203,25 +203,28 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 
 		DestroyShieldEffect();
 		PCParryEffect = UGameplayStatics::SpawnEmitterAttached(
-			PSParryEffect,        
+			PSParryEffect,
 			GetMesh(),
 			NAME_None,
 			FVector(0.0f, 70.0f, 100.0f),
 			FRotator::ZeroRotator,
 			EAttachLocation::KeepRelativeOffset,
-			true   
+			true
 		);
 		PCParryEffect->SetRelativeScale3D(FVector(1.7f));
 
 		KRAnim->bIsGuarding = false;
 
-		// 강조선 위젯 애니메이션 출력
 		AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetController());
 		if (PC)
 		{
+			// 강조선 위젯 애니메이션 출력
 			PC->PlayParryWidgetEffect();
+			
+			// 카메라 쉐이크 출력
+			PC->PlayParryCameraShake();
 		}
-		// 카메라 쉐이크 추가 예정
+
 
 		return 0.0f; // 데미지 무효화
 	}
