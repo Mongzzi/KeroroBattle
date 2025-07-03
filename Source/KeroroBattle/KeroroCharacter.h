@@ -65,6 +65,7 @@ public:
 	void AttackCheck_Keroball();
 	void AttackCheck_Fist();
 	void AttackCheck_NoteBook();
+	void ParryAttack();
 	void ResetGuardCooldown();
 	void StartGuard();
 	void EndParry();

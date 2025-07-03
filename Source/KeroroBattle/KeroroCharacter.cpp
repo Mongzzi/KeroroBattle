@@ -199,6 +199,7 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 	if (IsParrying)
 	{
 		//OnParrySuccess(DamageCauser); // 상대 튕기게
+		ParryAttack();
 		UE_LOG(LogTemp, Log, TEXT("Parry check in TakeDamage"));
 
 		DestroyShieldEffect();
@@ -213,6 +214,7 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 		);
 		PCParryEffect->SetRelativeScale3D(FVector(1.7f));
 
+		IsParrying = false;
 		KRAnim->bIsGuarding = false;
 
 		AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetController());
@@ -224,9 +226,7 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 			// 카메라 쉐이크 출력
 			PC->PlayParryCameraShake();
 		}
-
-
-		return 0.0f; // 데미지 무효화
+		return 0.0f; 
 	}
 
 	// 가드 체크
@@ -245,13 +245,13 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 			EAttachLocation::KeepRelativeOffset,
 			true
 		);
+		IsGuarding = false;
 		KRAnim->bIsGuarding = false;
-
-		// 카메라 쉐이크 추가 예정
-
-		return 0.0f; // 데미지 무효화
+		return 0.0f; 
 	}
 
+
+	// 데미지 처리
 	float FinalDamage = KRStat->SetFinalDamage(Damage);
 
 	if (KRAnim && KRStat && FinalDamage > 0.0f)
@@ -742,6 +742,37 @@ void AKeroroCharacter::AttackCheck_NoteBook()
 	if (WeaponType == EWeaponType::NOTEBOOK)
 	{
 		Cast<ANoteBookWeapon>(Weapon)->ActivateFinalEffect();
+	}
+}
+
+void AKeroroCharacter::ParryAttack()
+{
+	TArray<FHitResult> HitResults;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	float Radius = 500.f;
+	bool bHit = GetWorld()->SweepMultiByChannel(
+		HitResults,
+		GetActorLocation(),
+		GetActorLocation(),
+		FQuat::Identity,
+		ECC_GameTraceChannel3,
+		FCollisionShape::MakeSphere(Radius),
+		Params
+	);
+
+	if (bHit)
+	{
+		for (const FHitResult& Hit : HitResults)
+		{
+			AActor* HitActor = Hit.GetActor();
+			if (IsValid(HitActor) && Cast<AKeroroEnemyCharacter>(Hit.GetActor()))
+			{
+				FDamageEvent DamageEvent;
+				HitActor->TakeDamage(999.0f, DamageEvent, GetController(), this);
+			}
+		}
 	}
 }
 
