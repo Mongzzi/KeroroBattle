@@ -55,8 +55,8 @@ AKeroroEnemyCharacter::AKeroroEnemyCharacter()
 	if (HUD.Succeeded()) HPBar->SetWidgetClass(HUD.Class);
 
 	bIsDead = false;
-	AttackRange = 200.0f;
-	AttackRadius = 50.0f;
+	AttackRange = 400.0f;
+	AttackRadius = 25.0f;
 }
 
 void AKeroroEnemyCharacter::Attack()

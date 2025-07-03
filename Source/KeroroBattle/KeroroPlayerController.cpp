@@ -329,19 +329,26 @@ void AKeroroPlayerController::Die()
 
 void AKeroroPlayerController::SetUIMode()
 {
-	// test card draw
+
+	bEnableClickEvents = true;
+	bEnableMouseOverEvents = true;
+
 	FInputModeUIOnly InputMode;
+	InputMode.SetWidgetToFocus(KRHUDWidget->TakeWidget());
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	SetInputMode(InputMode);
+
 	bShowMouseCursor = true;
-	SetPause(true);
+	GetPawn()->DisableInput(this);
 }
 
 void AKeroroPlayerController::SetGameMode()
 {
 	FInputModeGameOnly InputMode;
 	SetInputMode(InputMode);
+
 	bShowMouseCursor = false;
-	SetPause(false);
+	GetPawn()->EnableInput(this);
 }
 
 
