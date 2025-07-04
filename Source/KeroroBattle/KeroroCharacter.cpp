@@ -73,19 +73,29 @@ AKeroroCharacter::AKeroroCharacter()
 		NSGuardEffect = NE4.Object;
 	}
 
-	// 아래 사용 안하는중 일단 냅두긴함
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NE5(TEXT("/Game/Basic_VFX/Niagara/NS_Basic_13.NS_Basic_13"));
-	if (NE5.Succeeded())
-	{
-		NSParryEffect = NE5.Object;
-	}
-
 	static ConstructorHelpers::FObjectFinder<UParticleSystem> PS1(TEXT("/Game/FXVarietyPack/Particles/P_ky_hit1.P_ky_hit1"));
 	if (PS1.Succeeded())
 	{
 		PSParryEffect = PS1.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<USoundWave> SOUND1(TEXT("/Game/Keroro_Sound/etc/ShieldSound.ShieldSound"));
+	if (SOUND1.Succeeded())
+	{
+		ShieldSound = SOUND1.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundWave> SOUND2(TEXT("/Game/Keroro_Sound/etc/GuardSound.GuardSound"));
+	if (SOUND2.Succeeded())
+	{
+		GuardSound = SOUND2.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundWave> SOUND3(TEXT("/Game/Keroro_Sound/etc/ParrySound.ParrySound"));
+	if (SOUND3.Succeeded())
+	{
+		ParrySound = SOUND3.Object;
+	}
 
 	// HP바 추가
 	HPBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
@@ -217,6 +227,8 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 		IsParrying = false;
 		KRAnim->bIsGuarding = false;
 
+		UGameplayStatics::SpawnSoundAtLocation(this, ParrySound, GetActorLocation(), FRotator::ZeroRotator, 1.0f);
+
 		AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetController());
 		if (PC)
 		{
@@ -247,6 +259,9 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 		);
 		IsGuarding = false;
 		KRAnim->bIsGuarding = false;
+	
+		UGameplayStatics::SpawnSoundAtLocation(this, GuardSound, GetActorLocation(), FRotator::ZeroRotator, 1.0f);
+
 		return 0.0f; 
 	}
 
@@ -834,6 +849,7 @@ void AKeroroCharacter::EndGuard()
 {
 	IsGuarding = false;
 	IsParrying = false;
+	KRAnim->bIsGuarding = false;
 	//UE_LOG(LogTemp, Log, TEXT("EndGuard"));
 
 	DestroyShieldEffect();
@@ -854,6 +870,8 @@ void AKeroroCharacter::SpawnShieldEffect()
 		FRotator(0.0f, 90.0f, 0.0f),
 		EAttachLocation::KeepRelativeOffset,
 		true);
+
+	UGameplayStatics::SpawnSoundAtLocation(this, ShieldSound, GetActorLocation(), FRotator::ZeroRotator, 1.0f);
 }
 
 void AKeroroCharacter::DestroyShieldEffect()

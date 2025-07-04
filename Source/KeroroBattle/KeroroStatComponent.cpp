@@ -33,19 +33,19 @@ UKeroroStatComponent::UKeroroStatComponent()
 	ProjectileScale_Default = 1.0f;
 
 	InvincibilityTime = 1.5f;
-	InvincibilityTime_Default =1.5f;
+	InvincibilityTime_Default = 1.5f;
 
 	CritDamageRate = 1.5f;
 	CritDamageRate_Default = 1.5f;
 
 	// 테스트용 시간 3~4초 정도 적당한듯 추후 변경해줘야함
-	GuardCoolTime = 0.3f;
-	GuardCollTime_Default = 0.3f;
+	GuardCoolTime = 3.0f;
+	GuardCollTime_Default = 3.0f;
 
 	GuardTime = 0.5f;
 	GuardTime_Default = 0.5f;
 
-	ParryTime = 0.15f;
+	ParryTime = 0.15f;	//0.15가 맞음
 	ParryTime_Default = 0.15f;
 
 	// 데이터 테이블 없는 항목
@@ -113,7 +113,8 @@ void UKeroroStatComponent::UpdateStatCardEnhanced(AKeroroPlayerState* PlayerStat
 	HealPowerRate = HealPowerRate_Default + PlayerState->HealPowerRate_Enhanced;
 	HealPowerOnKill = HealPowerOnKill_Default + PlayerState->HealPowerOnKill_Enhanced;
 
-	GuardCoolTime = GuardCollTime_Default + PlayerState->GuardCoolTime_Enhanced;
+	GuardCoolTime = GuardCollTime_Default * (1.0f - PlayerState->GuardCoolTime_Enhanced);
+	if (GuardCoolTime < 0.0f) GuardCoolTime = 0.001f;
 	GuardTime = GuardTime_Default + PlayerState->GuardTime_Enhanced;
 	ParryTime = ParryTime_Default + PlayerState->ParryTime_Enhanced;
 
@@ -136,6 +137,7 @@ void UKeroroStatComponent::UpdateStatCardEnhanced(AKeroroPlayerState* PlayerStat
 		//UE_LOG(LogTemp, Warning, TEXT("InvincibilityTime_Enhanced: %f"), PlayerState->InvincibilityTime_Enhanced);
 		//UE_LOG(LogTemp, Warning, TEXT("HealPowerRate_Enhanced: %f"), PlayerState->HealPowerRate_Enhanced);
 		//UE_LOG(LogTemp, Warning, TEXT("HealPowerOnKill_Enhanced: %f"), PlayerState->HealPowerOnKill_Enhanced);
+		//UE_LOG(LogTemp, Warning, TEXT("GuardCoolTime: %f"), GuardCoolTime);
 	}
 
 }

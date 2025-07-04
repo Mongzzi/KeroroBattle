@@ -189,9 +189,6 @@ public:
 	class UNiagaraSystem* NSGuardEffect;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
-	class UNiagaraSystem* NSParryEffect;
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
 
 	class UNiagaraComponent* NCShieldEffect;
 
@@ -200,13 +197,17 @@ public:
 	class UNiagaraComponent* NCGuardEffect;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
-
-	class UNiagaraComponent* NCParryEffect;
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
 	class UParticleSystem* PSParryEffect;
 
 	UPROPERTY()
 	UParticleSystemComponent* PCParryEffect;
 
+	UPROPERTY()
+	USoundBase* ShieldSound;
+
+	UPROPERTY()
+	USoundBase* GuardSound;
+
+	UPROPERTY()
+	USoundBase* ParrySound;
 };
