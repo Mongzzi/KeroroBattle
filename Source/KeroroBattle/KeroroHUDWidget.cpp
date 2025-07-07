@@ -4,7 +4,9 @@
 #include "KeroroHUDWidget.h"
 #include "KeroroStatComponent.h"
 #include "KeroroPlayerState.h"
+#include "KeroroCharacter.h"
 #include "LevelupCardWidget.h"
+#include "Skill_Widget.h"
 #include "Components/ProgressBar.h"
 #include "Components/Image.h"
 #include "Components/EditableTextBox.h"
@@ -32,6 +34,9 @@ void UKeroroHUDWidget::NativeConstruct()
 		}
 	}
 
+	// 가드, 스킬 아이콘
+	GuardWidget->SetBorderImage(EWidgetType::SHIELD_IMAGE);
+
 	// 카드 인덱스 부여
 	if (CardWidget1) CardWidget1->SetCardIndex(1);
 	if (CardWidget2) CardWidget2->SetCardIndex(2);
@@ -56,7 +61,7 @@ void UKeroroHUDWidget::UpdateHPWidget()
 
 void UKeroroHUDWidget::UpdateLevelWidget()
 {
-
+	if (CurrentKRStat == nullptr) return;
 	if (LevelText)
 	{
 		//UE_LOG(LogTemp, Error, TEXT(" in level updated"));
@@ -121,10 +126,12 @@ void UKeroroHUDWidget::UpdateTimeWidget(float RemainTime)
 
 void UKeroroHUDWidget::UpdateEXPWidget()
 {
-
 	if (CurrentKRPlayerState == nullptr) return;
-	float a = CurrentKRPlayerState->GetExpRatio();
-	EXPBar->SetPercent(a);
+	if (EXPBar)
+	{
+		float a = CurrentKRPlayerState->GetExpRatio();
+		EXPBar->SetPercent(a);
+	}
 }
 
 void UKeroroHUDWidget::UpdateKillWidget()
@@ -133,6 +140,53 @@ void UKeroroHUDWidget::UpdateKillWidget()
 	if (KillText)
 	{
 		KillText->SetText(FText::FromString(FString::FromInt(CurrentKRPlayerState->KilledEnemyNum)));
+	}
+}
+
+void UKeroroHUDWidget::UpdateSkillCoolTimeWidget()
+{
+	if (CurrentKRStat == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("CurrentKRStat is nullptr in hud widget"));
+		return;
+	}
+
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
+	if (!kero) {
+		UE_LOG(LogTemp, Error, TEXT("kero is nullptr in hud widget"));
+		return;
+	}
+
+	float RemainGuardCoolTime = kero->GetRemainingGuardCooldown();
+	float RemainSkillCoolTime = kero->GetRemainingUltimateSkillCooldown();
+
+	float MaxGuardCoolTime = CurrentKRStat->GuardCoolTime;	// 플레이어컨트롤에서 태그 캐릭터할때 꼭 다시 krstat컴포넌트 재바인딩해야함 아니면 다른캐릭터 스탯컴포넌트 참조할수도
+	float MaxSkillCoolTime = 10.0f;	// 현재 스탯컴포넌트에 궁극기 쿨타임이 정의되어있진 않음 쿨타임 감소만있는 상태 일단 10초로 고정
+
+	if (GuardWidget)
+	{
+		if (RemainGuardCoolTime < 0.0f)
+		{
+			GuardWidget->UpdateCoolTimeProgressBar(0.0f);
+		}
+		else
+		{
+			GuardWidget->UpdateCoolTimeProgressBar(RemainGuardCoolTime / MaxGuardCoolTime);
+		}
+		GuardWidget->UpdateCoolTimeText(RemainGuardCoolTime);
+	}
+
+	if (SkillWidget)
+	{
+		if (RemainSkillCoolTime < 0.0f)
+		{
+			SkillWidget->UpdateCoolTimeProgressBar(0.0f);
+		}
+		else
+		{
+			SkillWidget->UpdateCoolTimeProgressBar(RemainSkillCoolTime / MaxSkillCoolTime);
+		}
+		SkillWidget->UpdateCoolTimeText(RemainSkillCoolTime);
 	}
 }
 
@@ -147,8 +201,6 @@ void UKeroroHUDWidget::BindKRStat(UKeroroStatComponent* NewKRStat)
 	CurrentKRStat = NewKRStat;
 
 	UpdateHPWidget();
-
-
 }
 
 void UKeroroHUDWidget::BindPlayerState(AKeroroPlayerState* PlayerState)
@@ -168,4 +220,10 @@ void UKeroroHUDWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
+}
+
+void UKeroroHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	UpdateSkillCoolTimeWidget();
 }

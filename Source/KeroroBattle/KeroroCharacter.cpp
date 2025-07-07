@@ -403,6 +403,18 @@ void AKeroroCharacter::PlayWeaponSound()
 	}
 }
 
+float AKeroroCharacter::GetRemainingGuardCooldown()
+{
+	if (!GetWorld()) return 0.0f;
+	return GetWorld()->GetTimerManager().GetTimerRemaining(GuardCooldownTimer);
+}
+
+float AKeroroCharacter::GetRemainingUltimateSkillCooldown()
+{
+	if (!GetWorld()) return 0.0f;
+	return GetWorld()->GetTimerManager().GetTimerRemaining(UltimateSkillCooldownTimer);
+}
+
 void AKeroroCharacter::SetWeapon()
 {
 	if (Weapon)

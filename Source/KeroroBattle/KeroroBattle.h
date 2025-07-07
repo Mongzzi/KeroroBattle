@@ -47,6 +47,13 @@ enum class ESoundType : uint8
 	MAX						UMETA(Hidden) // 순환 계산용
 };
 
+UENUM(BlueprintType)
+enum class EWidgetType : uint8
+{
+	SKILL_IMAGE				UMETA(DisplayName = "SKILL_IMAGE"),
+	SHIELD_IMAGE			UMETA(DisplayName = "SHIELD_IMAGE")
+};
+
 
 UENUM(BlueprintType)
 enum class ECardType : uint8

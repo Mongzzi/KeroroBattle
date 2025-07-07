@@ -52,6 +52,7 @@ private:
 	FTimerHandle ParryTimerHandle;
 	FTimerHandle GuardTimerHandle;
 	FTimerHandle GuardCooldownTimer;
+	FTimerHandle UltimateSkillCooldownTimer;	// 궁극기 쿨타임 타이머 추후 사용예정
 
 public:
 	void StartRun();
@@ -83,6 +84,9 @@ public:
 	void PlayWeaponSound();
 	bool GetIsAttacking() { return IsAttacking; };
 
+public:
+	float GetRemainingGuardCooldown();
+	float GetRemainingUltimateSkillCooldown(); // 궁극기 쿨타임 가져오는함수 추후 사용예정
 
 public:
 	EKeroroType GetKeroroCharacterType() { return CurrentKeroroType; }

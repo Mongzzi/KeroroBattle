@@ -1,0 +1,38 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "KeroroBattle.h"
+#include "Blueprint/UserWidget.h"
+#include "Skill_Widget.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class KEROROBATTLE_API USkill_Widget : public UUserWidget
+{
+	GENERATED_BODY()
+	
+public:
+	virtual void NativeConstruct() override;
+
+	void SetSkillImage(int32 Image_num);
+	void SetBorderImage(EWidgetType Type);
+	void UpdateCoolTimeText(float Time);
+	void UpdateCoolTimeProgressBar(float Percent);
+
+protected:
+	UPROPERTY(meta=(BindWidget))
+	class UImage* SkillImage;
+
+	UPROPERTY(meta=(BindWidget))
+	class UImage* SkillBorder;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* CoolTimeText;
+
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* CoolTImeProgressBar;
+
+};

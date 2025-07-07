@@ -17,17 +17,19 @@ class KEROROBATTLE_API UKeroroHUDWidget : public UUserWidget
 protected:
 	virtual void NativeConstruct() override;
 	virtual void NativeOnInitialized() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 public:
 	void BindKRStat(class UKeroroStatComponent* NewKRStat);
 	void BindPlayerState(class AKeroroPlayerState* PlayerState);
 
 	void UpdateWidget();
-	void UpdateHPWidget();	// ¿Ï
+	void UpdateHPWidget();
 	void UpdateGoldWidget();
-	void UpdateTimeWidget(float RemainTime);	// ¿Ï
+	void UpdateTimeWidget(float RemainTime);
 	void UpdateEXPWidget();
 	void UpdateKillWidget();
+	void UpdateSkillCoolTimeWidget();
 
 	UFUNCTION()
 	void UpdateLevelWidget();
@@ -45,6 +47,7 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* EXPBar;
+
 	UPROPERTY(meta = (BindWidget))
 	class UImage* KillImage;
 
@@ -63,6 +66,12 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	class UEditableTextBox* LevelText;
 
+	UPROPERTY(meta = (BindWidget))
+	class USkill_Widget* GuardWidget;
+
+	UPROPERTY(meta= (BindWidget))
+	class USkill_Widget* SkillWidget;
+
 public:
 	UPROPERTY(meta = (BindWidget))
 	class ULevelupCardWidget* CardWidget1;
@@ -72,4 +81,5 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	class ULevelupCardWidget* CardWidget3;
+
 };
