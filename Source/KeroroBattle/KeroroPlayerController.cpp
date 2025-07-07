@@ -272,7 +272,8 @@ void AKeroroPlayerController::TagCharacter()
 		// 초기 HP 값,레벨 갱신
 		KRHUDWidget->BindKRStat(NewCharacter->KRStat);
 
-		//UpdateStatWidget();
+		// 스킬 이미지 변경
+		KRHUDWidget->ChangeSkillImage();
 	}
 	//--------------------------------------------------------------------------------------------------------
 	// 태그 이펙트

@@ -190,6 +190,37 @@ void UKeroroHUDWidget::UpdateSkillCoolTimeWidget()
 	}
 }
 
+void UKeroroHUDWidget::ChangeSkillImage()
+{
+	if (SkillWidget)
+	{
+		if (CurrentKRPlayerState != nullptr)
+		{
+			EKeroroType CurKeroType = CurrentKRPlayerState->GetCurrentCharacterType();
+			int32 texture_num;
+			switch (CurKeroType)
+			{
+			case EKeroroType::Keroro:
+				texture_num = 10;
+				break;
+			case EKeroroType::Tamama:
+				texture_num = 72;
+				break;
+			case EKeroroType::Giroro:
+				texture_num = 65;
+				break;
+			case EKeroroType::Kururu:
+				texture_num = 75;
+				break;
+			case EKeroroType::Dororo:
+				texture_num = 78;
+				break;
+			}
+			SkillWidget->SetSkillImage(texture_num);
+		}
+	}
+}
+
 void UKeroroHUDWidget::BindKRStat(UKeroroStatComponent* NewKRStat)
 {
 	if (NewKRStat == nullptr)

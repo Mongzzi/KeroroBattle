@@ -30,6 +30,7 @@ public:
 	void UpdateEXPWidget();
 	void UpdateKillWidget();
 	void UpdateSkillCoolTimeWidget();
+	void ChangeSkillImage();
 
 	UFUNCTION()
 	void UpdateLevelWidget();
