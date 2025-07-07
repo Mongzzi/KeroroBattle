@@ -295,6 +295,11 @@ void AKeroroPlayerController::Guard()
 	}
 }
 
+void AKeroroPlayerController::UltimateSkill()
+{
+	UE_LOG(LogTemp, Error, TEXT("UltimateSkill"));
+}
+
 
 void AKeroroPlayerController::Die()
 {
@@ -407,6 +412,8 @@ void AKeroroPlayerController::LoadInputActionAndMappingContext()
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_GUARD(TEXT("/Game/Input/IA_Keroro_Guard.IA_Keroro_Guard"));
 	if (IA_GUARD.Succeeded()) Guarding = IA_GUARD.Object;
 
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_SKILL(TEXT("/Game/Input/IA_Keroro_Ultimate_Skill.IA_Keroro_Ultimate_Skill"));
+	if (IA_SKILL.Succeeded())SkillAction = IA_SKILL.Object;
 }
 
 
@@ -431,6 +438,7 @@ void AKeroroPlayerController::SetupInputComponent()
 		Input->BindAction(Tag, ETriggerEvent::Started, this, &AKeroroPlayerController::TagCharacter);
 		Input->BindAction(MouseRight, ETriggerEvent::Started, this, &AKeroroPlayerController::OnMagicCircleActivated);
 		Input->BindAction(Guarding, ETriggerEvent::Started, this, &AKeroroPlayerController::Guard);
+		Input->BindAction(SkillAction, ETriggerEvent::Started, this, &AKeroroPlayerController::UltimateSkill);
 	}
 }
 

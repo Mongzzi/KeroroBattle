@@ -36,6 +36,7 @@ private:
 	void Attack();
 	void TagCharacter();
 	void Guard();
+	void UltimateSkill();
 	void OnPlayerLevelUpdated();
 	void OnMagicCircleActivated();
 
@@ -113,4 +114,7 @@ protected:
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category = Input)
 	class UInputAction* Guarding;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* SkillAction;
 };
