@@ -289,7 +289,7 @@ void UKeroroStatComponent::StartHeal()
 {
 	GetWorld()->GetTimerManager().SetTimer(HealTimerHandle, [this]() {
 		CurrentHp = FMath::Clamp(CurrentHp + MaxHp * HealPowerRate, 0.0f, MaxHp);
-		UE_LOG(LogTemp, Log, TEXT("Auto heal amount : %f, current hp = %f"), MaxHp * HealPowerRate, CurrentHp);
+		//UE_LOG(LogTemp, Log, TEXT("Auto heal amount : %f, current hp = %f"), MaxHp * HealPowerRate, CurrentHp);
 		OnHpIsChanged.Broadcast();
 		},
 		HealIntervalTime,

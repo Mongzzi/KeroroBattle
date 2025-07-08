@@ -7,6 +7,7 @@
 #include "KeroroStatComponent.h"
 #include "KeroroHUDWidget.h"
 #include "ParringEffectWidget.h"
+#include "CutSceneWidget.h"
 #include "KeroroGameState.h"
 #include "KeroroAIController.h"
 #include "NoteBookWeapon.h"
@@ -33,22 +34,26 @@ AKeroroPlayerController::AKeroroPlayerController()
 	{
 		NSTagEffect = NS.Object;
 	}
-	static ConstructorHelpers::FClassFinder<UKeroroHUDWidget> WidgetClassFinder(TEXT("/Game/Blueprints/KR_HUD_Widget.KR_HUD_Widget_C"));
-	if (WidgetClassFinder.Succeeded())
+	static ConstructorHelpers::FClassFinder<UKeroroHUDWidget> HUDCLASS(TEXT("/Game/Blueprints/KR_HUD_Widget.KR_HUD_Widget_C"));
+	if (HUDCLASS.Succeeded())
 	{
-		KRHUDWidgetClass = WidgetClassFinder.Class;
+		KRHUDWidgetClass = HUDCLASS.Class;
 	}
 	static ConstructorHelpers::FClassFinder<UParringEffectWidget> PARRYWIDGET(TEXT("/Game/Blueprints/KR_Parrying_Effect_Widget.KR_Parrying_Effect_Widget_C"));
 	if (PARRYWIDGET.Succeeded())
 	{
 		KRParryWidgetClass = PARRYWIDGET.Class;
 	}
-	static ConstructorHelpers::FClassFinder<UCameraShakeBase> aaa(TEXT("/Game/Blueprints/KR_Parrying_CameraShake.KR_Parrying_CameraShake_C"));
-	if (aaa.Succeeded())
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> CSB(TEXT("/Game/Blueprints/KR_Parrying_CameraShake.KR_Parrying_CameraShake_C"));
+	if (CSB.Succeeded())
 	{
-		KRParryCameraShakeClass = aaa.Class;
+		KRParryCameraShakeClass = CSB.Class;
 	}
-	
+	static ConstructorHelpers::FClassFinder<UCutSceneWidget> CUTSCENECLASS(TEXT("/Game/Blueprints/KR_CutSceneWidget.KR_CutSceneWidget_C"));
+	if (CUTSCENECLASS.Succeeded())
+	{
+		KRCutSceneClass = CUTSCENECLASS.Class;
+	}
 
 }
 
@@ -85,8 +90,6 @@ void AKeroroPlayerController::BeginPlay()
 	KRHUDWidget->AddToViewport();
 	KRHUDWidget->BindKRStat(KRCharacter->KRStat);
 	KRHUDWidget->BindPlayerState(KRPlayerState);
-
-
 
 	KRCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
 	KRPlayerState->OnLevelChanged.AddUObject(this, &AKeroroPlayerController::OnPlayerLevelUpdated);
@@ -160,6 +163,17 @@ void AKeroroPlayerController::UpdateEXPWidget()
 
 void AKeroroPlayerController::UpdateKillWidget()
 {
+}
+
+void AKeroroPlayerController::PlayUltimateCutScene()
+{
+	if (!KRCutSceneClass) return;
+	KRUltimateCutSceneWidget = CreateWidget<UCutSceneWidget>(this, KRCutSceneClass);
+	if (KRUltimateCutSceneWidget)
+	{
+		KRUltimateCutSceneWidget->AddToViewport(101);
+		KRUltimateCutSceneWidget->PlayCutscene();
+	}
 }
 
 void AKeroroPlayerController::PlayParryWidgetEffect()
@@ -303,6 +317,8 @@ void AKeroroPlayerController::UltimateSkill()
 	{
 		Kero->StartUltimateSkill();
 	}
+
+	PlayUltimateCutScene();
 }
 
 

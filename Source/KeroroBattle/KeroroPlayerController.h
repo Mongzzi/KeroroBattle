@@ -60,9 +60,14 @@ public:
 	UPROPERTY()
 	class UParringEffectWidget* KRParryWidget;
 
-
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UCameraShakeBase> KRParryCameraShakeClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<class UCutSceneWidget> KRCutSceneClass;
+
+	UPROPERTY()
+	class UCutSceneWidget* KRUltimateCutSceneWidget;
 
 
 	void UpdateStatCardEnhanced();
@@ -76,6 +81,7 @@ public:
 
 	void Die();
 	
+	void PlayUltimateCutScene();
 	void PlayParryWidgetEffect();
 	void PlayParryCameraShake();
 	float GetGameStateRemainingTime();
