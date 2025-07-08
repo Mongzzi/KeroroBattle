@@ -850,6 +850,12 @@ void AKeroroCharacter::StartGuard()
 	SpawnShieldEffect();
 }
 
+void AKeroroCharacter::StartUltimateSkill()
+{
+	float SkillCoolTime = 10.0f;
+	GetWorld()->GetTimerManager().SetTimer(UltimateSkillCooldownTimer, this, &AKeroroCharacter::EndParry, SkillCoolTime, false);
+}
+
 void AKeroroCharacter::EndParry()
 {
 	IsParrying = false;

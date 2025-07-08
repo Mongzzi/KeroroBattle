@@ -69,6 +69,7 @@ public:
 	void ParryAttack();
 	void ResetGuardCooldown();
 	void StartGuard();
+	void StartUltimateSkill();
 	void EndParry();
 	void EndGuard();
 	void SpawnShieldEffect();
