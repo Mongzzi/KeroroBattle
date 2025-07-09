@@ -40,7 +40,7 @@ enum class EFaceType : uint8
 };
 
 UENUM(BlueprintType)
-enum class ESoundType : uint8
+enum class EKRSoundType : uint8
 {
 	ComboAttack				UMETA(DisplayName = "ComboAttack"),
 	Die						UMETA(DisplayName = "Die"),

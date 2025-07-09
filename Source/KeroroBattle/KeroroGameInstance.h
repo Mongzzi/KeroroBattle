@@ -41,7 +41,7 @@ public:
 	EKeroroType KeroroType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Asset)
-	ESoundType SoundType;
+	EKRSoundType SoundType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Asset)
 	FSoftObjectPath AssetPath;

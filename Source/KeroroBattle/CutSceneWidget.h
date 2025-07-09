@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "KeroroBattle.h"
 #include "Blueprint/UserWidget.h"
 #include "CutSceneWidget.generated.h"
 
@@ -30,13 +30,26 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widget)
 	class UMediaPlayer* MediaPlayer;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widget)
-	class UFileMediaSource* MediaSource;
-
-	// 영상 사운드
+	// 영상 사운드 ( 따로 사운드 에셋 플레이 할 예정 일단 냅둠 )
 	UPROPERTY()
 	class UMediaSoundComponent* MediaSound;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MediaSource)
+	class UFileMediaSource* KeroroMS;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MediaSource)
+	class UFileMediaSource* TamamaMS;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MediaSource)
+	class UFileMediaSource* GiroroMS;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MediaSource)
+	class UFileMediaSource* DororoMS;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MediaSource)
+	class UFileMediaSource* KururuMS;
+
+public:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* CutSceneImage;
 };
