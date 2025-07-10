@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "ParringEffectWidget.generated.h"
+#include "KeroroEffectWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class KEROROBATTLE_API UParringEffectWidget : public UUserWidget
+class KEROROBATTLE_API UKeroroEffectWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	

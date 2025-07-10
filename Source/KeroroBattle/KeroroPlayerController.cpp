@@ -6,7 +6,7 @@
 #include "KeroroPlayerState.h"
 #include "KeroroStatComponent.h"
 #include "KeroroHUDWidget.h"
-#include "ParringEffectWidget.h"
+#include "KeroroEffectWidget.h"
 #include "CutSceneWidget.h"
 #include "KeroroGameState.h"
 #include "KeroroAIController.h"
@@ -39,7 +39,7 @@ AKeroroPlayerController::AKeroroPlayerController()
 	{
 		KRHUDWidgetClass = HUDCLASS.Class;
 	}
-	static ConstructorHelpers::FClassFinder<UParringEffectWidget> PARRYWIDGET(TEXT("/Game/Blueprints/KR_Parrying_Effect_Widget.KR_Parrying_Effect_Widget_C"));
+	static ConstructorHelpers::FClassFinder<UKeroroEffectWidget> PARRYWIDGET(TEXT("/Game/Blueprints/KR_Parrying_Effect_Widget.KR_Parrying_Effect_Widget_C"));
 	if (PARRYWIDGET.Succeeded())
 	{
 		KRParryWidgetClass = PARRYWIDGET.Class;
@@ -180,7 +180,7 @@ void AKeroroPlayerController::PlayParryWidgetEffect()
 {
 	if (!KRParryWidgetClass) return;
 
-	KRParryWidget = CreateWidget<UParringEffectWidget>(this, KRParryWidgetClass);
+	KRParryWidget = CreateWidget<UKeroroEffectWidget>(this, KRParryWidgetClass);
 	if (KRParryWidget)
 	{
 		KRParryWidget->AddToViewport(100);

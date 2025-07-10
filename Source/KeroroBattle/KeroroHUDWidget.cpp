@@ -197,7 +197,7 @@ void UKeroroHUDWidget::ChangeSkillImage()
 		if (CurrentKRPlayerState != nullptr)
 		{
 			EKeroroType CurKeroType = CurrentKRPlayerState->GetCurrentCharacterType();
-			int32 texture_num;
+			int32 texture_num = 0;
 			switch (CurKeroType)
 			{
 			case EKeroroType::Keroro:

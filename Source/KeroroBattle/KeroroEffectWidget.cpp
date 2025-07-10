@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ParringEffectWidget.h"
+#include "KeroroEffectWidget.h"
 
-void UParringEffectWidget::NativeConstruct()
+void UKeroroEffectWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 }
 
-void UParringEffectWidget::PlayParryWidgetEffect()
+void UKeroroEffectWidget::PlayParryWidgetEffect()
 {
 	if (ParryingAnim)
 	{

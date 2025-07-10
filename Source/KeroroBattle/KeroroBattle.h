@@ -44,6 +44,8 @@ enum class EKRSoundType : uint8
 {
 	ComboAttack				UMETA(DisplayName = "ComboAttack"),
 	Die						UMETA(DisplayName = "Die"),
+	Ultimate				UMETA(DisplayName = "Ultimate"),
+	Hitted					UMETA(DisplayName = "Hitted"),
 	MAX						UMETA(Hidden) // 순환 계산용
 };
 

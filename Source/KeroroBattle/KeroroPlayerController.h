@@ -55,10 +55,10 @@ public:
 	class UKeroroHUDWidget* KRHUDWidget;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<class UParringEffectWidget> KRParryWidgetClass;
+	TSubclassOf<class UKeroroEffectWidget> KRParryWidgetClass;
 
 	UPROPERTY()
-	class UParringEffectWidget* KRParryWidget;
+	class UKeroroEffectWidget* KRParryWidget;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UCameraShakeBase> KRParryCameraShakeClass;
