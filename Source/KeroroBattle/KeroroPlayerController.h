@@ -63,6 +63,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UCameraShakeBase> KRParryCameraShakeClass;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UCameraShakeBase> KRUltiSkillCameraShakeClass;
+
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<class UCutSceneWidget> KRCutSceneClass;
 
@@ -84,6 +87,7 @@ public:
 	void PlayUltimateCutScene();
 	void PlayParryWidgetEffect();
 	void PlayParryCameraShake();
+	void PlayUltiSkillCameraShake();
 	float GetGameStateRemainingTime();
 	
 	void SetUIMode();

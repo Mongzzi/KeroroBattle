@@ -49,6 +49,11 @@ AKeroroPlayerController::AKeroroPlayerController()
 	{
 		KRParryCameraShakeClass = CSB.Class;
 	}
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> ULTISHAKE(TEXT("/Game/Blueprints/KR_Ulti_Camera_Shake.KR_Ulti_Camera_Shake_C"));
+	if (ULTISHAKE.Succeeded())
+	{
+		KRUltiSkillCameraShakeClass = ULTISHAKE.Class;
+	}
 	static ConstructorHelpers::FClassFinder<UCutSceneWidget> CUTSCENECLASS(TEXT("/Game/Blueprints/KR_CutSceneWidget.KR_CutSceneWidget_C"));
 	if (CUTSCENECLASS.Succeeded())
 	{
@@ -202,8 +207,14 @@ void AKeroroPlayerController::PlayParryWidgetEffect()
 void AKeroroPlayerController::PlayParryCameraShake()
 {
 	PlayerCameraManager->StartCameraShake(KRParryCameraShakeClass, 1.0f);
-	UE_LOG(LogTemp, Warning, TEXT("PlayParryCameraShake"));
+	//UE_LOG(LogTemp, Warning, TEXT("PlayParryCameraShake"));
 
+}
+
+void AKeroroPlayerController::PlayUltiSkillCameraShake()
+{
+	PlayerCameraManager->StartCameraShake(KRUltiSkillCameraShakeClass, 1.0f);
+	//UE_LOG(LogTemp, Warning, TEXT("PlayUltiSkillCameraShake"));
 }
 
 float AKeroroPlayerController::GetGameStateRemainingTime()
@@ -319,6 +330,7 @@ void AKeroroPlayerController::UltimateSkill()
 	}
 
 	PlayUltimateCutScene();
+	PlayUltiSkillCameraShake();
 }
 
 
