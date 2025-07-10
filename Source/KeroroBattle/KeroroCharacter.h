@@ -80,6 +80,7 @@ public:
 	void HandleComboInput();
 	void StartNewAttack();
 	void PlayVoiceSound();
+	void PlayUltiSkillSound();
 	void PlayHitSound(int32 Combo = 0);
 	void PlayHitEffect(FVector HitLocation, FRotator HitRotator, FVector Scale = FVector(1.0f));
 	void PlayWeaponSound();
@@ -171,7 +172,7 @@ public:
 
 public:
 	UPROPERTY()
-	int32 NumVoices = 4;
+	int32 NumVoices = 5;
 
 	UPROPERTY(EditAnywhere, Category = Sound)
 	TArray<USoundBase*> VoiceSounds;

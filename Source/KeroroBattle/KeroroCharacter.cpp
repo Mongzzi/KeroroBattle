@@ -234,11 +234,11 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 		{
 			// 강조선 위젯 애니메이션 출력
 			PC->PlayParryWidgetEffect();
-			
+
 			// 카메라 쉐이크 출력
 			PC->PlayParryCameraShake();
 		}
-		return 0.0f; 
+		return 0.0f;
 	}
 
 	// 가드 체크
@@ -259,10 +259,10 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 		);
 		IsGuarding = false;
 		KRAnim->bIsGuarding = false;
-	
+
 		UGameplayStatics::SpawnSoundAtLocation(this, GuardSound, GetActorLocation(), FRotator::ZeroRotator, 1.0f);
 
-		return 0.0f; 
+		return 0.0f;
 	}
 
 
@@ -365,8 +365,8 @@ void AKeroroCharacter::PlayVoiceSound()
 	{
 		if (WeaponType == EWeaponType::RIFLE)
 		{
-			int RandomIndex = FMath::RandRange(0, 10);	//0~3 유효 4~10 무효 , 무효시 아무소리안나게 너무시끄러움..
-			if (VoiceSounds.IsValidIndex(RandomIndex))
+			int RandomIndex = FMath::RandRange(0, 10);	//0~2 유효 5~10 무효 ,3은 그냥뻇음 4는 궁극기, 무효시 아무소리안나게 너무시끄러움..
+			if (VoiceSounds.IsValidIndex(RandomIndex) && RandomIndex != 4)
 			{
 				UGameplayStatics::PlaySoundAtLocation(this, VoiceSounds[RandomIndex], GetActorLocation());
 				return;
@@ -376,6 +376,15 @@ void AKeroroCharacter::PlayVoiceSound()
 		{
 			UGameplayStatics::PlaySoundAtLocation(this, VoiceSounds[CurrentCombo - 1], GetActorLocation());
 		}
+	}
+}
+
+void AKeroroCharacter::PlayUltiSkillSound()
+{
+	// 상수로 넣어주고있어서 살짝 위험함 추후 수정 필요
+	if (VoiceSounds.IsValidIndex(4))
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, VoiceSounds[4], GetActorLocation());
 	}
 }
 
@@ -854,6 +863,7 @@ void AKeroroCharacter::StartUltimateSkill()
 {
 	float SkillCoolTime = 10.0f;
 	GetWorld()->GetTimerManager().SetTimer(UltimateSkillCooldownTimer, this, &AKeroroCharacter::EndParry, SkillCoolTime, false);
+	PlayUltiSkillSound();
 }
 
 void AKeroroCharacter::EndParry()
