@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Animation/AnimMontage.h"
+#include "Animation/AnimSequence.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
 
 UKeroroAnimInstance::UKeroroAnimInstance()
@@ -17,6 +18,7 @@ UKeroroAnimInstance::UKeroroAnimInstance()
 	IsDead = false;
 	bIsGuarding = false;
 	bIsRunning = false;
+	bIsUltiSkillPlaying = false;
 	AnimationRunSpeed = 1.0f;
 	WeaponType = EWeaponType::SWORD;
 
@@ -50,6 +52,31 @@ UKeroroAnimInstance::UKeroroAnimInstance()
 		NoteBookAttackMontage = NOTEBOOK_ATTACK_MONTAGE.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ULTIMONTAGE1(TEXT("/Game/Animation/Doro_UltiMontage.Doro_UltiMontage"));
+	if (ULTIMONTAGE1.Succeeded())
+	{
+		SwordUltiMontage = ULTIMONTAGE1.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ULTIMONTAGE2(TEXT("/Game/Animation/Giro_UltiMontage.Giro_UltiMontage"));
+	if (ULTIMONTAGE2.Succeeded())
+	{
+		RifleUltiMontage = ULTIMONTAGE2.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ULTIMONTAGE3(TEXT("/Game/Animation/Kero_UltiMontage.Kero_UltiMontage"));
+	if (ULTIMONTAGE3.Succeeded())
+	{
+		KeroBallUltiMontage = ULTIMONTAGE3.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ULTIMONTAGE4(TEXT("/Game/Animation/Tama_UltiMontage.Tama_UltiMontage"));
+	if (ULTIMONTAGE4.Succeeded())
+	{
+		FistUltiMontage = ULTIMONTAGE4.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ULTIMONTAGE5(TEXT("/Game/Animation/Kuru_UltiMontage.Kuru_UltiMontage"));
+	if (ULTIMONTAGE5.Succeeded())
+	{
+		NoteBookUltiMontage = ULTIMONTAGE5.Object;
+	}
 }
 
 void UKeroroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -92,7 +119,6 @@ void UKeroroAnimInstance::PlayAttackMontage()
 {
 	if (IsDead) return;
 
-
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(TryGetPawnOwner());
 	if (kero && KRPlayerState)
 	{
@@ -109,6 +135,23 @@ void UKeroroAnimInstance::PlayAttackMontage()
 	}
 }
 
+void UKeroroAnimInstance::PlayUltiSkillMontage()
+{
+	if (IsDead) return;
+
+	if (UAnimMontage* Montage = GetAnimMontage())
+	{
+		if (Montage_IsPlaying(Montage))
+		{
+			StopAttackMontage();
+		}
+		if (UAnimMontage* UltiMontage = GetUltiAnimMontage())
+		{
+			Montage_Play(UltiMontage, 1.0f);
+		}
+	}
+}
+
 void UKeroroAnimInstance::SetDeadAnim()
 {
 	IsDead = true;
@@ -117,6 +160,11 @@ void UKeroroAnimInstance::SetDeadAnim()
 void UKeroroAnimInstance::SetWeaponType(EWeaponType type)
 {
 	WeaponType = type;
+}
+
+void UKeroroAnimInstance::SetKeroroType(EKeroroType type)
+{
+	CurrentKeroroType = type;
 }
 
 void UKeroroAnimInstance::AnimNotify_AttackHitCheck()
@@ -157,6 +205,12 @@ void UKeroroAnimInstance::AnimNotify_EndBlocking()
 	UE_LOG(LogTemp, Error, TEXT("HitDown"));
 }
 
+void UKeroroAnimInstance::AnimNotify_EndUltiSkill()
+{
+	bIsUltiSkillPlaying = false;
+	UE_LOG(LogTemp, Error, TEXT("End Ulti Skill"));
+}
+
 FName UKeroroAnimInstance::GetAttackMontageSectionName(int32 Section)
 {
 	if (FMath::IsWithinInclusive<int32>(Section, 1, 4)) return FName(*FString::Printf(TEXT("Attack%d"), Section));
@@ -165,7 +219,6 @@ FName UKeroroAnimInstance::GetAttackMontageSectionName(int32 Section)
 
 UAnimMontage* UKeroroAnimInstance::GetAnimMontage()
 {
-
 	switch (WeaponType)
 	{
 	case EWeaponType::FIST:
@@ -180,6 +233,24 @@ UAnimMontage* UKeroroAnimInstance::GetAnimMontage()
 		return NoteBookAttackMontage;
 	}
 	return SwordAttackMontage;
+}
+
+UAnimMontage* UKeroroAnimInstance::GetUltiAnimMontage()
+{
+	switch (WeaponType)
+	{
+	case EWeaponType::FIST:
+		return FistUltiMontage;
+	case EWeaponType::KEROBALL:
+		return KeroBallUltiMontage;
+	case EWeaponType::RIFLE:
+		return RifleUltiMontage;
+	case EWeaponType::SWORD:
+		return SwordUltiMontage;
+	case EWeaponType::NOTEBOOK:
+		return NoteBookUltiMontage;
+	}
+	return SwordUltiMontage;
 }
 
 void UKeroroAnimInstance::JumptoAttackMontageSection(int32 NewSection)

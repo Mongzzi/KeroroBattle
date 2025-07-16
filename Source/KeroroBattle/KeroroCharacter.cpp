@@ -864,6 +864,12 @@ void AKeroroCharacter::StartUltimateSkill()
 	float SkillCoolTime = 10.0f;
 	GetWorld()->GetTimerManager().SetTimer(UltimateSkillCooldownTimer, this, &AKeroroCharacter::EndParry, SkillCoolTime, false);
 	PlayUltiSkillSound();
+	if (KRAnim)
+	{
+		//UE_LOG(LogTemp, Log, TEXT("StartUltimateSkill"));
+		KRAnim->bIsUltiSkillPlaying = true;
+		KRAnim->PlayUltiSkillMontage();
+	}
 }
 
 void AKeroroCharacter::EndParry()
@@ -1032,6 +1038,7 @@ void AKeroroCharacter::LoadAssetandSetting(EKeroroType type)
 
 		KRAnim = Cast<UKeroroAnimInstance>(GetMesh()->GetAnimInstance());
 		KRAnim->SetWeaponType(WeaponType);
+		KRAnim->SetKeroroType(type);
 		// 애님인스턴스 설정 및 델리게이트 바인딩
 		BindCharacterEvents();
 		SetWeapon();
