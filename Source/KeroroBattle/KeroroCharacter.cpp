@@ -13,6 +13,7 @@
 #include "ImpactWeapon.h"
 #include "RifleWeapon.h"
 #include "NoteBookWeapon.h"
+#include "KR_MovingObject.h"
 #include "RifleBullet.h"
 #include "KeroroPlayerState.h"
 #include "KeroroStatComponent.h"
@@ -108,7 +109,7 @@ AKeroroCharacter::AKeroroCharacter()
 	if (HUD.Succeeded()) HPBar->SetWidgetClass(HUD.Class);
 
 	// 스프링암 설정
-	SpringArm->bUsePawnControlRotation = true; 
+	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bInheritPitch = true;
 	SpringArm->bInheritYaw = true;
 	SpringArm->bInheritRoll = false;
@@ -124,7 +125,7 @@ AKeroroCharacter::AKeroroCharacter()
 	bUseControllerRotationRoll = false;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->bUseControllerDesiredRotation = false; 
+	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 
 	// 캐릭터 속도
 	WalkSpeed = 600.0f;
@@ -455,6 +456,29 @@ void AKeroroCharacter::FistUlti()
 
 void AKeroroCharacter::NoteBookUlti()
 {
+	FVector Start = GetActorLocation()+FVector(0.0f,0.0f,100.0f);
+
+	FVector Forward = GetActorForwardVector();
+	FVector Right = GetActorRightVector();
+	FVector Up = GetActorUpVector();
+
+	FVector Mid = Start
+		+ Forward * FMath::FRandRange(4000.0f, 5000.0f)
+		+ Right * FMath::FRandRange(-5000.0f, 5000.0f)
+		+ Up * FMath::FRandRange(500.0f, 1500.0f);
+
+	FVector End = Mid
+		+ Forward * FMath::FRandRange(4000.0f, 5000.0f)
+		+ Right * FMath::FRandRange(-5000.0f, 5000.0f)
+		+ Up * FMath::FRandRange(500.0f, 1500.0f);
+
+	AKR_MovingObject* Obj = GetWorld()->SpawnActor<AKR_MovingObject>(AKR_MovingObject::StaticClass(), Start, FRotator::ZeroRotator);
+
+	if (Obj)
+	{
+		Obj->SetBezierPoints(Start, Mid, End);
+		Obj->StartMoving(2000.0f);
+	}
 }
 
 void AKeroroCharacter::RifleUlti()

@@ -88,8 +88,8 @@ void AKeroballWeapon::Explode()
 		if (Rand < kero_stat->CritChanceRate)
 		{
 			Damage *= kero_stat->CritDamageRate;
-			UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f /// Critical Chance Rate = %f"),
-				Damage, kero_stat->AttackPower, kero_stat->CritDamageRate, kero_stat->CritChanceRate);
+			//UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f /// Critical Chance Rate = %f"),
+			//	Damage, kero_stat->AttackPower, kero_stat->CritDamageRate, kero_stat->CritChanceRate);
 		}
 
 		for (auto& Hit : HitResults)
@@ -105,7 +105,7 @@ void AKeroballWeapon::Explode()
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSEffect, GetActorLocation(), FRotator::ZeroRotator, FVector(3.0f));
 	if (BombSound)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, BombSound, GetActorLocation(), 3.0f);
+		UGameplayStatics::PlaySoundAtLocation(this, BombSound, GetActorLocation(), BombSoundVolume);
 	}
 	Destroy();
 }
@@ -114,6 +114,7 @@ void AKeroballWeapon::FallDown()
 {
 	StaticMeshComponent->SetSimulatePhysics(true);
 	StaticMeshComponent->AddImpulse(FVector(0.0f,0.0f,-100.0f), NAME_None, true);
+	BombSoundVolume = 0.5f;
 	GetWorldTimerManager().SetTimer(ExplodeTimerHandle, this, &AKeroballWeapon::Explode, 3.0f, false);
 }
 

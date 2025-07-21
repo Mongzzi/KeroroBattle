@@ -30,14 +30,14 @@ void AImpactWeapon::PlayEffect(AKeroroCharacter* Character)
 {
 	if (!Character) return;
 	OwnerKero = Character;
-	
+
 	if (ImpactPS)
 	{
 		ImpactPC = UGameplayStatics::SpawnEmitterAttached(ImpactPS, Character->GetMesh(), FName("TamamaImpact"), FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 		ImpactPC->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.5f));
 	}
 
-	GetWorld()->GetTimerManager().SetTimer(AttackTimer,this,&AImpactWeapon::AttackCheck_Impact,0.3f,true);
+	GetWorld()->GetTimerManager().SetTimer(AttackTimer, this, &AImpactWeapon::AttackCheck_Impact, 0.3f, true);
 
 	GetWorld()->GetTimerManager().SetTimer(EffectTimer, [this]() {
 		ImpactPC->DestroyComponent();
@@ -75,7 +75,7 @@ void AImpactWeapon::AttackCheck_Impact()
 			AActor* HitActor = Hit.GetActor();
 			if (IsValid(HitActor) && Cast<AKeroroEnemyCharacter>(Hit.GetActor()))
 			{
-				
+
 				float FinalDamage = OwnerKRStat->AttackPower;
 				float Rand = FMath::FRand();
 				if (Rand < OwnerKRStat->CritChanceRate)

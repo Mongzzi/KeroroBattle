@@ -30,6 +30,7 @@ public:
 
 public:
 	float BombTime = 1.25f;
+	float BombSoundVolume = 3.0f;
 
 private:
 	UPROPERTY(EditAnywhere, Category = Sound)
