@@ -108,19 +108,23 @@ AKeroroCharacter::AKeroroCharacter()
 	if (HUD.Succeeded()) HPBar->SetWidgetClass(HUD.Class);
 
 	// 스프링암 설정
-	SpringArm->bUsePawnControlRotation = true; // 컨트롤러 기준 회전
-	SpringArm->bInheritPitch = false;
+	SpringArm->bUsePawnControlRotation = true; 
+	SpringArm->bInheritPitch = true;
+	SpringArm->bInheritYaw = true;
 	SpringArm->bInheritRoll = false;
-	SpringArm->bInheritYaw = true; // Yaw만 따라가게
-	SpringArm->bDoCollisionTest = false; // 벽에 가까이 갔을 때 카메라 충돌 보정
+
+	Camera->bUsePawnControlRotation = false;
 
 	// 카메라 설정
 	Camera->bUsePawnControlRotation = false;
 
 	// 캐릭터 회전 관련 설정
+	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
-	GetCharacterMovement()->bOrientRotationToMovement = true; // 입력 방향 따라 몸 회전
-	GetCharacterMovement()->bUseControllerDesiredRotation = true; // 컨트롤러 회전 비활성화
+	bUseControllerRotationRoll = false;
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->bUseControllerDesiredRotation = false; 
 
 	// 캐릭터 속도
 	WalkSpeed = 600.0f;
@@ -744,7 +748,7 @@ void AKeroroCharacter::AttackCheck_Rifle()
 		float YawOffset = Adjust * AddYaw;
 
 		FRotator MuzzleRotation = GetControlRotation();
-		MuzzleRotation.Pitch = 0.0f;
+		//MuzzleRotation.Pitch = 0.0f;
 		MuzzleRotation.Yaw = BaseYaw + YawOffset;
 
 		FVector MuzzleOffset = FVector(100.f, 0.0f, 25.0f);

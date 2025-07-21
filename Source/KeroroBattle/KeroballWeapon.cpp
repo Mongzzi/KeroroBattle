@@ -17,7 +17,7 @@ AKeroballWeapon::AKeroballWeapon()
 	StaticMeshComponent->SetCollisionProfileName(TEXT("KeroroWeapon"));
 	RootComponent = StaticMeshComponent;
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> KB(TEXT("/Game/Keroro_Model/etc/keroball.keroball"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> KB(TEXT("/Game/Keroro_Model/etc/keroball/keroball.keroball"));
 	if (KB.Succeeded())
 	{
 		StaticMeshComponent->SetStaticMesh(KB.Object);
