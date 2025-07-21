@@ -183,38 +183,17 @@ void AKeroroEnemyCharacter::AttackCheck()
 {
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this); // 자기 자신은 무시
+	Params.AddIgnoredActor(this);
 
 	bool bHit = GetWorld()->SweepSingleByChannel(
 		HitResult,
-		GetActorLocation(),	// 시작위치
-		GetActorLocation() + GetActorForwardVector() * AttackRange,	// 끝위치
-		FQuat::Identity, // 회전 없음
-		ECC_GameTraceChannel3, // Attack채널 ( DefaultEngine 파일에 내가만든 채널 몇번쨰인지 나와있음 )
+		GetActorLocation(),
+		GetActorLocation() + GetActorForwardVector() * AttackRange,
+		FQuat::Identity,
+		ECC_GameTraceChannel3, 
 		FCollisionShape::MakeSphere(AttackRadius),
 		Params
 	);
-
-#if ENABLE_DRAW_DEBUG
-	FVector TraceVec = GetActorForwardVector() * AttackRange;
-	FVector Center = GetActorLocation() + TraceVec * 0.5f;
-	float HalfHeight = AttackRange * 0.5f + AttackRadius;
-	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
-	FColor DrawColor = bHit ? FColor::Green : FColor::Red;
-	float DebugLifeTime = 5.0f;
-
-	//DrawDebugCapsule(
-	//	GetWorld(),
-	//	Center,
-	//	HalfHeight,
-	//	AttackRadius,
-	//	CapsuleRot,
-	//	DrawColor,
-	//	false,
-	//	DebugLifeTime
-	//);
-
-#endif
 
 	if (bHit)
 	{
@@ -232,7 +211,6 @@ void AKeroroEnemyCharacter::AttackCheck()
 			}
 
 			HitResult.GetActor()->TakeDamage(FinalDamage, DamageEvent, GetController(), this);
-			//UE_LOG(LogTemp, Warning, TEXT(" hitted : %s"), *HitResult.GetActor()->GetName());
 
 		}
 	}

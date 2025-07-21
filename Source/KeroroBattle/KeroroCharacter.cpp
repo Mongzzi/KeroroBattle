@@ -274,13 +274,14 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 
 	// 데미지 처리
 	float FinalDamage = KRStat->SetFinalDamage(Damage);
-
-	if (KRAnim && KRStat && FinalDamage > 0.0f)
+	float FinalDamagePercent = FinalDamage / KRStat->MaxHp;
+	if (FinalDamagePercent > 0.05f)
 	{
 		KRAnim->bIsHit = true;
 		ChangeFaceTexture(EFaceType::Anger);
 		// 여기에 피격 사운드 넣으면 좋을듯 추후 에셋 구하고 추가 진행
 	}
+
 
 	// 플레이어 사망
 	if (KRStat->GetHpRatio() <= 0.0f)
@@ -456,7 +457,7 @@ void AKeroroCharacter::FistUlti()
 
 void AKeroroCharacter::NoteBookUlti()
 {
-	FVector Start = GetActorLocation()+FVector(0.0f,0.0f,100.0f);
+	FVector Start = GetActorLocation() + FVector(0.0f, 0.0f, 100.0f);
 
 	FVector Forward = GetActorForwardVector();
 	FVector Right = GetActorRightVector();
@@ -772,7 +773,7 @@ void AKeroroCharacter::AttackCheck_Rifle()
 		float YawOffset = Adjust * AddYaw;
 
 		FRotator MuzzleRotation = GetControlRotation();
-		//MuzzleRotation.Pitch = 0.0f;
+		MuzzleRotation.Pitch += 10.0f;
 		MuzzleRotation.Yaw = BaseYaw + YawOffset;
 
 		FVector MuzzleOffset = FVector(100.f, 0.0f, 25.0f);
