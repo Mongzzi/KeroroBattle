@@ -44,7 +44,7 @@ void AKeroballWeapon::Throw(const FVector& Direction, float Force)
 {
 	StaticMeshComponent->SetSimulatePhysics(true);
 	StaticMeshComponent->AddImpulse(Direction * Force, NAME_None, true);
-	GetWorldTimerManager().SetTimer(ExplodeTimerHandle, this, &AKeroballWeapon::Explode, 1.25f, false);
+	GetWorldTimerManager().SetTimer(ExplodeTimerHandle, this, &AKeroballWeapon::Explode, BombTime, false);
 }
 
 void AKeroballWeapon::ReturnToHand(AKeroroCharacter* Character)
@@ -108,6 +108,13 @@ void AKeroballWeapon::Explode()
 		UGameplayStatics::PlaySoundAtLocation(this, BombSound, GetActorLocation(), 3.0f);
 	}
 	Destroy();
+}
+
+void AKeroballWeapon::FallDown()
+{
+	StaticMeshComponent->SetSimulatePhysics(true);
+	StaticMeshComponent->AddImpulse(FVector(0.0f,0.0f,-100.0f), NAME_None, true);
+	GetWorldTimerManager().SetTimer(ExplodeTimerHandle, this, &AKeroballWeapon::Explode, 3.0f, false);
 }
 
 void AKeroballWeapon::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

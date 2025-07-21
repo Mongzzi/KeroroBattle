@@ -415,6 +415,25 @@ void AKeroroCharacter::PlayWeaponSound()
 
 void AKeroroCharacter::KeroBallUlti()
 {
+
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	SpawnParams.Instigator = this;
+
+	for (int i = 0; i < 100; ++i)
+	{
+		float Randx = FMath::FRandRange(-2000, 2000.0f);
+		float Randy = FMath::FRandRange(-2000, 2000.0f);
+		float Randz = FMath::FRandRange(1000.0f, 2000.0f);
+
+		auto keroball = GetWorld()->SpawnActor<AKeroballWeapon>(GetActorLocation() + FVector(Randx, Randy, Randz), FRotator::ZeroRotator, SpawnParams);
+		if (keroball) {
+			keroball->FallDown();
+		}
+
+
+	}
 }
 
 void AKeroroCharacter::SwordUlti()
@@ -890,10 +909,10 @@ void AKeroroCharacter::StartUltimateSkill()
 	float SkillCoolTime = 10.0f;
 	// 아래 코드 콜백함수 다시 설정 필요
 	GetWorld()->GetTimerManager().SetTimer(UltimateSkillCooldownTimer, this, &AKeroroCharacter::EndParry, SkillCoolTime, false);
-	
+
 	// 궁극기 사운드 재생
 	PlayUltiSkillSound();
-	
+
 	// 궁극기 로직 실행
 	switch (WeaponType)
 	{

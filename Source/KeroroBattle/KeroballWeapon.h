@@ -23,14 +23,18 @@ public:
 	FTimerHandle ExplodeTimerHandle;
 
 	void Explode();
+	void FallDown();
 
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, FVector NormalImpulse,const FHitResult& Hit);
 
+public:
+	float BombTime = 1.25f;
 
-	UPROPERTY(EditAnywhere, Category = "Sound")
+private:
+	UPROPERTY(EditAnywhere, Category = Sound)
 	USoundBase* BombSound;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Effect)
+	UPROPERTY(EditDefaultsOnly, Category = Effect)
 	class UNiagaraSystem* NSEffect;
 };
