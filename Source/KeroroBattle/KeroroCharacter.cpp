@@ -10,6 +10,7 @@
 #include "KeroballWeapon.h"
 #include "SwordWeapon.h"
 #include "FistWeapon.h"
+#include "ImpactWeapon.h"
 #include "RifleWeapon.h"
 #include "NoteBookWeapon.h"
 #include "RifleBullet.h"
@@ -410,6 +411,31 @@ void AKeroroCharacter::PlayWeaponSound()
 	{
 		Weapon->PlaySound(CurrentCombo);
 	}
+}
+
+void AKeroroCharacter::KeroBallUlti()
+{
+}
+
+void AKeroroCharacter::SwordUlti()
+{
+}
+
+void AKeroroCharacter::FistUlti()
+{
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	SpawnParams.Instigator = this;
+	UltiWeapon = GetWorld()->SpawnActor<AImpactWeapon>(FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+	UltiWeapon->PlayEffect(this);
+}
+
+void AKeroroCharacter::NoteBookUlti()
+{
+}
+
+void AKeroroCharacter::RifleUlti()
+{
 }
 
 float AKeroroCharacter::GetRemainingGuardCooldown()
@@ -862,8 +888,32 @@ void AKeroroCharacter::StartGuard()
 void AKeroroCharacter::StartUltimateSkill()
 {
 	float SkillCoolTime = 10.0f;
+	// 아래 코드 콜백함수 다시 설정 필요
 	GetWorld()->GetTimerManager().SetTimer(UltimateSkillCooldownTimer, this, &AKeroroCharacter::EndParry, SkillCoolTime, false);
+	
+	// 궁극기 사운드 재생
 	PlayUltiSkillSound();
+	
+	// 궁극기 로직 실행
+	switch (WeaponType)
+	{
+	case EWeaponType::KEROBALL:
+		KeroBallUlti();
+		break;
+	case EWeaponType::RIFLE:
+		RifleUlti();
+		break;
+	case EWeaponType::SWORD:
+		SwordUlti();
+		break;
+	case EWeaponType::FIST:
+		FistUlti();
+		break;
+	case EWeaponType::NOTEBOOK:
+		NoteBookUlti();
+		break;
+	}
+
 	if (KRAnim)
 	{
 		//UE_LOG(LogTemp, Log, TEXT("StartUltimateSkill"));

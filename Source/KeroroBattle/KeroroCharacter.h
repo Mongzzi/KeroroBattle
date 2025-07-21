@@ -87,6 +87,13 @@ public:
 	bool GetIsAttacking() { return IsAttacking; };
 
 public:
+	void KeroBallUlti();
+	void SwordUlti();
+	void FistUlti();
+	void NoteBookUlti();
+	void RifleUlti();
+
+public:
 	float GetRemainingGuardCooldown();
 	float GetRemainingUltimateSkillCooldown(); // 궁극기 쿨타임 가져오는함수 추후 사용예정
 
@@ -141,6 +148,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	class AKeroroWeapon* Weapon;
 
+	UPROPERTY(VisibleAnywhere, Category = UltiWeapon)
+	class AKeroroWeapon* UltiWeapon;
+
 	UPROPERTY(VisibleAnywhere, Category = UI)
 	class UWidgetComponent* HPBar;
 
@@ -162,7 +172,7 @@ private:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KeroroType)
-	EKeroroType CurrentKeroroType = EKeroroType::Dororo;
+	EKeroroType CurrentKeroroType = EKeroroType::Tamama;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat)
 	float RunSpeed;
