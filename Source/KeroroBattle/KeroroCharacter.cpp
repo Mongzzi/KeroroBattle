@@ -9,6 +9,7 @@
 #include "KeroroGameInstance.h"
 #include "KeroballWeapon.h"
 #include "SwordWeapon.h"
+#include "RotateWeapon.h"
 #include "FistWeapon.h"
 #include "ImpactWeapon.h"
 #include "RifleWeapon.h"
@@ -444,6 +445,12 @@ void AKeroroCharacter::KeroBallUlti()
 
 void AKeroroCharacter::SwordUlti()
 {
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	SpawnParams.Instigator = this;
+	UltiWeapon = GetWorld()->SpawnActor<ARotateWeapon>(FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+	ARotateWeapon* RotateWeapon = Cast<ARotateWeapon>(UltiWeapon);
+	RotateWeapon->PlayEffect(this);
 }
 
 void AKeroroCharacter::FistUlti()
