@@ -15,21 +15,14 @@ AKeroroItemBox::AKeroroItemBox()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	Trigger = CreateDefaultSubobject<UBoxComponent>(TEXT("TRIGGER"));
-	Box = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BOX"));
-
-	RootComponent = Trigger;
-	
-	Box->SetupAttachment(RootComponent);
-	Box->SetCollisionProfileName(TEXT("NoCollision"));
-
-	Trigger->SetBoxExtent(FVector(52.0f, 34.5f, 33.5f));
-	Trigger->SetCollisionProfileName(TEXT("ItemBox"));
+	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BOX"));
+	StaticMeshComponent->SetCollisionProfileName(TEXT("ItemBox"));
+	RootComponent = StaticMeshComponent;
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>SM_BOX(TEXT("/Game/SciFiCrates/Crates/Mesh/SM_Small_Crate_V1.SM_Small_Crate_V1"));
 	if (SM_BOX.Succeeded())
 	{
-		Box->SetStaticMesh(SM_BOX.Object);
+		StaticMeshComponent->SetStaticMesh(SM_BOX.Object);
 	}
 	WeaponItemClass = AKeroroWeapon::StaticClass();
 
@@ -46,7 +39,7 @@ void AKeroroItemBox::BeginPlay()
 {
 	Super::BeginPlay();
 
-	int32 RandIndex = FMath::RandRange(0, static_cast<int32>(EItemType::NUM) - 1);
+	int32 RandIndex = FMath::RandRange(0, static_cast<int32>(EItemType::MAX) - 1);
 	ItemType = static_cast<EItemType>(RandIndex);
 
 }
@@ -54,7 +47,7 @@ void AKeroroItemBox::BeginPlay()
 void AKeroroItemBox::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	Trigger->OnComponentBeginOverlap.AddDynamic(this, &AKeroroItemBox::OnCharacterBeginOverlap);
+	StaticMeshComponent->OnComponentBeginOverlap.AddDynamic(this, &AKeroroItemBox::OnCharacterBeginOverlap);
 }
 
 // Called every frame
@@ -62,6 +55,15 @@ void AKeroroItemBox::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AKeroroItemBox::SetPhysics()
+{
+	StaticMeshComponent->SetSimulatePhysics(true);
+	float XImpulse = FMath::FRandRange(-400.0f, 400.0f);
+	float YImpulse = FMath::FRandRange(-400.0f, 400.0f);
+	float ZImpulse = FMath::FRandRange(-400.0f, -100.0f);
+	StaticMeshComponent->AddImpulse(FVector(XImpulse, YImpulse, ZImpulse), NAME_None, true);
 }
 
 void AKeroroItemBox::OnCharacterBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

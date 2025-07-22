@@ -23,6 +23,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void DropItemBox();
+
+public:
 	void StartMoving(float Speed);
 	void SetBezierPoints(FVector p0, FVector p1, FVector p2);
 	float GetTotalDistance();
@@ -30,10 +33,13 @@ public:
 
 private:
 	FVector P0, P1, P2;
+	
 	float TotalDist = 0.0f;
 	float CurrentDist = 0.0f;
 	float MoveSpeed = 300.f;
 	bool bIsMoving = true;
+
+	FTimerHandle DropTimerHandle;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)

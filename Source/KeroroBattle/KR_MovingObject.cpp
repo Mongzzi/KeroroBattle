@@ -2,6 +2,7 @@
 
 
 #include "KR_MovingObject.h"
+#include "KeroroItemBox.h"
 
 // Sets default values
 AKR_MovingObject::AKR_MovingObject()
@@ -23,6 +24,14 @@ AKR_MovingObject::AKR_MovingObject()
 void AKR_MovingObject::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetWorldTimerManager().SetTimer(
+		DropTimerHandle,
+		this,
+		&AKR_MovingObject::DropItemBox,
+		0.5f, // 2초마다
+		true  // 루프 반복
+	);
 
 }
 
@@ -46,6 +55,16 @@ void AKR_MovingObject::Tick(float DeltaTime)
 	else {
 		Destroy();
 	}
+}
+
+void AKR_MovingObject::DropItemBox()
+{
+	FVector DropLocation = GetActorLocation() - FVector(0.0f, 0.0f, 100.f);
+	FRotator DropRotation = FRotator::ZeroRotator;
+
+	auto ItemBox = GetWorld()->SpawnActor<AKeroroItemBox>(AKeroroItemBox::StaticClass(), DropLocation, DropRotation);
+	ItemBox->SetPhysics();
+
 }
 
 void AKR_MovingObject::StartMoving(float Speed)

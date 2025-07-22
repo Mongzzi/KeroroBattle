@@ -21,25 +21,16 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;
 	
-	enum class EItemType
-	{
-		HP,
-		MP,
-		GOLD,
-		SKILL,
-		WEAPON_GUN,
-		NUM,
-	};
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+	void SetPhysics();
 
+public:
 	UPROPERTY(VisibleAnywhere,Category = Box)
-	class UBoxComponent* Trigger;
-
-	UPROPERTY(VisibleAnywhere,Category = Box)
-	class UStaticMeshComponent* Box;
+	class UStaticMeshComponent* StaticMeshComponent;
 
 	UPROPERTY(EditInstanceOnly, Category=Box)
 	TSubclassOf<class AKeroroWeapon> WeaponItemClass;
@@ -50,7 +41,6 @@ public:
 	UPROPERTY()
 	class UNiagaraComponent* NCOpenEffect;
 
-public:
 	EItemType ItemType;
 
 private:

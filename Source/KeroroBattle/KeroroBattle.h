@@ -56,6 +56,18 @@ enum class EWidgetType : uint8
 	SHIELD_IMAGE			UMETA(DisplayName = "SHIELD_IMAGE")
 };
 
+UENUM(BlueprintType)
+
+enum class EItemType : uint8
+{
+	HP						UMETA(DisplayName = "HP"),
+	MP						UMETA(DisplayName = "MP"),
+	GOLD					UMETA(DisplayName = "GOLD"),
+	SKILL					UMETA(DisplayName = "SKILL"),
+	GUARD					UMETA(DisplayName = "GUARD"),
+	MAX						UMETA(Hidden) // 순환 계산용
+};
+
 
 UENUM(BlueprintType)
 enum class ECardType : uint8
