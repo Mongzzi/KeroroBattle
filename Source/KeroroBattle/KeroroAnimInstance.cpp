@@ -209,6 +209,12 @@ void UKeroroAnimInstance::AnimNotify_EndUltiSkill()
 {
 	bIsUltiSkillPlaying = false;
 	UE_LOG(LogTemp, Error, TEXT("End Ulti Skill"));
+	auto Pawn = TryGetPawnOwner();
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(Pawn);
+	if (kero->CurrentKeroroType == EKeroroType::Keroro|| kero->CurrentKeroroType == EKeroroType::Kururu)
+	{
+		kero->ChangeCameraDefault();
+	}
 }
 
 FName UKeroroAnimInstance::GetAttackMontageSectionName(int32 Section)

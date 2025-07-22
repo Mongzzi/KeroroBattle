@@ -37,9 +37,10 @@ void AImpactWeapon::PlayEffect(AKeroroCharacter* Character)
 		ImpactPC->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.5f));
 	}
 
-	GetWorld()->GetTimerManager().SetTimer(AttackTimer, this, &AImpactWeapon::AttackCheck_Impact, 0.3f, true);
+	GetWorld()->GetTimerManager().SetTimer(AttackTimer, this, &AImpactWeapon::AttackCheck_Impact, 0.1f, true);
 
 	GetWorld()->GetTimerManager().SetTimer(EffectTimer, [this]() {
+		OwnerKero->ChangeCameraDefault();
 		ImpactPC->DestroyComponent();
 		GetWorld()->GetTimerManager().ClearTimer(AttackTimer);
 		}, UltiDuration, false);

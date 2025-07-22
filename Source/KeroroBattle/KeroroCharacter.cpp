@@ -44,11 +44,24 @@ AKeroroCharacter::AKeroroCharacter()
 
 	// 카메라 스프링암
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
-	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
-	Camera->SetupAttachment(SpringArm);
+
 	SpringArm->TargetArmLength = 250.0f;
 	SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 50.0f, 60.0f), FRotator(-15.0f, 0.0f, 0.0f));
+
+	SpringArm->bUsePawnControlRotation = true;
+	SpringArm->bInheritPitch = true;
+	SpringArm->bInheritYaw = true;
+	SpringArm->bInheritRoll = false;
+	SpringArm->bDoCollisionTest = false;
+
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
+	Camera->bUsePawnControlRotation = false;
+	Camera->SetupAttachment(SpringArm);
+
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
 
 	// 캡슐컴포넌트 콜리전프로파일 설정 
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("KeroroCharacter"));
@@ -109,21 +122,6 @@ AKeroroCharacter::AKeroroCharacter()
 	static ConstructorHelpers::FClassFinder<UUserWidget>HUD(TEXT("/Game/Blueprints/KR_HPBar.KR_HPBar_C"));
 	if (HUD.Succeeded()) HPBar->SetWidgetClass(HUD.Class);
 
-	// 스프링암 설정
-	SpringArm->bUsePawnControlRotation = true;
-	SpringArm->bInheritPitch = true;
-	SpringArm->bInheritYaw = true;
-	SpringArm->bInheritRoll = false;
-
-	Camera->bUsePawnControlRotation = false;
-
-	// 카메라 설정
-	Camera->bUsePawnControlRotation = false;
-
-	// 캐릭터 회전 관련 설정
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
@@ -422,8 +420,6 @@ void AKeroroCharacter::PlayWeaponSound()
 
 void AKeroroCharacter::KeroBallUlti()
 {
-
-
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	SpawnParams.Instigator = this;
@@ -438,8 +434,6 @@ void AKeroroCharacter::KeroBallUlti()
 		if (keroball) {
 			keroball->FallDown();
 		}
-
-
 	}
 }
 
@@ -491,6 +485,53 @@ void AKeroroCharacter::NoteBookUlti()
 
 void AKeroroCharacter::RifleUlti()
 {
+}
+
+void AKeroroCharacter::ChangeCameraDefault()
+{
+	if (!SpringArm || !Camera) return;
+	
+	SpringArm->bUsePawnControlRotation = true;
+	SpringArm->bInheritPitch = true;
+	SpringArm->bInheritYaw = true;
+	SpringArm->bInheritRoll = false;
+	SpringArm->bDoCollisionTest = false;
+	SpringArm->TargetArmLength = 250.0f;
+	SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 50.0f, 60.0f), FRotator(-15.0f, 0.0f, 0.0f));
+
+	Camera->bUsePawnControlRotation = false;
+	Camera->SetupAttachment(SpringArm);
+
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+}
+
+void AKeroroCharacter::ChangeCameraUltimate()
+{
+	switch (CurrentKeroroType)
+	{
+	case EKeroroType::Keroro:
+		//Camera->bUsePawnControlRotation = false;
+		//SpringArm->bInheritYaw = false;
+		//SpringArm->bInheritPitch = false;
+		//SpringArm->TargetArmLength = 400.0f;
+		//SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 0.0f), FRotator(-30.0f, 180.0f, 0.0f));
+		break;
+	case EKeroroType::Tamama:
+		SpringArm->TargetArmLength = 150.0f;
+		SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 40.0f), FRotator(-30.0f, 0.0f, 0.0f));
+		break;
+	case EKeroroType::Giroro:
+		break;
+	case EKeroroType::Kururu:
+		break;
+	case EKeroroType::Dororo:
+		SpringArm->bInheritPitch = false;
+		SpringArm->TargetArmLength = 1000.0f;
+		SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 0.0f), FRotator(-45.0f, 0.0f, 0.0f));
+		break;
+	}
 }
 
 float AKeroroCharacter::GetRemainingGuardCooldown()
@@ -948,6 +989,9 @@ void AKeroroCharacter::StartUltimateSkill()
 
 	// 궁극기 사운드 재생
 	PlayUltiSkillSound();
+
+	// 궁극기 시점 변경
+	ChangeCameraUltimate();
 
 	// 궁극기 로직 실행
 	switch (WeaponType)

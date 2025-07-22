@@ -116,6 +116,7 @@ void ARotateWeapon::PlayEffect(AKeroroCharacter* Character)
 	FTimerHandle DurationHandle;
 	
 	GetWorld()->GetTimerManager().SetTimer(DurationHandle, [this]() {
+		OwnerKero->ChangeCameraDefault();
 		Destroy();
 		}, SkillDuration, false);
 }

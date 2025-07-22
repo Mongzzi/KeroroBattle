@@ -92,6 +92,9 @@ public:
 	void FistUlti();
 	void NoteBookUlti();
 	void RifleUlti();
+	
+	void ChangeCameraDefault();
+	void ChangeCameraUltimate();
 
 public:
 	float GetRemainingGuardCooldown();
