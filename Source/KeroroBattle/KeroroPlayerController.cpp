@@ -209,7 +209,7 @@ void AKeroroPlayerController::PlayParryWidgetEffect()
 					KRParryWidget->RemoveFromParent();
 					KRParryWidget = nullptr;
 				}
-			},0.4f,false);
+			}, 0.4f, false);
 	}
 }
 
@@ -335,7 +335,7 @@ void AKeroroPlayerController::UltimateSkill()
 	AKeroroCharacter* Kero = Cast<AKeroroCharacter>(GetCharacter());
 	if (Kero)
 	{
-		if(Kero->StartUltimateSkill())
+		if (Kero->StartUltimateSkill())
 		{
 			PlayUltimateCutScene();
 			PlayUltiSkillCameraShake();
@@ -423,6 +423,16 @@ void AKeroroPlayerController::OnPlayerLevelUpdated()
 void AKeroroPlayerController::OnMagicCircleActivated()
 {
 	IsMagicCircleActivated = !IsMagicCircleActivated;
+	AKeroroCharacter* Kero = Cast<AKeroroCharacter>(GetCharacter());
+	if (Kero)
+	{
+		if (IsMagicCircleActivated == true) {
+			Kero->ChangeCameraNoteBookAttack();
+		}
+		else {
+			Kero->ChangeCameraDefault();
+		}
+	}
 }
 
 

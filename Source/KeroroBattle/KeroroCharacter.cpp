@@ -554,6 +554,13 @@ void AKeroroCharacter::LookAttackDir()
 	}
 }
 
+void AKeroroCharacter::ChangeCameraNoteBookAttack()
+{
+	SpringArm->bInheritPitch = false;
+	SpringArm->TargetArmLength = 1000.0f;
+	SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 0.0f), FRotator(-45.0f, 0.0f, 0.0f));
+}
+
 float AKeroroCharacter::GetRemainingGuardCooldown()
 {
 	if (!GetWorld()) return 0.0f;
