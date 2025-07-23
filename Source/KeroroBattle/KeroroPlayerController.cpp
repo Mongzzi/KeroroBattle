@@ -332,15 +332,15 @@ void AKeroroPlayerController::Guard()
 
 void AKeroroPlayerController::UltimateSkill()
 {
-	UE_LOG(LogTemp, Error, TEXT("UltimateSkill"));
 	AKeroroCharacter* Kero = Cast<AKeroroCharacter>(GetCharacter());
 	if (Kero)
 	{
-		Kero->StartUltimateSkill();
+		if(Kero->StartUltimateSkill())
+		{
+			PlayUltimateCutScene();
+			PlayUltiSkillCameraShake();
+		}
 	}
-
-	PlayUltimateCutScene();
-	PlayUltiSkillCameraShake();
 }
 
 

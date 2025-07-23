@@ -17,6 +17,7 @@ UKeroroStatComponent::UKeroroStatComponent()
 	bWantsInitializeComponent = true;
 
 	Level = 1;
+	UltiCostMp = 80.0f;
 
 	HealPowerRate = 0.03f;
 	HealPowerRate_Default = 0.03f;
@@ -351,5 +352,17 @@ void UKeroroStatComponent::EndInvincibility()
 {
 	bIsInvincible = false;
 	UE_LOG(LogTemp, Log, TEXT("invisible time end....."));
+}
+
+bool UKeroroStatComponent::PlayUltiSkill()
+{
+	float cal = CurrentMp - UltiCostMp;
+	if (cal < 0.0f) return false;
+	else
+	{
+		CurrentMp -= UltiCostMp;
+		OnMpIsChanged.Broadcast();
+		return true;
+	}
 }
 

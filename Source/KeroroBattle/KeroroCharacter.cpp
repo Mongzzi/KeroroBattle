@@ -987,11 +987,18 @@ void AKeroroCharacter::StartGuard()
 	SpawnShieldEffect();
 }
 
-void AKeroroCharacter::StartUltimateSkill()
+bool AKeroroCharacter::StartUltimateSkill()
 {
+	if (KRStat == nullptr) return false;
+	if (!KRStat->PlayUltiSkill())
+	{
+		//UE_LOG(LogTemp, Error, TEXT("Can't Play UlitiSkill"));
+		return false;
+	}
+
 	float SkillCoolTime = 10.0f;
-	// 아래 코드 콜백함수 다시 설정 필요
-	GetWorld()->GetTimerManager().SetTimer(UltimateSkillCooldownTimer, this, &AKeroroCharacter::EndParry, SkillCoolTime, false);
+	// 타이머핸들 이용하여 쿨타임 hud에넘겨줘서 쿨타임 위젯업데이트중
+	GetWorld()->GetTimerManager().SetTimer(UltimateSkillCooldownTimer, [](){}, SkillCoolTime, false);
 
 	// 궁극기 사운드 재생
 	PlayUltiSkillSound();
@@ -1025,6 +1032,7 @@ void AKeroroCharacter::StartUltimateSkill()
 		KRAnim->bIsUltiSkillPlaying = true;
 		KRAnim->PlayUltiSkillMontage();
 	}
+	return true;
 }
 
 void AKeroroCharacter::EndParry()
