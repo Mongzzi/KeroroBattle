@@ -37,6 +37,7 @@ public:
 	FOnWeaponSoundDeleGate	OnWeaponSoundCheck;
 
 	void SetDeadAnim();
+	void SetbIsHit(EKeroroType type);
 	void SetWeaponType(EWeaponType type);
 	void SetKeroroType(EKeroroType type);
 	

@@ -426,11 +426,14 @@ void AKeroroPlayerController::OnMagicCircleActivated()
 	AKeroroCharacter* Kero = Cast<AKeroroCharacter>(GetCharacter());
 	if (Kero)
 	{
-		if (IsMagicCircleActivated == true) {
-			Kero->ChangeCameraNoteBookAttack();
-		}
-		else {
-			Kero->ChangeCameraDefault();
+		if (Kero->WeaponType == EWeaponType::NOTEBOOK)
+		{
+			if (IsMagicCircleActivated == true) {
+				Kero->ChangeCameraNoteBookAttack();
+			}
+			else {
+				Kero->ChangeCameraDefault();
+			}
 		}
 	}
 }
