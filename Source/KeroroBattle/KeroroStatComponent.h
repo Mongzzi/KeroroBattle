@@ -38,6 +38,8 @@ public:
 	float GetMpRatio();
 	int32 GetDropExp();
 	int32 GetDropGold();
+	float GetUlitiCoolTime(EKeroroType kero);
+	float GetUlitiCostMp(EKeroroType kero);
 
 	FOnHPIsZeroDelegate OnHpIsZero;
 	FOnHPIsChangedDeleGate OnHpIsChanged;
@@ -62,7 +64,7 @@ public:
 	void StartInvincibility();
 	void EndInvincibility();
 
-	bool PlayUltiSkill();
+	bool PayUlitiSkillMP();
 
 private:
 	struct FKRStatData* StatData;
@@ -76,10 +78,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	float CurrentMp;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float UltiCostMp;
-
 	// --------------------------레벨에 따라 스탯 데이터 테이블로 부터 받아와야하는 정보 ----------------------
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)

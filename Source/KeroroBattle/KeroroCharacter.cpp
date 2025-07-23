@@ -192,7 +192,6 @@ void AKeroroCharacter::BeginPlay()
 void AKeroroCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AKeroroCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -489,7 +488,7 @@ void AKeroroCharacter::RifleUlti()
 void AKeroroCharacter::ChangeCameraDefault()
 {
 	if (!SpringArm || !Camera) return;
-	
+
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bInheritPitch = true;
 	SpringArm->bInheritYaw = true;
@@ -543,7 +542,7 @@ void AKeroroCharacter::ChangeCameraUltimate()
 }
 
 void AKeroroCharacter::LookAttackDir()
-{	
+{
 	// 공격 시작시 컨트롤러 방향으로 캐릭터 회전
 	if (WeaponType == EWeaponType::RIFLE || WeaponType == EWeaponType::KEROBALL)
 	{
@@ -1005,15 +1004,18 @@ void AKeroroCharacter::StartGuard()
 bool AKeroroCharacter::StartUltimateSkill()
 {
 	if (KRStat == nullptr) return false;
-	if (!KRStat->PlayUltiSkill())
+	float SkillCoolTimeCheck = GetRemainingUltimateSkillCooldown();
+	if (SkillCoolTimeCheck != -1)return false;	// -1값이어야 타이머 안돌아감
+
+	if (!KRStat->PayUlitiSkillMP())
 	{
 		//UE_LOG(LogTemp, Error, TEXT("Can't Play UlitiSkill"));
 		return false;
 	}
 
-	float SkillCoolTime = 10.0f;
+	float SkillCoolTime = KRStat->GetUlitiCoolTime(CurrentKeroroType);
 	// 타이머핸들 이용하여 쿨타임 hud에넘겨줘서 쿨타임 위젯업데이트중
-	GetWorld()->GetTimerManager().SetTimer(UltimateSkillCooldownTimer, [](){}, SkillCoolTime, false);
+	GetWorld()->GetTimerManager().SetTimer(UltimateSkillCooldownTimer, []() {}, SkillCoolTime, false);
 
 	// 궁극기 사운드 재생
 	PlayUltiSkillSound();

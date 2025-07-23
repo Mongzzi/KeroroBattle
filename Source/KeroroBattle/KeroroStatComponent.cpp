@@ -17,7 +17,6 @@ UKeroroStatComponent::UKeroroStatComponent()
 	bWantsInitializeComponent = true;
 
 	Level = 1;
-	UltiCostMp = 80.0f;
 
 	HealPowerRate = 0.03f;
 	HealPowerRate_Default = 0.03f;
@@ -303,6 +302,55 @@ int32 UKeroroStatComponent::GetDropGold()
 	return 0;
 }
 
+float UKeroroStatComponent::GetUlitiCoolTime(EKeroroType kero)
+{
+	float UltiCoolTime = 0.0f;
+	switch (kero)
+	{
+	case EKeroroType::Keroro:
+		UltiCoolTime = 10.0f;
+		break;
+	case EKeroroType::Tamama:
+		UltiCoolTime = 13.0f;
+		break;
+	case EKeroroType::Giroro:
+		UltiCoolTime = 3.0f;
+		break;
+	case EKeroroType::Kururu:
+		UltiCoolTime = 10.0f;
+		break;
+	case EKeroroType::Dororo:
+		UltiCoolTime = 15.0f;
+		break;
+	}
+	UltiCoolTime *= (1.0f - SkillCooldownRate);
+	return UltiCoolTime;
+}
+
+float UKeroroStatComponent::GetUlitiCostMp(EKeroroType kero)
+{
+	float UltiCostMp = 100.0f;
+	switch (kero)
+	{
+	case EKeroroType::Keroro:
+		UltiCostMp = 80.0f;
+		break;
+	case EKeroroType::Tamama:
+		UltiCostMp = 50.0f;
+		break;
+	case EKeroroType::Giroro:
+		UltiCostMp = 30.0f;
+		break;
+	case EKeroroType::Kururu:
+		UltiCostMp = 100.0f;
+		break;
+	case EKeroroType::Dororo:
+		UltiCostMp = 100.0f;
+		break;
+	}
+	return UltiCostMp;
+}
+
 void UKeroroStatComponent::StartAutoHeal()
 {
 	GetWorld()->GetTimerManager().SetTimer(HealTimerHandle, [this]() {
@@ -366,13 +414,17 @@ void UKeroroStatComponent::EndInvincibility()
 	UE_LOG(LogTemp, Log, TEXT("invisible time end....."));
 }
 
-bool UKeroroStatComponent::PlayUltiSkill()
+bool UKeroroStatComponent::PayUlitiSkillMP()
 {
-	float cal = CurrentMp - UltiCostMp;
+	AKeroroCharacter* kero = GetOwner<AKeroroCharacter>();
+	if (kero == nullptr) return false;
+	float UltiCost = GetUlitiCostMp(kero->CurrentKeroroType);
+
+	float cal = CurrentMp - UltiCost;
 	if (cal < 0.0f) return false;
 	else
 	{
-		CurrentMp -= UltiCostMp;
+		CurrentMp -= UltiCost;
 		OnMpIsChanged.Broadcast();
 		return true;
 	}
