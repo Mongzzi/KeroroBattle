@@ -83,6 +83,12 @@ public:
 	float HealPowerOnKill_Enhanced;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float MpHealPowerRate_Enhanced;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float MpHealPowerOnKill_Enhanced;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	float ExpGainRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)

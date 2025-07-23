@@ -86,9 +86,11 @@ enum class ECardType : uint8
 	Evasion					UMETA(DisplayName = "Evasion"),						// 회피율
 	InvincibilityTime		UMETA(DisplayName = "InvincibilityTime"),			// 무적시간
 	Armor					UMETA(DisplayName = "Armor"),						// 방어력
-	HealAmount				UMETA(DisplayName = "HealAmount"),					// 체력회복
-	HealOnKill				UMETA(DisplayName = "HealOnKill"),					// 공격시 체력회복
+	HealAmount				UMETA(DisplayName = "HealAmount"),					// 체력자동회복
+	HealOnKill				UMETA(DisplayName = "HealOnKill"),					// 처치 시 체력회복
 	Shield					UMETA(DisplayName = "Shield"),						// 쉴드(+패링) 시간
 	ShieldCoolTime			UMETA(DisplayName = "ShieldCoolTime"),				// 쉴드 쿨타임 시간
+	MpHealAmount			UMETA(DisplayName = "MpHealAmount"),				// 마나자동회복
+	MpHealOnKill			UMETA(DisplayName = "MpHealOnKill"),				// 처치 시 마나회복
 	MAX						UMETA(Hidden)										// 순환 계산용
 };

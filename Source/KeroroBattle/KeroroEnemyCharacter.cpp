@@ -127,7 +127,6 @@ float AKeroroEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& 
 	if (EnemyStat->GetHpRatio() <= 0.0f)
 	{
 		Die();
-
 	}
 	return DamageAmount;
 }

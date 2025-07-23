@@ -167,6 +167,7 @@ void AKeroroCharacter::PossessedBy(AController* NewController)
 
 			KRStat->SetLevel(KRPlayerState->CurrentLevel);
 			KRStat->StartAutoHeal();
+			KRStat->StartAutoMpHeal();
 		}
 
 	}

@@ -123,6 +123,14 @@ public:
 	float HealPowerOnKill_Default;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float MpHealPowerRate;
+	float MpHealPowerRate_Default;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float MpHealPowerOnKill;
+	float MpHealPowerOnKill_Default;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	int32 ProjectileCount;
 	int32 ProjectileCount_Default;
 

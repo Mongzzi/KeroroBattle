@@ -25,6 +25,12 @@ UKeroroStatComponent::UKeroroStatComponent()
 	HealPowerOnKill = 0.0f;
 	HealPowerOnKill_Default = 0.0f;
 
+	MpHealPowerRate = 0.03f;
+	MpHealPowerRate_Default = 0.03f;
+
+	MpHealPowerOnKill = 0.0f;
+	MpHealPowerOnKill_Default = 0.0f;
+
 	ProjectileCount = 1;
 	ProjectileCount_Default = 1;
 
@@ -49,6 +55,7 @@ UKeroroStatComponent::UKeroroStatComponent()
 
 	// 데이터 테이블 없는 항목
 	HealIntervalTime = 5.0f;
+	MpHealIntervalTime = 5.0f;
 }
 
 
@@ -111,6 +118,8 @@ void UKeroroStatComponent::UpdateStatCardEnhanced(AKeroroPlayerState* PlayerStat
 	InvincibilityTime = InvincibilityTime_Default + PlayerState->InvincibilityTime_Enhanced;
 	HealPowerRate = HealPowerRate_Default + PlayerState->HealPowerRate_Enhanced;
 	HealPowerOnKill = HealPowerOnKill_Default + PlayerState->HealPowerOnKill_Enhanced;
+	MpHealPowerRate = MpHealPowerRate_Default + PlayerState->MpHealPowerRate_Enhanced;
+	MpHealPowerOnKill = MpHealPowerOnKill_Default + PlayerState->MpHealPowerOnKill_Enhanced;
 
 	GuardCoolTime = GuardCollTime_Default * (1.0f - PlayerState->GuardCoolTime_Enhanced);
 	if (GuardCoolTime < 0.0f) GuardCoolTime = 0.001f;
@@ -310,13 +319,13 @@ void UKeroroStatComponent::StartAutoHeal()
 
 void UKeroroStatComponent::StartAutoMpHeal()
 {
-	//GetWorld()->GetTimerManager().SetTimer(MpHealTimerHandle, [this]() {
-	//	CurrentMp = FMath::Clamp(CurrentMp + MaxMp * MpHealPowerRate, 0.0f, MaxHp);
-	//	//UE_LOG(LogTemp, Log, TEXT("Auto heal amount : %f, current hp = %f"), MaxHp * HealPowerRate, CurrentHp);
-	//	OnHpIsChanged.Broadcast();
-	//	},
-	//	HealIntervalTime,
-	//	true);
+	GetWorld()->GetTimerManager().SetTimer(MpHealTimerHandle, [this]() {
+		CurrentMp = FMath::Clamp(CurrentMp + MaxMp * MpHealPowerRate, 0.0f, MaxMp);
+		//UE_LOG(LogTemp, Log, TEXT("Auto mp heal amount : %f, current mp = %f"), MaxMp * MpHealPowerRate, CurrentMp);
+		OnMpIsChanged.Broadcast();
+		},
+		MpHealIntervalTime,
+		true);
 }
 
 void UKeroroStatComponent::AttackHeal()

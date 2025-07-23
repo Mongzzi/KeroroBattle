@@ -15,6 +15,11 @@ AKeroroPlayerState::AKeroroPlayerState()
 	KilledEnemyNum = 0;
 
 	// Ä«µå ½ºÅÈ
+	HealPowerRate_Enhanced = 0.0f;
+	HealPowerOnKill_Enhanced = 0.0f;
+	MpHealPowerRate_Enhanced = 0.0f;
+	MpHealPowerOnKill_Enhanced = 0.0f;
+
 	ExpGainRate = 1.0f;
 	GoldGainRate = 1.0f;
 
