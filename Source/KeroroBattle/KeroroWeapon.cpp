@@ -50,6 +50,11 @@ void AKeroroWeapon::ReturnToHand(AKeroroCharacter* Character)
 {
 }
 
+void AKeroroWeapon::BindOwnerKero(AKeroroCharacter* Character)
+{
+	OwnerKero = Character;
+}
+
 TArray<FName> AKeroroWeapon::GetSocketNames()
 {
 	return SocketNames;

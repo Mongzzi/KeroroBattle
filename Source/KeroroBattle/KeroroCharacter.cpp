@@ -13,6 +13,7 @@
 #include "FistWeapon.h"
 #include "ImpactWeapon.h"
 #include "RifleWeapon.h"
+#include "MineWeapon.h"
 #include "NoteBookWeapon.h"
 #include "KR_MovingObject.h"
 #include "RifleBullet.h"
@@ -485,6 +486,11 @@ void AKeroroCharacter::NoteBookUlti()
 
 void AKeroroCharacter::RifleUlti()
 {
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	SpawnParams.Instigator = this;
+	UltiWeapon = GetWorld()->SpawnActor<AMineWeapon>(GetActorLocation(), GetActorRotation(), SpawnParams);
+	UltiWeapon->BindOwnerKero(this);
 }
 
 void AKeroroCharacter::ChangeCameraDefault()
@@ -574,7 +580,7 @@ void AKeroroCharacter::SetWeapon()
 		break;
 	case EWeaponType::NOTEBOOK:
 		Weapon = GetWorld()->SpawnActor<ANoteBookWeapon>(FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
-		Cast<ANoteBookWeapon>(Weapon)->InitEffect(this);
+		Cast<ANoteBookWeapon>(Weapon)->BindOwnerKero(this);
 		break;
 	}
 	if (Weapon)

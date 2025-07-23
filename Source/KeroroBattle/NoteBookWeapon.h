@@ -23,7 +23,6 @@ public:
 	virtual void PlayHitSound(int32 CurrentCombo) override;
 	virtual void PlaySound(int32 ComboIndex) override;
 
-	void InitEffect(class AKeroroCharacter* kero);
 	void ActivateMagicCircle();
 	void ActivateFinalEffect();
 	void AttackCheck_NoteBook();
@@ -37,9 +36,6 @@ public:
 	FVector FinalEffectLoc;
 
 protected:
-	UPROPERTY()
-	class AKeroroCharacter* OwnerKero;
-
 	UPROPERTY()
 	class UNiagaraComponent* MagicCircleNiagara;
 

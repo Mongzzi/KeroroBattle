@@ -22,6 +22,8 @@ protected:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	TWeakObjectPtr<class AKeroroCharacter> OwnerKero;
+
 public:
 	virtual void PlayEffect(class AKeroroCharacter* Character);
 	virtual void PlayHitEffect(FVector HitLocation, FRotator HitRotator,FVector Scale);
@@ -29,6 +31,7 @@ public:
 	virtual void PlaySound(int32 ComboIndex);
 	virtual void Throw(const FVector& Direction, float Force);
 	virtual void ReturnToHand(class AKeroroCharacter* Character);
+	virtual void BindOwnerKero(class AKeroroCharacter* Character);
 
 	TArray<FName> GetSocketNames();
 	UPROPERTY(VisibleAnywhere, Category = Weapon)

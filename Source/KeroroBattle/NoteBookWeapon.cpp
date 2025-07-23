@@ -93,14 +93,9 @@ void ANoteBookWeapon::PlaySound(int32 ComboIndex)
 	}
 }
 
-void ANoteBookWeapon::InitEffect(AKeroroCharacter* kero)
-{
-	OwnerKero = kero;
-}
-
 void ANoteBookWeapon::ActivateMagicCircle()
 {
-	if (!MagicCircleEffect || !OwnerKero) return;
+	if (!MagicCircleEffect || !OwnerKero.IsValid()) return;
 
 	APlayerController* PC = Cast<APlayerController>(OwnerKero->GetController());
 	if (!PC) return;
@@ -110,7 +105,7 @@ void ANoteBookWeapon::ActivateMagicCircle()
 		return;
 
 	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(OwnerKero);
+	Params.AddIgnoredActor(OwnerKero.Get());
 
 	// 첫번째 라인트레이스 
 	FVector Start = WorldLocation;
@@ -148,7 +143,7 @@ void ANoteBookWeapon::ActivateMagicCircle()
 
 void ANoteBookWeapon::ActivateFinalEffect()
 {
-	if (!OwnerKero) return;
+	if (!OwnerKero.IsValid()) return;
 
 	PlaySound(0);
 
