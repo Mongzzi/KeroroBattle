@@ -28,8 +28,8 @@ UKeroroStatComponent::UKeroroStatComponent()
 	MpHealPowerRate = 0.03f;
 	MpHealPowerRate_Default = 0.03f;
 
-	MpHealPowerOnKill = 0.0f;
-	MpHealPowerOnKill_Default = 0.0f;
+	MpHealPowerOnKill = 0.005f;
+	MpHealPowerOnKill_Default = 0.005f;
 
 	ProjectileCount = 1;
 	ProjectileCount_Default = 1;
@@ -101,9 +101,6 @@ void UKeroroStatComponent::UpdateStatCardEnhanced(AKeroroPlayerState* PlayerStat
 
 	MaxHp = StatData->MaxHp + PlayerState->MaxHP_Enhanced;
 	MaxMp = StatData->MaxMP + PlayerState->MaxMP_Enhanced;
-	//CurrentHp = MaxHp;
-	//CurrentMp = MaxMp;
-
 
 	MaxMoveSpeed = StatData->MaxMoveSpeed + PlayerState->MaxMoveSpeed_Enhanced;
 	CritChanceRate = StatData->CritChanceRate + PlayerState->CritChanceRate_Enhanced;
@@ -191,7 +188,7 @@ void UKeroroStatComponent::SetLevel(int32 lv, AKeroroPlayerState* PlayerState)
 				UpdateStatCardEnhanced(PS);
 			}
 			else {
-				UE_LOG(LogTemp, Error, TEXT("PS is nullptr in stat component"));
+				//UE_LOG(LogTemp, Error, TEXT("PS is nullptr in stat component"));
 			}
 
 		}
@@ -283,7 +280,7 @@ float UKeroroStatComponent::GetHpRatio()
 
 float UKeroroStatComponent::GetMpRatio()
 {
-	UE_LOG(LogTemp, Error, TEXT("Cur MP = %f, MaxMp = %f"), CurrentMp, MaxMp);
+	//UE_LOG(LogTemp, Error, TEXT("Cur MP = %f, MaxMp = %f"), CurrentMp, MaxMp);
 	return (CurrentMp / MaxMp);
 }
 
@@ -340,6 +337,12 @@ void UKeroroStatComponent::AttackHeal()
 
 void UKeroroStatComponent::AttackMpHeal()
 {
+	if (MpHealPowerOnKill > 0.0f)
+	{
+		CurrentMp = FMath::Clamp(CurrentMp + MaxMp * MpHealPowerOnKill, 0.0f, MaxMp);
+		//UE_LOG(LogTemp, Log, TEXT("Attack Mpheal amount : %f, current Mp = %f"), MaxMp * MpHealPowerOnKill, CurrentMp);
+		OnMpIsChanged.Broadcast();
+	}
 }
 
 void UKeroroStatComponent::StartInvincibility()

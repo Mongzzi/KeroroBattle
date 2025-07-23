@@ -95,6 +95,7 @@ public:
 	
 	void ChangeCameraDefault();
 	void ChangeCameraUltimate();
+	void LookAttackDir();
 
 public:
 	float GetRemainingGuardCooldown();

@@ -147,7 +147,8 @@ void AKeroroEnemyCharacter::Die()
 	SetActorEnableCollision(false);
 
 	// 일정 시간 후 소멸
-	SetLifeSpan(2.0f);
+	SetLifeSpan(1.5f);
+
 
 	// 굳이 EventInstigator 사용하지않고 GameplayStatics 함수로 사용했음 // ai컨트롤러가 처치시 코드가 복잡해짐 추후 멀티플레이 추가시 수정해야할듯
 	if (APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0))
@@ -156,15 +157,21 @@ void AKeroroEnemyCharacter::Die()
 		{
 			PS->AddKillEnemyNum();
 
+			AKeroroCharacter* KR = Cast<AKeroroCharacter>(PC->GetCharacter());
+			// 처치시 Mp,Hp 회복
+			if (KR->KRStat)
+			{
+				KR->KRStat->AttackMpHeal();
+				KR->KRStat->AttackHeal();
+			}
+
 			// exp 오브젝트 생성
 			AExpObject* ExpObj = GetWorld()->SpawnActor<AExpObject>(AExpObject::StaticClass(), GetActorLocation(), FRotator::ZeroRotator);
 			if (ExpObj)
 			{
-				AKeroroCharacter* KR = Cast<AKeroroCharacter>(PC->GetCharacter());
 				int32 DropExp = EnemyStat->GetDropExp();
 				int32 FinalDropExp = static_cast<int32>(DropExp * PS->ExpGainRate);
 
-				//UE_LOG(LogTemp, Error, TEXT("EXP = %d  ExpGainRate = %f "), FinalDropExp, PS->ExpGainRate);
 				// 여기서 타겟 , 경험치구슬 속도 , 경험치 수치 정해주고 구슬이 캐릭터에 닿으면 addexp호출
 				ExpObj->SetTargetAndSpeedAndExp(KR, 1.5f, FinalDropExp);
 			}
@@ -189,7 +196,7 @@ void AKeroroEnemyCharacter::AttackCheck()
 		GetActorLocation(),
 		GetActorLocation() + GetActorForwardVector() * AttackRange,
 		FQuat::Identity,
-		ECC_GameTraceChannel3, 
+		ECC_GameTraceChannel3,
 		FCollisionShape::MakeSphere(AttackRadius),
 		Params
 	);

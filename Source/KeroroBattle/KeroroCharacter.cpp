@@ -328,6 +328,8 @@ void AKeroroCharacter::Attack()
 		if (KRAnim->bIsHit) return;
 	}
 
+	LookAttackDir();
+
 	if (IsAttacking) // 애니메이션(몽타주) 재생중인가
 	{
 		HandleComboInput();
@@ -350,16 +352,6 @@ void AKeroroCharacter::HandleComboInput()
 void AKeroroCharacter::StartNewAttack()
 {
 	if (CurrentCombo != 0) return;
-
-	// 공격 시작시 컨트롤러 방향으로 캐릭터 회전
-	if (WeaponType == EWeaponType::RIFLE || WeaponType == EWeaponType::KEROBALL)
-	{
-		FRotator ControlRotation = GetControlRotation();
-		ControlRotation.Pitch = 0.0f;
-		ControlRotation.Roll = 0.0f;
-		SetActorRotation(ControlRotation);
-		GetCharacterMovement()->bOrientRotationToMovement = false; // 입력 방향 따라 몸 회전 안되게
-	}
 
 	AttackStartComboState();
 	KRAnim->PlayAttackMontage();
@@ -512,6 +504,15 @@ void AKeroroCharacter::ChangeCameraDefault()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
+
+	auto pc = GetController();
+	if (pc)
+	{
+		FRotator ControlRot = pc->GetControlRotation();
+		ControlRot.Pitch = 0.0f;
+		pc->SetControlRotation(ControlRot);
+	}
+
 }
 
 void AKeroroCharacter::ChangeCameraUltimate()
@@ -538,6 +539,19 @@ void AKeroroCharacter::ChangeCameraUltimate()
 		SpringArm->TargetArmLength = 1000.0f;
 		SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 0.0f), FRotator(-45.0f, 0.0f, 0.0f));
 		break;
+	}
+}
+
+void AKeroroCharacter::LookAttackDir()
+{	
+	// 공격 시작시 컨트롤러 방향으로 캐릭터 회전
+	if (WeaponType == EWeaponType::RIFLE || WeaponType == EWeaponType::KEROBALL)
+	{
+		FRotator ControlRotation = GetControlRotation();
+		ControlRotation.Pitch = 0.0f;
+		ControlRotation.Roll = 0.0f;
+		SetActorRotation(ControlRotation);
+		GetCharacterMovement()->bOrientRotationToMovement = false; // 입력 방향 따라 몸 회전 안되게
 	}
 }
 
@@ -780,10 +794,10 @@ void AKeroroCharacter::AttackCheck_Sword()
 				PlayHitEffect(Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), FVector(0.5f));
 			}
 		}
-		if (KRStat)
-		{
-			KRStat->AttackHeal();
-		}
+		//if (KRStat)
+		//{
+		//	KRStat->AttackHeal();
+		//}
 		PlayHitSound();
 	}
 
