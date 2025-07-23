@@ -400,7 +400,6 @@ void AKeroroCharacter::PlayHittedSound()
 {
 	if (VoiceSounds.IsValidIndex(5))
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("=========================PlayHittedSound============================"));
 		UGameplayStatics::PlaySoundAtLocation(this, VoiceSounds[5], GetActorLocation(),0.6f);
 	}
 }
