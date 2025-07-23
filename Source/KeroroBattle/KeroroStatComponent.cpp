@@ -18,8 +18,6 @@ UKeroroStatComponent::UKeroroStatComponent()
 
 	Level = 1;
 
-
-
 	HealPowerRate = 0.03f;
 	HealPowerRate_Default = 0.03f;
 
@@ -211,6 +209,7 @@ void UKeroroStatComponent::SetLevel(int32 lv, AKeroroPlayerState* PlayerState)
 	}
 
 	SetHP(MaxHp);
+	SetMP(MaxMp);
 }
 
 void UKeroroStatComponent::SetDamage(float Damage)
@@ -261,9 +260,21 @@ void UKeroroStatComponent::SetHP(float hp)
 	}
 }
 
+void UKeroroStatComponent::SetMP(float mp)
+{
+	CurrentMp = mp;
+	OnMpIsChanged.Broadcast();
+}
+
 float UKeroroStatComponent::GetHpRatio()
 {
 	return (CurrentHp / MaxHp);
+}
+
+float UKeroroStatComponent::GetMpRatio()
+{
+	UE_LOG(LogTemp, Error, TEXT("Cur MP = %f, MaxMp = %f"), CurrentMp, MaxMp);
+	return (CurrentMp / MaxMp);
 }
 
 int32 UKeroroStatComponent::GetDropExp()
@@ -285,7 +296,7 @@ int32 UKeroroStatComponent::GetDropGold()
 	return 0;
 }
 
-void UKeroroStatComponent::StartHeal()
+void UKeroroStatComponent::StartAutoHeal()
 {
 	GetWorld()->GetTimerManager().SetTimer(HealTimerHandle, [this]() {
 		CurrentHp = FMath::Clamp(CurrentHp + MaxHp * HealPowerRate, 0.0f, MaxHp);
@@ -296,6 +307,17 @@ void UKeroroStatComponent::StartHeal()
 		true);
 }
 
+void UKeroroStatComponent::StartAutoMpHeal()
+{
+	//GetWorld()->GetTimerManager().SetTimer(MpHealTimerHandle, [this]() {
+	//	CurrentMp = FMath::Clamp(CurrentMp + MaxMp * MpHealPowerRate, 0.0f, MaxHp);
+	//	//UE_LOG(LogTemp, Log, TEXT("Auto heal amount : %f, current hp = %f"), MaxHp * HealPowerRate, CurrentHp);
+	//	OnHpIsChanged.Broadcast();
+	//	},
+	//	HealIntervalTime,
+	//	true);
+}
+
 void UKeroroStatComponent::AttackHeal()
 {
 	if (HealPowerOnKill > 0.0f)
@@ -304,6 +326,10 @@ void UKeroroStatComponent::AttackHeal()
 		UE_LOG(LogTemp, Log, TEXT("Attack heal amount : %f, current hp = %f"), MaxHp * HealPowerOnKill, CurrentHp);
 		OnHpIsChanged.Broadcast();
 	}
+}
+
+void UKeroroStatComponent::AttackMpHeal()
+{
 }
 
 void UKeroroStatComponent::StartInvincibility()

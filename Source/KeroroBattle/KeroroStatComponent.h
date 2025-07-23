@@ -9,6 +9,9 @@
 DECLARE_MULTICAST_DELEGATE(FOnHPIsZeroDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnHPIsChangedDeleGate);
 
+DECLARE_MULTICAST_DELEGATE(FOnMPIsChangedDeleGate);
+
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class KEROROBATTLE_API UKeroroStatComponent : public UActorComponent
 {
@@ -30,27 +33,31 @@ public:
 	void SetDamage(float Damage);
 	float SetFinalDamage(float Damage);
 	void SetHP(float hp);
+	void SetMP(float mp);
 	float GetHpRatio();
+	float GetMpRatio();
 	int32 GetDropExp();
 	int32 GetDropGold();
 
-
-
-
 	FOnHPIsZeroDelegate OnHpIsZero;
 	FOnHPIsChangedDeleGate OnHpIsChanged;
-
+	FOnMPIsChangedDeleGate OnMpIsChanged;
 
 private:
 	FTimerHandle HealTimerHandle;
 	float HealIntervalTime;
 	
+	FTimerHandle MpHealTimerHandle;
+	float MpHealIntervalTime;
+
 	FTimerHandle InvincibilityTimerHandle;
 	bool bIsInvincible = false;
 
 public:
-	void StartHeal();
+	void StartAutoHeal();
+	void StartAutoMpHeal();
 	void AttackHeal();
+	void AttackMpHeal();
 	void StartInvincibility();
 	void EndInvincibility();
 
@@ -108,8 +115,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	float HealPowerOnKill;
 	float HealPowerOnKill_Default;
-
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	int32 ProjectileCount;

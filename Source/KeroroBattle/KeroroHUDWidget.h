@@ -25,6 +25,7 @@ public:
 
 	void UpdateWidget();
 	void UpdateHPWidget();
+	void UpdateMPWidget();
 	void UpdateGoldWidget();
 	void UpdateTimeWidget(float RemainTime);
 	void UpdateEXPWidget();
@@ -46,6 +47,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* HPBar;
 
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* MPBar;
+	
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* EXPBar;
 

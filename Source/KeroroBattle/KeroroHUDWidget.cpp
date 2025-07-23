@@ -16,8 +16,6 @@
 void UKeroroHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	//UE_LOG(LogTemp, Error, TEXT(" in NativeConstruct"));
-
 
 	if (APlayerController* PC = GetOwningPlayer())
 	{
@@ -57,6 +55,14 @@ void UKeroroHUDWidget::UpdateHPWidget()
 	if (CurrentKRStat == nullptr || HPBar == nullptr) return;
 	float a = 0.266f + (CurrentKRStat->GetHpRatio()) * 0.6f;
 	HPBar->SetPercent(a);
+}
+
+void UKeroroHUDWidget::UpdateMPWidget()
+{
+	// 0.268 ~ 0.868
+	if (CurrentKRStat == nullptr || MPBar == nullptr) return;
+	float a = 0.268f + (CurrentKRStat->GetMpRatio()) * 0.6f;
+	MPBar->SetPercent(a);
 }
 
 void UKeroroHUDWidget::UpdateLevelWidget()
@@ -232,6 +238,7 @@ void UKeroroHUDWidget::BindKRStat(UKeroroStatComponent* NewKRStat)
 	CurrentKRStat = NewKRStat;
 
 	UpdateHPWidget();
+	UpdateMPWidget();
 }
 
 void UKeroroHUDWidget::BindPlayerState(AKeroroPlayerState* PlayerState)

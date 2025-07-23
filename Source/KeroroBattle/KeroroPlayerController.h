@@ -76,6 +76,7 @@ public:
 	void UpdateStatCardEnhanced();
 	void UpdateStatWidget();
 	void UpdateHPWidget();
+	void UpdateMPWidget();
 	void UpdateGoldWidget();
 	void UpdateLevelWidget();
 	void UpdateTimeWidget(float RemainTime);

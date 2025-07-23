@@ -97,6 +97,7 @@ void AKeroroPlayerController::BeginPlay()
 	KRHUDWidget->BindPlayerState(KRPlayerState);
 
 	KRCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
+	KRCharacter->KRStat->OnMpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateMPWidget);
 	KRPlayerState->OnLevelChanged.AddUObject(this, &AKeroroPlayerController::OnPlayerLevelUpdated);
 	UpdateStatWidget();
 }
@@ -138,6 +139,14 @@ void AKeroroPlayerController::UpdateHPWidget()
 	if (IsValid(KRHUDWidget))
 	{
 		KRHUDWidget->UpdateHPWidget();
+	}
+}
+
+void AKeroroPlayerController::UpdateMPWidget()
+{
+	if (IsValid(KRHUDWidget))
+	{
+		KRHUDWidget->UpdateMPWidget();
 	}
 }
 
@@ -292,6 +301,7 @@ void AKeroroPlayerController::TagCharacter()
 	{
 		// 새로운 캐릭터가 태그되었을 때, 해당 캐릭터의 HP 델리게이트를 바인딩
 		NewCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
+		NewCharacter->KRStat->OnMpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateMPWidget);
 
 		// 새로운 캐릭터에 대한 스탯 바인딩
 		// 초기 HP 값,레벨 갱신

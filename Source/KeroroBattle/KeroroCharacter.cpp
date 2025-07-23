@@ -166,7 +166,7 @@ void AKeroroCharacter::PossessedBy(AController* NewController)
 			UE_LOG(LogTemp, Warning, TEXT("KRPlayerState is valid in PossessedBy"));
 
 			KRStat->SetLevel(KRPlayerState->CurrentLevel);
-			KRStat->StartHeal();
+			KRStat->StartAutoHeal();
 		}
 
 	}

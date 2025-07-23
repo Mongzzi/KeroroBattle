@@ -145,10 +145,6 @@ void ULevelupCardWidget::OnSelectButtonClicked()
 		case ECardType::ShieldCoolTime:
 			PS->GuardCoolTime_Enhanced += CardValue;
 			break;
-		case ECardType::MAX:
-			break;
-		default:
-			break;
 		}
 	}
 	PC->UpdateStatCardEnhanced();
