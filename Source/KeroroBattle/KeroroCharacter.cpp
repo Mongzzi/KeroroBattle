@@ -192,6 +192,10 @@ void AKeroroCharacter::BeginPlay()
 void AKeroroCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	//if (KRAnim)
+	//{
+	//	UE_LOG(LogTemp,Error,TEXT("bishit = %d"),KRAnim->bIsHit);
+	//}
 }
 
 void AKeroroCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -275,11 +279,16 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 	// 데미지 처리
 	float FinalDamage = KRStat->SetFinalDamage(Damage);
 	float FinalDamagePercent = FinalDamage / KRStat->MaxHp;
-	if (FinalDamagePercent > 0.05f)
+
+	// 최대체력 5퍼이상 데미지 받거나 30퍼 확률로 피격 처리
+	if (FinalDamagePercent > 0.05f || FMath::FRand()<0.3f)
 	{
-		KRAnim->bIsHit = true;
+		KRAnim->SetbIsHit(CurrentKeroroType);
 		ChangeFaceTexture(EFaceType::Anger);
-		// 여기에 피격 사운드 넣으면 좋을듯 추후 에셋 구하고 추가 진행
+		if (Cast<AKeroroPlayerController>(GetController()))
+		{
+			PlayHittedSound();
+		}
 	}
 
 
@@ -384,6 +393,15 @@ void AKeroroCharacter::PlayUltiSkillSound()
 	if (VoiceSounds.IsValidIndex(4))
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, VoiceSounds[4], GetActorLocation());
+	}
+}
+
+void AKeroroCharacter::PlayHittedSound()
+{
+	if (VoiceSounds.IsValidIndex(5))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("=========================PlayHittedSound============================"));
+		UGameplayStatics::PlaySoundAtLocation(this, VoiceSounds[5], GetActorLocation(),0.6f);
 	}
 }
 

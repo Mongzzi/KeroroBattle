@@ -117,7 +117,7 @@ void UKeroroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UKeroroAnimInstance::PlayAttackMontage()
 {
-	if (IsDead) return;
+	if (IsDead || bIsHit) return;
 
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(TryGetPawnOwner());
 	if (kero && KRPlayerState)
@@ -137,7 +137,7 @@ void UKeroroAnimInstance::PlayAttackMontage()
 
 void UKeroroAnimInstance::PlayUltiSkillMontage()
 {
-	if (IsDead) return;
+	if (IsDead || bIsHit) return;
 
 	if (UAnimMontage* Montage = GetAnimMontage())
 	{
@@ -155,6 +155,23 @@ void UKeroroAnimInstance::PlayUltiSkillMontage()
 void UKeroroAnimInstance::SetDeadAnim()
 {
 	IsDead = true;
+}
+
+void UKeroroAnimInstance::SetbIsHit(EKeroroType type)
+{
+	bIsHit = true;
+
+	float AnimDuration;
+	if (type == EKeroroType::Giroro) AnimDuration = 0.6f;
+	else AnimDuration = 1.33f;
+
+	FTimerHandle HitResetTimer;
+	GetWorld()->GetTimerManager().SetTimer(HitResetTimer,[this]() {
+			bIsHit = false;
+		},
+		AnimDuration,
+		false
+	);
 }
 
 void UKeroroAnimInstance::SetWeaponType(EWeaponType type)
@@ -196,7 +213,6 @@ void UKeroroAnimInstance::AnimNotify_WeaponSound()
 void UKeroroAnimInstance::AnimNotify_HitDown()
 {
 	bIsHit = false;
-	//UE_LOG(LogTemp, Error, TEXT("HitDown"));
 }
 
 void UKeroroAnimInstance::AnimNotify_EndBlocking()
@@ -261,7 +277,7 @@ UAnimMontage* UKeroroAnimInstance::GetUltiAnimMontage()
 
 void UKeroroAnimInstance::JumptoAttackMontageSection(int32 NewSection)
 {
-	if (IsDead) return;
+	if (IsDead || bIsHit) return;
 
 	if (UAnimMontage* MontageToPlay = GetAnimMontage())
 	{
@@ -278,7 +294,7 @@ void UKeroroAnimInstance::StopAttackMontage()
 	{
 		if (Montage_IsPlaying(Montage))
 		{
-			Montage_Stop(0.1f, Montage);
+			Montage_Stop(0.05f, Montage);
 		}
 	}
 }
