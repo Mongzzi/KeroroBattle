@@ -38,12 +38,14 @@ AKeroballWeapon::AKeroballWeapon()
 	}
 
 	StaticMeshComponent->OnComponentHit.AddDynamic(this, &AKeroballWeapon::OnHit);
+	bIsThrowing = false;
 }
 
 void AKeroballWeapon::Throw(const FVector& Direction, float Force)
 {
 	StaticMeshComponent->SetSimulatePhysics(true);
 	StaticMeshComponent->AddImpulse(Direction * Force, NAME_None, true);
+	bIsThrowing = true;
 	GetWorldTimerManager().SetTimer(ExplodeTimerHandle, this, &AKeroballWeapon::Explode, BombTime, false);
 }
 
@@ -88,8 +90,6 @@ void AKeroballWeapon::Explode()
 		if (Rand < kero_stat->CritChanceRate)
 		{
 			Damage *= kero_stat->CritDamageRate;
-			//UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f /// Critical Chance Rate = %f"),
-			//	Damage, kero_stat->AttackPower, kero_stat->CritDamageRate, kero_stat->CritChanceRate);
 		}
 
 		for (auto& Hit : HitResults)

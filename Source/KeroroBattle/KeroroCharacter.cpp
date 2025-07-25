@@ -281,7 +281,7 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 	float FinalDamagePercent = FinalDamage / KRStat->MaxHp;
 
 	// 최대체력 5퍼이상 데미지 받거나 30퍼 확률로 피격 처리
-	if (FinalDamagePercent > 0.05f || FMath::FRand()<0.3f)
+	if (FinalDamagePercent > 0.05f || FMath::FRand() < 0.3f)
 	{
 		KRAnim->SetbIsHit(CurrentKeroroType);
 		ChangeFaceTexture(EFaceType::Anger);
@@ -324,13 +324,6 @@ void AKeroroCharacter::Die()
 
 void AKeroroCharacter::Attack()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Attack succed"));
-	//if (WeaponType == EWeaponType::NOTEBOOK)
-	//{
-	//	Cast<ANoteBookWeapon>(Weapon)->ActivateFinalEffect();
-	//	KRAnim->PlayAttackMontage();
-	//}
-
 	if (KRAnim)
 	{
 		if (KRAnim->bIsHit) return;
@@ -365,6 +358,14 @@ void AKeroroCharacter::StartNewAttack()
 	KRAnim->PlayAttackMontage();
 	KRAnim->JumptoAttackMontageSection(CurrentCombo);
 	IsAttacking = true;
+
+	if (Weapon && WeaponType == EWeaponType::KEROBALL)
+	{
+		if (Cast<AKeroballWeapon>(Weapon)->bIsThrowing)
+		{
+			SpawnToHand();
+		}
+	}
 }
 
 void AKeroroCharacter::PlayVoiceSound()
@@ -400,7 +401,7 @@ void AKeroroCharacter::PlayHittedSound()
 {
 	if (VoiceSounds.IsValidIndex(5))
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, VoiceSounds[5], GetActorLocation(),0.6f);
+		UGameplayStatics::PlaySoundAtLocation(this, VoiceSounds[5], GetActorLocation(), 0.6f);
 	}
 }
 
@@ -1125,6 +1126,8 @@ void AKeroroCharacter::DestroyShieldEffect()
 
 void AKeroroCharacter::SpawnToHand()
 {
+	UE_LOG(LogTemp, Log, TEXT("SpawnToHand"));
+
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Instigator = this;
 
@@ -1175,7 +1178,7 @@ void AKeroroCharacter::ChangeFaceTexture(EFaceType FaceType)
 	}
 }
 
-void AKeroroCharacter::StartRoll(FVector Dir,float RollDistance)
+void AKeroroCharacter::StartRoll(FVector Dir, float RollDistance)
 {
 	// 방향 설정 (현재 바라보는 방향 또는 이동 중인 방향)
 	FVector RollDirection = Dir; // 앞으로 구르기

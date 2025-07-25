@@ -32,6 +32,8 @@ public:
 	float BombTime = 1.25f;
 	float BombSoundVolume = 3.0f;
 
+	bool bIsThrowing;
+
 private:
 	UPROPERTY(EditAnywhere, Category = Sound)
 	USoundBase* BombSound;
