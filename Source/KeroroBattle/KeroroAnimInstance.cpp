@@ -18,6 +18,7 @@ UKeroroAnimInstance::UKeroroAnimInstance()
 	IsDead = false;
 	bIsGuarding = false;
 	bIsRunning = false;
+	bIsRolling = false;
 	bIsUltiSkillPlaying = false;
 	AnimationRunSpeed = 1.0f;
 	WeaponType = EWeaponType::SWORD;
@@ -77,6 +78,13 @@ UKeroroAnimInstance::UKeroroAnimInstance()
 	{
 		NoteBookUltiMontage = ULTIMONTAGE5.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ROLLANIM(TEXT("/Game/Animation/Roll_Forward_Montage.Roll_Forward_Montage"));
+	if (ROLLANIM.Succeeded())
+	{
+		RollActionMontage = ROLLANIM.Object;
+	}
+
 }
 
 void UKeroroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -117,7 +125,7 @@ void UKeroroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UKeroroAnimInstance::PlayAttackMontage()
 {
-	if (IsDead || bIsHit) return;
+	if (IsDead || bIsHit || bIsRolling) return;
 
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(TryGetPawnOwner());
 	if (kero && KRPlayerState)
@@ -137,7 +145,7 @@ void UKeroroAnimInstance::PlayAttackMontage()
 
 void UKeroroAnimInstance::PlayUltiSkillMontage()
 {
-	if (IsDead || bIsHit) return;
+	if (IsDead || bIsHit || bIsRolling) return;
 
 	if (UAnimMontage* Montage = GetAnimMontage())
 	{
@@ -148,6 +156,23 @@ void UKeroroAnimInstance::PlayUltiSkillMontage()
 		if (UAnimMontage* UltiMontage = GetUltiAnimMontage())
 		{
 			Montage_Play(UltiMontage, 1.0f);
+		}
+	}
+}
+
+void UKeroroAnimInstance::PlayRollAnimation()
+{
+	if (IsDead || bIsHit) return;
+
+	if (UAnimMontage* Montage = GetAnimMontage())
+	{
+		if (Montage_IsPlaying(Montage))
+		{
+			StopAttackMontage();
+		}
+		if (RollActionMontage)
+		{
+			Montage_Play(RollActionMontage, 1.0f);
 		}
 	}
 }
@@ -166,8 +191,8 @@ void UKeroroAnimInstance::SetbIsHit(EKeroroType type)
 	else AnimDuration = 1.33f;
 
 	FTimerHandle HitResetTimer;
-	GetWorld()->GetTimerManager().SetTimer(HitResetTimer,[this]() {
-			bIsHit = false;
+	GetWorld()->GetTimerManager().SetTimer(HitResetTimer, [this]() {
+		bIsHit = false;
 		},
 		AnimDuration,
 		false
@@ -233,6 +258,17 @@ void UKeroroAnimInstance::AnimNotify_EndUltiSkill()
 	}*/
 }
 
+void UKeroroAnimInstance::AnimNotify_EndRolling()
+{
+	bIsRolling = false;
+	UE_LOG(LogTemp, Error, TEXT("End Rolling"));
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(TryGetPawnOwner());
+	if (kero)
+	{
+		kero->EndRoll();
+	}
+}
+
 FName UKeroroAnimInstance::GetAttackMontageSectionName(int32 Section)
 {
 	if (FMath::IsWithinInclusive<int32>(Section, 1, 4)) return FName(*FString::Printf(TEXT("Attack%d"), Section));
@@ -277,7 +313,7 @@ UAnimMontage* UKeroroAnimInstance::GetUltiAnimMontage()
 
 void UKeroroAnimInstance::JumptoAttackMontageSection(int32 NewSection)
 {
-	if (IsDead || bIsHit) return;
+	if (IsDead || bIsHit || bIsRolling) return;
 
 	if (UAnimMontage* MontageToPlay = GetAnimMontage())
 	{

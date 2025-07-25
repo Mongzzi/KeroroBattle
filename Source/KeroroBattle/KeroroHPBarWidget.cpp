@@ -15,12 +15,6 @@ void UKeroroHPBarWidget::BindKRStat(UKeroroStatComponent* NewKRStat)
 
 	CurrentKRStat = NewKRStat;
 	NewKRStat->OnHpIsChanged.AddUObject(this, &UKeroroHPBarWidget::UpdateHPWidget);
-	//NewKRStat->OnHpIsChanged.AddLambda([this]()->void{
-	//	if (CurrentKRStat.IsValid())
-	//	{
-	//		UE_LOG(LogTemp, Error, TEXT("hhhhHPRatio : %f"), CurrentKRStat->GetHpRatio());
-	//	}
-	//});
 }
 
 void UKeroroHPBarWidget::NativeConstruct()

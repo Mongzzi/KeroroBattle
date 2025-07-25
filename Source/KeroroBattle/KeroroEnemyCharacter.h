@@ -37,6 +37,7 @@ public:
     virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
     // 몬스터가 죽었을 때 호출되는 함수
+    UFUNCTION()
     void Die();
     
     // 사망 처리 여부

@@ -55,6 +55,8 @@ private:
 	FTimerHandle UltimateSkillCooldownTimer;	// 궁극기 쿨타임 타이머 추후 사용예정
 
 public:
+	void StartRoll(FVector Dir,float RollDistance=600.0f);
+	void EndRoll();
 	void StartRun();
 	void StopRun();
 	void Attack();

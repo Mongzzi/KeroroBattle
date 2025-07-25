@@ -26,6 +26,7 @@ public:
 
 	void PlayAttackMontage();
 	void PlayUltiSkillMontage();
+	void PlayRollAnimation();
 	void JumptoAttackMontageSection(int32 NewSection);
 	void StopAttackMontage();
 
@@ -69,6 +70,9 @@ private:
 	UFUNCTION()
 	void AnimNotify_EndUltiSkill();
 
+	UFUNCTION()
+	void AnimNotify_EndRolling();
+
 	FName GetAttackMontageSectionName(int32 Section);
 
 
@@ -89,6 +93,9 @@ public:
 	bool bIsRunning;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn)
+	bool bIsRolling;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn)
 	bool bIsHit;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn)
@@ -104,6 +111,9 @@ public:
 	class UAnimMontage* GetUltiAnimMontage();
 
 private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	class UAnimMontage* RollActionMontage;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	class UAnimMontage* SwordAttackMontage;
 

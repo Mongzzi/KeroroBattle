@@ -30,6 +30,7 @@ private:
 	void LoadInputActionAndMappingContext();
 	void Move(const struct FInputActionValue& Value);
 	void Look(const struct FInputActionValue& Value);
+	void Roll(const struct FInputActionValue& Value);
 	void Jump();
 	void StartRun();
 	void StopRun();
@@ -110,6 +111,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* Jumping;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* RollingForward;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* Running;

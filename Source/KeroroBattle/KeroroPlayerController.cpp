@@ -23,6 +23,8 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
+#include "KeroroAnimInstance.h"
+
 AKeroroPlayerController::AKeroroPlayerController()
 {
 	// ют╥б
@@ -453,6 +455,9 @@ void AKeroroPlayerController::LoadInputActionAndMappingContext()
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_JUMP(TEXT("/Game/Input/IA_Keroro_Jump.IA_Keroro_Jump"));
 	if (IA_JUMP.Succeeded()) Jumping = IA_JUMP.Object;
 
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_ROLL(TEXT("/Game/Input/IA_Keroro_Roll.IA_Keroro_Roll"));
+	if (IA_ROLL.Succeeded()) RollingForward = IA_ROLL.Object;
+
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_RUN(TEXT("/Game/Input/IA_Keroro_Run.IA_Keroro_Run"));
 	if (IA_RUN.Succeeded()) Running = IA_RUN.Object;
 
@@ -488,6 +493,7 @@ void AKeroroPlayerController::SetupInputComponent()
 		Input->BindAction(Moving, ETriggerEvent::Triggered, this, &AKeroroPlayerController::Move);
 		Input->BindAction(Looking, ETriggerEvent::Triggered, this, &AKeroroPlayerController::Look);
 		Input->BindAction(Jumping, ETriggerEvent::Triggered, this, &AKeroroPlayerController::Jump);
+		Input->BindAction(RollingForward, ETriggerEvent::Started, this, &AKeroroPlayerController::Roll);
 		Input->BindAction(Running, ETriggerEvent::Triggered, this, &AKeroroPlayerController::StartRun);
 		Input->BindAction(Running, ETriggerEvent::Completed, this, &AKeroroPlayerController::StopRun);
 		Input->BindAction(Attacking, ETriggerEvent::Started, this, &AKeroroPlayerController::Attack);
@@ -507,6 +513,8 @@ void AKeroroPlayerController::Move(const FInputActionValue& Value)
 
 	if (AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter()))
 	{
+		if (!kero->KRAnim)return;
+		if (kero->KRAnim->bIsRolling) return;
 		const FVector2D InputVector = Value.Get<FVector2D>();
 		const FRotator YawRotation(0.f, GetControlRotation().Yaw, 0.f);
 
@@ -546,6 +554,26 @@ void AKeroroPlayerController::Look(const FInputActionValue& Value)
 	AddPitchInput(LookInput.Y);
 }
 
+void AKeroroPlayerController::Roll(const struct FInputActionValue& Value)
+{
+	if (AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter()))
+	{
+		UKeroroAnimInstance* keroAnim = kero->KRAnim;
+		if (!keroAnim)return;
+		if (keroAnim->bIsRolling || keroAnim->bIsHit) return;
+
+		const FVector2D InputVector = Value.Get<FVector2D>();
+		const FRotator YawRotation(0.f, GetControlRotation().Yaw, 0.f);
+		const FVector ForwardDir = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector RightDir = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		FVector RollDirection = (ForwardDir * InputVector.Y + RightDir * InputVector.X).GetSafeNormal();
+		kero->SetActorRotation(RollDirection.Rotation());
+
+		kero->StartRoll(RollDirection, 900.0f);
+	}
+}
+
 void AKeroroPlayerController::Jump()
 {
 	if (AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter()))
@@ -553,11 +581,11 @@ void AKeroroPlayerController::Jump()
 		kero->Jump();
 	}
 
-	// test
-	if (KRHUDWidget)
-	{
-		KRHUDWidget->PlayDrawAnimation_AllCard();
-	}
+	//// test
+	//if (KRHUDWidget)
+	//{
+	//	KRHUDWidget->PlayDrawAnimation_AllCard();
+	//}
 }
 
 void AKeroroPlayerController::StartRun()

@@ -96,11 +96,11 @@ void AKeroroEnemyCharacter::PostInitializeComponents()
 	EnemyAnim->OnAttackHitCheck.AddUObject(this, &AKeroroEnemyCharacter::AttackCheck);
 
 
-	// 스탯컴포넌트 체력0 델리게이트 바인딩
-	EnemyStat->OnHpIsZero.AddLambda([this]()->void {
-		EnemyAnim->SetDeadAnim();
-		SetActorEnableCollision(false);
-		});
+	//// 스탯컴포넌트 체력0 델리게이트 바인딩
+	//EnemyStat->OnHpIsZero.AddLambda([this]()->void {
+	//	EnemyAnim->SetDeadAnim();
+	//	SetActorEnableCollision(false);
+	//	});
 }
 
 float AKeroroEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -145,6 +145,9 @@ void AKeroroEnemyCharacter::Die()
 	}
 	// 콜리전 끄기
 	SetActorEnableCollision(false);
+
+	// 애니메이션 재생
+	if(EnemyAnim) EnemyAnim->SetDeadAnim();
 
 	// 일정 시간 후 소멸
 	SetLifeSpan(1.5f);

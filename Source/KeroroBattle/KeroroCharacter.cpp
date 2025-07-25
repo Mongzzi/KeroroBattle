@@ -1175,6 +1175,29 @@ void AKeroroCharacter::ChangeFaceTexture(EFaceType FaceType)
 	}
 }
 
+void AKeroroCharacter::StartRoll(FVector Dir,float RollDistance)
+{
+	// 방향 설정 (현재 바라보는 방향 또는 이동 중인 방향)
+	FVector RollDirection = Dir; // 앞으로 구르기
+	float RollDuration = 0.5f;
+
+	FVector RollVelocity = RollDirection * (RollDistance / RollDuration);
+	GetCharacterMovement()->BrakingFrictionFactor = 0.0f; // 구를 때 마찰 없애기
+	LaunchCharacter(RollVelocity, true, true);
+
+	if (KRAnim)
+	{
+		KRAnim->bIsRolling = true;
+		KRAnim->PlayRollAnimation();
+	}
+}
+
+void AKeroroCharacter::EndRoll()
+{
+	GetCharacterMovement()->StopMovementImmediately();
+	GetCharacterMovement()->BrakingFrictionFactor = 2.0f;
+}
+
 void AKeroroCharacter::StartRun()
 {
 	if (KRAnim)
