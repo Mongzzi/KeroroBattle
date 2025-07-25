@@ -8,6 +8,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Engine/DamageEvents.h"
+#include "Kismet/GameplayStatics.h"
 
 
 AMineWeapon::AMineWeapon()
@@ -28,6 +29,12 @@ AMineWeapon::AMineWeapon()
 	if (NS.Succeeded())
 	{
 		NSEffect = NS.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundWave> SOUND2(TEXT("/Game/Keroro_Sound/weapon/keroball/bomb2.bomb2"));
+	if (SOUND2.Succeeded())
+	{
+		UltiHitSound = SOUND2.Object;
 	}
 }
 
@@ -65,6 +72,10 @@ void AMineWeapon::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 				Enemy->TakeDamage(Damage*5, DamageEvent, OwnerKero->GetController(), OwnerKero.Get());
 			}
 			
+		}
+		if (UltiHitSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, UltiHitSound, GetActorLocation(), 3.0f);
 		}
 	}
 }

@@ -38,6 +38,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Effect)
 	class UNiagaraSystem* NSEffect;
 
+	UPROPERTY()
+	USoundWave* UltiSound;
+
+	UPROPERTY()
+	USoundWave* UltiHitSound;
 
 private:
 	int32 WeaponNum;

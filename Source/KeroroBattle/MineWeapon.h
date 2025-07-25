@@ -24,4 +24,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Effect)
 	class UNiagaraSystem* NSEffect;
 
+	UPROPERTY()
+	USoundWave* UltiHitSound;
+
 };

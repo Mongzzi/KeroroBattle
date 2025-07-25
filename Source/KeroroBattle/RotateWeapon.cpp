@@ -8,6 +8,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Engine/DamageEvents.h"
+#include "Kismet/GameplayStatics.h"
 
 ARotateWeapon::ARotateWeapon()
 {
@@ -47,6 +48,18 @@ ARotateWeapon::ARotateWeapon()
 	if (SWORDTRAIL.Succeeded())
 	{
 		NSEffect = SWORDTRAIL.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundWave> SOUND(TEXT("/Game/Keroro_Sound/dororo/Rotating_Sword.Rotating_Sword"));
+	if (SOUND.Succeeded())
+	{
+		UltiSound = SOUND.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundWave> SOUND2(TEXT("/Game/Keroro_Sound/dororo/sword_hit.sword_hit"));
+	if (SOUND2.Succeeded())
+	{
+		UltiHitSound = SOUND2.Object;
 	}
 
 	SkillDuration = 10.0f;
@@ -130,9 +143,18 @@ void ARotateWeapon::OnWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AA
 
 	FDamageEvent DamageEvent;
 	Enemy->TakeDamage(Damage, DamageEvent, OwnerKero->GetController(), this);
+
+	if (UltiHitSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, UltiHitSound, GetActorLocation(), 0.5f);
+	}
 }
 
 void ARotateWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+	if (UltiSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, UltiSound, GetActorLocation(), 0.5f);
+	}
 }

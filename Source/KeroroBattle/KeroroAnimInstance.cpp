@@ -261,7 +261,7 @@ void UKeroroAnimInstance::AnimNotify_EndUltiSkill()
 void UKeroroAnimInstance::AnimNotify_EndRolling()
 {
 	bIsRolling = false;
-	UE_LOG(LogTemp, Error, TEXT("End Rolling"));
+	//UE_LOG(LogTemp, Error, TEXT("End Rolling"));
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(TryGetPawnOwner());
 	if (kero)
 	{
