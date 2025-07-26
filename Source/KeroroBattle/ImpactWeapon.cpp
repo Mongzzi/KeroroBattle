@@ -10,6 +10,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Engine/DamageEvents.h"
 #include "DrawDebugHelpers.h"	// 디버그 드로잉 기능 사용하기위한 헤더
+#include "Kismet/GameplayStatics.h"
 
 
 
@@ -24,6 +25,12 @@ AImpactWeapon::AImpactWeapon()
 	{
 		ImpactPS = PS.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<USoundWave> SOUND2(TEXT("/Game/Keroro_Sound/tamama/Tama_Ulti_Hit_Sound.Tama_Ulti_Hit_Sound"));
+	if (SOUND2.Succeeded())
+	{
+		UltiHitSound = SOUND2.Object;
+	}
 }
 
 void AImpactWeapon::PlayEffect(AKeroroCharacter* Character)
@@ -33,7 +40,7 @@ void AImpactWeapon::PlayEffect(AKeroroCharacter* Character)
 
 	if (ImpactPS)
 	{
-		ImpactPC = UGameplayStatics::SpawnEmitterAttached(ImpactPS, Character->GetMesh(), FName("TamamaImpact"), FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+		ImpactPC = UGameplayStatics::SpawnEmitterAttached(ImpactPS, Character->GetMesh(), FName("TamamaImpact"), FVector::ZeroVector, FRotator(0.0f,0.0f,-15.0f), EAttachLocation::SnapToTarget, true);
 		ImpactPC->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.5f));
 	}
 
@@ -86,6 +93,10 @@ void AImpactWeapon::AttackCheck_Impact()
 				FDamageEvent DamageEvent;
 				HitActor->TakeDamage(FinalDamage, DamageEvent, OwnerKero->GetController(), this);
 			}
+		}
+		if (UltiHitSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, UltiHitSound, GetActorLocation(), 0.6f);
 		}
 	}
 	//DrawDebugPoint(GetWorld(), Start, 15.0f, FColor::Red, false, 1.0f);

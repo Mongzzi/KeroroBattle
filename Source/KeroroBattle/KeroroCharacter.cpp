@@ -280,8 +280,8 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 	float FinalDamage = KRStat->SetFinalDamage(Damage);
 	float FinalDamagePercent = FinalDamage / KRStat->MaxHp;
 
-	// 최대체력 5퍼이상 데미지 받거나 30퍼 확률로 피격 처리
-	if (FinalDamagePercent > 0.05f || FMath::FRand() < 0.3f)
+	// 최대체력 20퍼이상 데미지 받거나 10퍼 확률로 피격 처리
+	if (FinalDamagePercent > 0.2f || FMath::FRand() < 0.1f)
 	{
 		KRAnim->SetbIsHit(CurrentKeroroType);
 		ChangeFaceTexture(EFaceType::Anger);
@@ -562,14 +562,11 @@ void AKeroroCharacter::ChangeCameraUltimate()
 void AKeroroCharacter::LookAttackDir()
 {
 	// 공격 시작시 컨트롤러 방향으로 캐릭터 회전
-	if (WeaponType == EWeaponType::RIFLE || WeaponType == EWeaponType::KEROBALL)
-	{
-		FRotator ControlRotation = GetControlRotation();
-		ControlRotation.Pitch = 0.0f;
-		ControlRotation.Roll = 0.0f;
-		SetActorRotation(ControlRotation);
-		GetCharacterMovement()->bOrientRotationToMovement = false; // 입력 방향 따라 몸 회전 안되게
-	}
+	FRotator ControlRotation = GetControlRotation();
+	ControlRotation.Pitch = 0.0f;
+	ControlRotation.Roll = 0.0f;
+	SetActorRotation(ControlRotation);
+	GetCharacterMovement()->bOrientRotationToMovement = false; // 입력 방향 따라 몸 회전 안되게
 }
 
 void AKeroroCharacter::ChangeCameraNoteBookAttack()

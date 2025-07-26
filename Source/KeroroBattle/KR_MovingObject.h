@@ -45,4 +45,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	UStaticMeshComponent* StaticMeshComponent;
 
+	UPROPERTY()
+	USoundWave* UltiSound;
+
+	UPROPERTY()
+	UAudioComponent* PlayingSound;
 };

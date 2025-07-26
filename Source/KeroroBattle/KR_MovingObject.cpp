@@ -3,6 +3,8 @@
 
 #include "KR_MovingObject.h"
 #include "KeroroItemBox.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
 
 // Sets default values
 AKR_MovingObject::AKR_MovingObject()
@@ -17,6 +19,12 @@ AKR_MovingObject::AKR_MovingObject()
 	if (SHIP.Succeeded())
 	{
 		StaticMeshComponent->SetStaticMesh(SHIP.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundWave> SOUND(TEXT("/Game/Keroro_Sound/kururu/Kuru_Ulti_Sound.Kuru_Ulti_Sound"));
+	if (SOUND.Succeeded())
+	{
+		UltiSound = SOUND.Object;
 	}
 }
 
@@ -33,6 +41,10 @@ void AKR_MovingObject::BeginPlay()
 		true  // 루프 반복
 	);
 
+	if (UltiSound)
+	{
+		PlayingSound = UGameplayStatics::SpawnSoundAtLocation(this, UltiSound, GetActorLocation());
+	}
 }
 
 // Called every frame
@@ -53,6 +65,10 @@ void AKR_MovingObject::Tick(float DeltaTime)
 		SetActorLocation(NextLoc);
 	}
 	else {
+		if (PlayingSound && PlayingSound->IsPlaying())
+		{
+			PlayingSound->Stop();
+		}
 		Destroy();
 	}
 }

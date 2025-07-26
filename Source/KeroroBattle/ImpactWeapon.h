@@ -34,5 +34,8 @@ private:
 	
 	UPROPERTY()
 	UParticleSystemComponent* ImpactPC;
+	
+	UPROPERTY()
+	USoundWave* UltiHitSound;
 
 };
