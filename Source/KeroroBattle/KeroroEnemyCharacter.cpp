@@ -8,9 +8,11 @@
 #include "KeroroPlayerState.h"
 #include "KeroroAIController.h"
 #include "EnemyAIController.h"
+#include "DamageTextWidget.h"
 #include "KeroroAnimInstance.h"
 #include "KeroroHPBarWidget.h"
 #include "ExpObject.h"
+#include "DamageTextWidget.h"
 #include "DropGold.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -51,8 +53,19 @@ AKeroroEnemyCharacter::AKeroroEnemyCharacter()
 	HPBar->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
 	HPBar->SetWidgetSpace(EWidgetSpace::Screen);
 	HPBar->SetDrawSize(FVector2D(300.0f, 50.0f));
+
 	static ConstructorHelpers::FClassFinder<UUserWidget>HUD(TEXT("/Game/Blueprints/KR_HPBar.KR_HPBar_C"));
-	if (HUD.Succeeded()) HPBar->SetWidgetClass(HUD.Class);
+	if (HUD.Succeeded())
+	{
+		HPBar->SetWidgetClass(HUD.Class);
+	}
+	static ConstructorHelpers::FClassFinder<UDamageTextWidget> DAMAGETEXT(TEXT("/Game/Blueprints/KR_DamageWidget.KR_DamageWidget_C"));
+	if (DAMAGETEXT.Succeeded())
+	{
+		DamageTextWidgetClass = DAMAGETEXT.Class;
+	}
+
+
 
 	bIsDead = false;
 	AttackRange = 400.0f;
@@ -94,13 +107,6 @@ void AKeroroEnemyCharacter::PostInitializeComponents()
 
 	EnemyAnim = Cast<UKeroroAnimInstance>(GetMesh()->GetAnimInstance());
 	EnemyAnim->OnAttackHitCheck.AddUObject(this, &AKeroroEnemyCharacter::AttackCheck);
-
-
-	//// 스탯컴포넌트 체력0 델리게이트 바인딩
-	//EnemyStat->OnHpIsZero.AddLambda([this]()->void {
-	//	EnemyAnim->SetDeadAnim();
-	//	SetActorEnableCollision(false);
-	//	});
 }
 
 float AKeroroEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -108,26 +114,39 @@ float AKeroroEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& 
 	if (bIsDead || EnemyStat == nullptr)
 		return 0.0f;
 
+	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
+	if (!PC) return 0.0f;
 
+	// 회피 판정
 	float RandEvasion = FMath::FRand();
-	//UE_LOG(LogTemp, Error, TEXT("evation rate = %f, "), EnemyStat->EvasionRate);
-
-	if (RandEvasion < EnemyStat->EvasionRate) {
-		UE_LOG(LogTemp, Error, TEXT("evasion attack~~"));
+	if (RandEvasion < EnemyStat->EvasionRate)
+	{
+		if (UDamageTextWidget* DamageWidget = CreateWidget<UDamageTextWidget>(PC, DamageTextWidgetClass))
+		{
+			DamageWidget->AddToViewport();
+			DamageWidget->SetTextMiss(); // MISS 텍스트 표시
+			DamageWidget->SetTargetLocation(GetActorLocation());
+		}
 		return 0.0f;
 	}
 
+	// 데미지 계산
 	float FinalDamage = DamageAmount * (1.0f - EnemyStat->DefenseRate);
-	//UE_LOG(LogTemp, Error, TEXT("in damage = %f, final Damage = %f"), DamageAmount, FinalDamage);
-
-	// 받은 데미지만큼 체력 감소
 	EnemyStat->SetDamage(FinalDamage);
 
-	// 체력이 0이하가 되면 die함수 호출
+	if (UDamageTextWidget* DamageWidget = CreateWidget<UDamageTextWidget>(PC, DamageTextWidgetClass))
+	{
+		DamageWidget->AddToViewport();
+		DamageWidget->SetTextFromDamage(FinalDamage);// 일반 데미지 텍스트 표시
+		DamageWidget->SetTargetLocation(GetActorLocation());
+	}
+
+	// 사망 처리
 	if (EnemyStat->GetHpRatio() <= 0.0f)
 	{
 		Die();
 	}
+
 	return DamageAmount;
 }
 
@@ -147,7 +166,7 @@ void AKeroroEnemyCharacter::Die()
 	SetActorEnableCollision(false);
 
 	// 애니메이션 재생
-	if(EnemyAnim) EnemyAnim->SetDeadAnim();
+	if (EnemyAnim) EnemyAnim->SetDeadAnim();
 
 	// 일정 시간 후 소멸
 	SetLifeSpan(1.5f);

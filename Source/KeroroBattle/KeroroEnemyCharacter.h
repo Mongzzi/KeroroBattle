@@ -26,32 +26,29 @@ public:
 	virtual void Tick(float DeltaTime) override;
     virtual void PostInitializeComponents() override;
 
-    // 스탯 컴포넌트 (HP, 공격력, 경험치 등 관리)
+    virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+    void Attack();
+    void AttackCheck();
+
+    UFUNCTION()
+    void Die();
+    
+public:
+    // 적 몬스터 콤보 공격용
+    float AttackRange; // 적 캐릭터와 거리
+    float AttackRadius;
+    bool bIsDead;
+    FOnEnemyDie OnEnemyDie;
+
+public:
+    class UKeroroAnimInstance* EnemyAnim;
+
     UPROPERTY(VisibleAnywhere, Category = Stat)
     class UKeroroStatComponent* EnemyStat;
 
     UPROPERTY(VisibleAnywhere, Category = UI)
     class UWidgetComponent* HPBar;
 
-    // 몬스터가 공격받을 때 호출되는 함수
-    virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
-
-    // 몬스터가 죽었을 때 호출되는 함수
-    UFUNCTION()
-    void Die();
-    
-    // 사망 처리 여부
-    bool bIsDead;
-
-    FOnEnemyDie OnEnemyDie;
-
-public:
-    // 적 몬스터 콤보 공격용
-    float AttackRange; // 적 캐릭터와 거리
-    float AttackRadius;
-
-    void Attack();  // 태스크에서 사용
-    void AttackCheck();
-public:
-    class UKeroroAnimInstance* EnemyAnim;
+    UPROPERTY()
+    TSubclassOf<class UDamageTextWidget> DamageTextWidgetClass;
 };

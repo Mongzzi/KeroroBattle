@@ -815,19 +815,8 @@ void AKeroroCharacter::AttackCheck_Sword()
 				PlayHitEffect(Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), FVector(0.5f));
 			}
 		}
-		//if (KRStat)
-		//{
-		//	KRStat->AttackHeal();
-		//}
 		PlayHitSound();
 	}
-
-	//if (KRStat) {
-	//	float a = KRStat->MaxHp;
-	//	float b = KRStat->CurrentHp;
-	//	UE_LOG(LogTemp, Warning, TEXT("=========================CURRENT HP = %f============================"), b);
-	//	UE_LOG(LogTemp, Warning, TEXT("=========================MAX HP = %f============================"), a);
-	//}
 }
 
 void AKeroroCharacter::AttackCheck_Rifle()
@@ -929,10 +918,6 @@ void AKeroroCharacter::AttackCheck_Fist()
 			PlayHitEffect(HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
 			PlayHitSound(CurrentCombo);
 
-		}
-		if (KRStat)
-		{
-			KRStat->AttackHeal();
 		}
 	}
 }
