@@ -61,7 +61,7 @@ void ULevelupCardWidget::SetCardInfo()
 
 		if (CardDescription)
 			CardDescription->SetText(CardData->Description);
-	
+
 		UTexture2D* Image = LoadObject<UTexture2D>(nullptr, *CardData->ImagePath.ToString());
 		if (CardImage && Image)
 		{
@@ -72,7 +72,7 @@ void ULevelupCardWidget::SetCardInfo()
 		CardValue = CardData->CardValue;
 	}
 	else {
-		UE_LOG(LogTemp,Error,TEXT("ssssssssss"))
+		UE_LOG(LogTemp, Error, TEXT("ssssssssss"))
 	}
 }
 
@@ -81,7 +81,10 @@ void ULevelupCardWidget::OnSelectButtonClicked()
 	UE_LOG(LogTemp, Log, TEXT("Level Up Card Selected!"));
 
 	// 선택된 카드 인덱스 전달
-	OnCardSelected.Broadcast(CardIndex);
+	if (OnCardSelected.IsBound())
+	{
+		OnCardSelected.Broadcast(CardIndex);
+	}
 	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
 
 	// 여기서 카드 타입, 카드 값에 따라 플레이어 스탯 정보 업데이트해줘야함
@@ -112,7 +115,7 @@ void ULevelupCardWidget::OnSelectButtonClicked()
 			PS->ExpGainRate += CardValue;
 			break;
 		case ECardType::GoldBoost:
-			PS->GoldGainRate+= CardValue;
+			PS->GoldGainRate += CardValue;
 			break;
 		case ECardType::CooldownReduction:
 			PS->SkillCooldownRate_Enhanced += CardValue;
@@ -124,7 +127,7 @@ void ULevelupCardWidget::OnSelectButtonClicked()
 			PS->ProjectileScale_Enhanced += CardValue;
 			break;
 		case ECardType::Evasion:
-			PS->EvasionRate_Enhanced+= CardValue;
+			PS->EvasionRate_Enhanced += CardValue;
 			break;
 		case ECardType::InvincibilityTime:
 			PS->InvincibilityTime_Enhanced += CardValue;

@@ -211,28 +211,42 @@ void UKeroroAnimInstance::SetKeroroType(EKeroroType type)
 
 void UKeroroAnimInstance::AnimNotify_AttackHitCheck()
 {
-	OnAttackHitCheck.Broadcast();
+	if (OnAttackHitCheck.IsBound())
+	{
+		OnAttackHitCheck.Broadcast();
+	}
 }
 
 void UKeroroAnimInstance::AnimNotify_NextAttackCheck()
 {
-	OnNextAttackCheck.Broadcast();
+	if (OnNextAttackCheck.IsBound())
+	{
+		OnNextAttackCheck.Broadcast();
+	}
 }
 
 void UKeroroAnimInstance::AnimNotify_EffectCreateCheck()
 {
-	//UE_LOG(LogTemp, Error, TEXT("Effect Create timing!"));
-	OnEffectCreateCheck.Broadcast();
+	if (OnEffectCreateCheck.IsBound())
+	{
+		OnEffectCreateCheck.Broadcast();
+	}
 }
 
 void UKeroroAnimInstance::AnimNotify_VoiceCheck()
 {
-	OnVoiceCheck.Broadcast();
+	if (OnVoiceCheck.IsBound())
+	{
+		OnVoiceCheck.Broadcast();
+	}
 }
 
 void UKeroroAnimInstance::AnimNotify_WeaponSound()
 {
+	if (OnWeaponSoundCheck.IsBound())
+	{
 	OnWeaponSoundCheck.Broadcast();
+	}
 }
 
 void UKeroroAnimInstance::AnimNotify_HitDown()

@@ -257,8 +257,11 @@ FDamageResult UKeroroStatComponent::SetFinalDamage(float Damage)
 void UKeroroStatComponent::SetHP(float hp)
 {
 	CurrentHp = hp;
-	OnHpIsChanged.Broadcast();
-	if (CurrentHp <= 0.0f)
+	if (OnHpIsChanged.IsBound())
+	{
+		OnHpIsChanged.Broadcast();
+	}
+	if (CurrentHp <= 0.0f && OnHpIsZero.IsBound())
 	{
 		OnHpIsZero.Broadcast();
 	}
@@ -267,7 +270,10 @@ void UKeroroStatComponent::SetHP(float hp)
 void UKeroroStatComponent::SetMP(float mp)
 {
 	CurrentMp = mp;
-	OnMpIsChanged.Broadcast();
+	if (OnMpIsChanged.IsBound())
+	{
+		OnMpIsChanged.Broadcast();
+	}
 }
 
 float UKeroroStatComponent::GetHpRatio()
@@ -354,7 +360,10 @@ void UKeroroStatComponent::StartAutoHeal()
 	GetWorld()->GetTimerManager().SetTimer(HealTimerHandle, [this]() {
 		CurrentHp = FMath::Clamp(CurrentHp + MaxHp * HealPowerRate, 0.0f, MaxHp);
 		//UE_LOG(LogTemp, Log, TEXT("Auto heal amount : %f, current hp = %f"), MaxHp * HealPowerRate, CurrentHp);
-		OnHpIsChanged.Broadcast();
+		if (OnHpIsChanged.IsBound())
+		{
+			OnHpIsChanged.Broadcast();
+		}
 		},
 		HealIntervalTime,
 		true);
@@ -365,7 +374,10 @@ void UKeroroStatComponent::StartAutoMpHeal()
 	GetWorld()->GetTimerManager().SetTimer(MpHealTimerHandle, [this]() {
 		CurrentMp = FMath::Clamp(CurrentMp + MaxMp * MpHealPowerRate, 0.0f, MaxMp);
 		//UE_LOG(LogTemp, Log, TEXT("Auto mp heal amount : %f, current mp = %f"), MaxMp * MpHealPowerRate, CurrentMp);
-		OnMpIsChanged.Broadcast();
+		if (OnMpIsChanged.IsBound())
+		{
+			OnMpIsChanged.Broadcast();
+		}
 		},
 		MpHealIntervalTime,
 		true);
@@ -377,7 +389,10 @@ void UKeroroStatComponent::AttackHeal()
 	{
 		CurrentHp = FMath::Clamp(CurrentHp + MaxHp * HealPowerOnKill, 0.0f, MaxHp);
 		UE_LOG(LogTemp, Log, TEXT("Attack heal amount : %f, current hp = %f"), MaxHp * HealPowerOnKill, CurrentHp);
-		OnHpIsChanged.Broadcast();
+		if (OnHpIsChanged.IsBound())
+		{
+			OnHpIsChanged.Broadcast();
+		}
 	}
 }
 
@@ -387,7 +402,10 @@ void UKeroroStatComponent::AttackMpHeal()
 	{
 		CurrentMp = FMath::Clamp(CurrentMp + MaxMp * MpHealPowerOnKill, 0.0f, MaxMp);
 		//UE_LOG(LogTemp, Log, TEXT("Attack Mpheal amount : %f, current Mp = %f"), MaxMp * MpHealPowerOnKill, CurrentMp);
-		OnMpIsChanged.Broadcast();
+		if (OnMpIsChanged.IsBound())
+		{
+			OnMpIsChanged.Broadcast();
+		}
 	}
 }
 
@@ -423,7 +441,10 @@ bool UKeroroStatComponent::PayUlitiSkillMP()
 	else
 	{
 		CurrentMp -= UltiCost;
-		OnMpIsChanged.Broadcast();
+		if (OnMpIsChanged.IsBound())
+		{
+			OnMpIsChanged.Broadcast();
+		}
 		return true;
 	}
 }

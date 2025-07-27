@@ -80,8 +80,11 @@ bool AKeroroPlayerState::AddExp(int32 exp)
 		SetLevel(CurrentLevel + 1);
 		DidLevelUp = true;
 	}
-	OnExpChanged.Broadcast();
-	if (DidLevelUp) {
+	if (OnExpChanged.IsBound())
+	{
+		OnExpChanged.Broadcast();
+	}
+	if (DidLevelUp && OnLevelChanged.IsBound()) {
 		OnLevelChanged.Broadcast();
 	}
 	//UE_LOG(LogTemp, Error, TEXT("EXP = %d"),CurrentExp);
@@ -92,7 +95,10 @@ bool AKeroroPlayerState::AddExp(int32 exp)
 void AKeroroPlayerState::AddGold(int32 gold)
 {
 	CurrentGold += gold;
-	OnGoldChanged.Broadcast();
+	if (OnGoldChanged.IsBound())
+	{
+		OnGoldChanged.Broadcast();
+	}
 	//UE_LOG(LogTemp, Error, TEXT("Gold = %d"), CurrentGold);
 }
 
@@ -113,7 +119,10 @@ float AKeroroPlayerState::GetExpRatio() const
 void AKeroroPlayerState::AddKillEnemyNum()
 {
 	KilledEnemyNum += 1;
-	OnKillNumChanged.Broadcast();
+	if (OnKillNumChanged.IsBound())
+	{
+		OnKillNumChanged.Broadcast();
+	}
 }
 
 
@@ -134,6 +143,9 @@ void AKeroroPlayerState::SetLevel(int32 lv)
 	if (StatData != nullptr)
 	{
 		CurrentLevel = lv;
-		OnLevelChanged.Broadcast();
+		if (OnLevelChanged.IsBound())
+		{
+			OnLevelChanged.Broadcast();
+		}
 	}
 }
