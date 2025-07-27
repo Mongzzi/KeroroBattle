@@ -94,3 +94,19 @@ enum class ECardType : uint8
 	MpHealOnKill			UMETA(DisplayName = "MpHealOnKill"),				// 처치 시 마나회복
 	MAX						UMETA(Hidden)										// 순환 계산용
 };
+
+enum EDamageResultType
+{
+	Normal,
+	Evaded,
+	Invincible
+};
+
+struct FDamageResult
+{
+	EDamageResultType ResultType = EDamageResultType::Normal;
+	float FinalDamage = 0.0f;
+
+	FDamageResult() {}
+	FDamageResult(EDamageResultType Type, float Damage) : ResultType(Type), FinalDamage(Damage) {}
+};

@@ -237,14 +237,14 @@ void AKeroroEnemyCharacter::AttackCheck()
 		// 캐스트 성공시 참반환 적캐릭터만 데미지주게 
 		if (IsValid(HitResult.GetActor()) && Cast<AKeroroCharacter>(HitResult.GetActor()))
 		{
-			FDamageEvent DamageEvent;
-
 			float FinalDamage = EnemyStat->AttackPower;
-			float Rand = FMath::FRand();
-			if (Rand < EnemyStat->CritChanceRate)
+			bool bIsCritical = (FMath::FRand() < EnemyStat->CritChanceRate);
+
+			FDamageEvent DamageEvent;
+			if (bIsCritical)
 			{
 				FinalDamage *= EnemyStat->CritDamageRate;
-				UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f"), FinalDamage, EnemyStat->AttackPower, EnemyStat->CritDamageRate);
+				DamageEvent.DamageTypeClass = UCriticalDamageType::StaticClass();
 			}
 
 			HitResult.GetActor()->TakeDamage(FinalDamage, DamageEvent, GetController(), this);

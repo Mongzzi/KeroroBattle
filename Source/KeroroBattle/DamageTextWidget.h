@@ -24,6 +24,7 @@ public:
 	void SetTextMiss();
 	void SetTextGuard();
 	void SetTextParry();
+	void SetTextinvincible();
 	void SetTargetLocation(FVector Loc);
 	void PlayFadeOutAnimation();
 

@@ -229,19 +229,17 @@ void UKeroroStatComponent::SetDamage(float Damage)
 	SetHP(FMath::Clamp<float>(CurrentHp - Damage, 0.0f, MaxHp));
 }
 
-float UKeroroStatComponent::SetFinalDamage(float Damage)
+FDamageResult UKeroroStatComponent::SetFinalDamage(float Damage)
 {
 	if (bIsInvincible)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("invisible time ~~"));
-		return 0.0f;
+		return FDamageResult(EDamageResultType::Invincible, 0.0f);
 	}
 
 	// 회피 판정
 	if (FMath::FRand() < EvasionRate)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("evade ~~"));
-		return 0.0f;
+		return FDamageResult(EDamageResultType::Evaded, 0.0f);
 	}
 
 	// 방어율 적용
@@ -253,7 +251,7 @@ float UKeroroStatComponent::SetFinalDamage(float Damage)
 	// 무적 시간 시작
 	StartInvincibility();
 
-	return FinalDamage;
+	return FDamageResult(EDamageResultType::Normal, FinalDamage);
 }
 
 void UKeroroStatComponent::SetHP(float hp)
@@ -405,13 +403,13 @@ void UKeroroStatComponent::StartInvincibility()
 		false
 	);
 
-	UE_LOG(LogTemp, Log, TEXT("invisible time start %f seconds"), InvincibilityTime);
+	UE_LOG(LogTemp, Log, TEXT("invicible time start %f seconds"), InvincibilityTime);
 }
 
 void UKeroroStatComponent::EndInvincibility()
 {
 	bIsInvincible = false;
-	UE_LOG(LogTemp, Log, TEXT("invisible time end....."));
+	UE_LOG(LogTemp, Log, TEXT("invicible time end....."));
 }
 
 bool UKeroroStatComponent::PayUlitiSkillMP()

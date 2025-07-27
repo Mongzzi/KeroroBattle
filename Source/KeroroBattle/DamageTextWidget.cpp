@@ -68,7 +68,7 @@ void UDamageTextWidget::SetTextGuard()
 {
 	if (DamageText)
 	{
-		DamageText->SetColorAndOpacity(FSlateColor(FLinearColor(1.0f, 1.0f, 1.0f)));
+		DamageText->SetColorAndOpacity(FSlateColor(FLinearColor(0.0f, 0.0f, 1.0f)));
 		DamageText->SetRenderScale(FVector2D(1.5f));
 		DamageText->SetText(FText::FromString("GUARD"));
 	}
@@ -78,9 +78,19 @@ void UDamageTextWidget::SetTextParry()
 {
 	if (DamageText)
 	{
-		DamageText->SetColorAndOpacity(FSlateColor(FLinearColor(1.0f, 1.0f, 1.0f)));
-		DamageText->SetRenderScale(FVector2D(1.5f));
-		DamageText->SetText(FText::FromString("GUARD"));
+		DamageText->SetColorAndOpacity(FSlateColor(FLinearColor(0.0f, 1.0f, 0.0f)));
+		DamageText->SetRenderScale(FVector2D(2.5f));
+		DamageText->SetText(FText::FromString("PARRY"));
+	}
+}
+
+void UDamageTextWidget::SetTextinvincible()
+{
+	if (DamageText)
+	{
+		DamageText->SetColorAndOpacity(FSlateColor(FLinearColor(1.0f, 0.5f, 0.0f)));
+		DamageText->SetRenderScale(FVector2D(0.5f));
+		DamageText->SetText(FText::FromString("INVINCIBLE"));
 	}
 }
 

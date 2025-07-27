@@ -68,6 +68,11 @@ public:
 	void AttackCheck_Keroball();
 	void AttackCheck_Fist();
 	void AttackCheck_NoteBook();
+	bool ParryCheck();
+	bool GuardCheck();
+	void ShowDamageText(FDamageEvent const& DamageEvent, float Damage);
+	void ShowDamageTextinvincible();
+	void ShowDamageTextMiss();
 	void ParryAttack();
 	void ResetGuardCooldown();
 	void StartGuard();
@@ -177,6 +182,10 @@ private:
 	// 플레이어 컨트롤러
 	UPROPERTY()
 	class AKeroroPlayerController* KRPlayerContoller;
+
+	// 데미지 위젯 클래스
+	TSubclassOf<class UDamageTextWidget> DamageTextWidgetClass;
+
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KeroroType)

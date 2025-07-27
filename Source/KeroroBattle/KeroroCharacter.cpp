@@ -33,6 +33,7 @@
 #include "Engine/DamageEvents.h"
 #include "Engine/StreamableManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "DamageTextWidget.h"
 
 
 // Sets default values
@@ -113,6 +114,12 @@ AKeroroCharacter::AKeroroCharacter()
 	if (SOUND3.Succeeded())
 	{
 		ParrySound = SOUND3.Object;
+	}
+
+	static ConstructorHelpers::FClassFinder<UDamageTextWidget> DAMAGETEXT(TEXT("/Game/Blueprints/KR_DamageWidget.KR_DamageWidget_C"));
+	if (DAMAGETEXT.Succeeded())
+	{
+		DamageTextWidgetClass = DAMAGETEXT.Class;
 	}
 
 	// HP바 추가
@@ -216,73 +223,30 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 {
 	if (KRStat == nullptr || KRAnim == nullptr) return 0.0f;
 
-	// 패링 체크 
-	if (IsParrying)
-	{
-		//OnParrySuccess(DamageCauser); // 상대 튕기게
-		ParryAttack();
-		UE_LOG(LogTemp, Log, TEXT("Parry check in TakeDamage"));
-
-		DestroyShieldEffect();
-		PCParryEffect = UGameplayStatics::SpawnEmitterAttached(
-			PSParryEffect,
-			GetMesh(),
-			NAME_None,
-			FVector(0.0f, 70.0f, 100.0f),
-			FRotator::ZeroRotator,
-			EAttachLocation::KeepRelativeOffset,
-			true
-		);
-		PCParryEffect->SetRelativeScale3D(FVector(1.7f));
-
-		IsParrying = false;
-		KRAnim->bIsGuarding = false;
-
-		UGameplayStatics::SpawnSoundAtLocation(this, ParrySound, GetActorLocation(), FRotator::ZeroRotator, 1.0f);
-
-		AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetController());
-		if (PC)
-		{
-			// 강조선 위젯 애니메이션 출력
-			PC->PlayParryWidgetEffect();
-
-			// 카메라 쉐이크 출력
-			PC->PlayParryCameraShake();
-		}
-		return 0.0f;
-	}
-
-	// 가드 체크
-	if (IsGuarding)
-	{
-		//OnGuardSuccess(DamageCauser); // 가드 이펙트
-		UE_LOG(LogTemp, Log, TEXT("Guard check in TakeDamage"));
-		DestroyShieldEffect();
-
-		NCGuardEffect = UNiagaraFunctionLibrary::SpawnSystemAttached(
-			NSGuardEffect,
-			GetMesh(),
-			NAME_None,
-			FVector(0.0f, 20.0f, 100.0f),
-			FRotator(0.0f, 90.0f, 0.0f),
-			EAttachLocation::KeepRelativeOffset,
-			true
-		);
-		IsGuarding = false;
-		KRAnim->bIsGuarding = false;
-
-		UGameplayStatics::SpawnSoundAtLocation(this, GuardSound, GetActorLocation(), FRotator::ZeroRotator, 1.0f);
-
-		return 0.0f;
-	}
-
+	if (ParryCheck()) return 0.0f;
+	if (GuardCheck()) return 0.0f;
 
 	// 데미지 처리
-	float FinalDamage = KRStat->SetFinalDamage(Damage);
+	FDamageResult DamageResult = KRStat->SetFinalDamage(Damage);
+
+	// 회피
+	if (DamageResult.ResultType == EDamageResultType::Evaded)
+	{
+		ShowDamageTextMiss();
+		return 0.0f;
+	}
+	// 무적시간
+	else if (DamageResult.ResultType == EDamageResultType::Invincible)
+	{
+		ShowDamageTextinvincible();
+		return 0.0f;
+	}
+
+	float FinalDamage = DamageResult.FinalDamage;
 	float FinalDamagePercent = FinalDamage / KRStat->MaxHp;
 
-	// 최대체력 20퍼이상 데미지 받거나 10퍼 확률로 피격 처리
-	if (FinalDamagePercent > 0.2f || FMath::FRand() < 0.1f)
+	// 크리티컬 데미지 입을 시
+	if (DamageEvent.DamageTypeClass && DamageEvent.DamageTypeClass->GetDefaultObject()->IsA(UCriticalDamageType::StaticClass()))
 	{
 		KRAnim->SetbIsHit(CurrentKeroroType);
 		ChangeFaceTexture(EFaceType::Anger);
@@ -292,12 +256,11 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 		}
 	}
 
+	ShowDamageText(DamageEvent, FinalDamage);
 
 	// 플레이어 사망
 	if (KRStat->GetHpRatio() <= 0.0f)
 	{
-		SetActorEnableCollision(false);
-		SetLifeSpan(5.0f);
 		Die();
 	}
 
@@ -806,7 +769,7 @@ void AKeroroCharacter::AttackCheck_Sword()
 			{
 				float FinalDamage = KRStat->AttackPower;
 				bool bIsCritical = (FMath::FRand() < KRStat->CritChanceRate);
-				
+
 				FDamageEvent DamageEvent;
 				if (bIsCritical)
 				{
@@ -814,7 +777,7 @@ void AKeroroCharacter::AttackCheck_Sword()
 					DamageEvent.DamageTypeClass = UCriticalDamageType::StaticClass();
 				}
 
-				HitActor->TakeDamage(FinalDamage*2, DamageEvent, GetController(), this);
+				HitActor->TakeDamage(FinalDamage * 2, DamageEvent, GetController(), this);
 				PlayHitEffect(Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), FVector(0.5f));
 			}
 		}
@@ -932,6 +895,131 @@ void AKeroroCharacter::AttackCheck_NoteBook()
 	{
 		Cast<ANoteBookWeapon>(Weapon)->ActivateFinalEffect();
 	}
+}
+
+bool AKeroroCharacter::ParryCheck()
+{
+	// 패링 체크 
+	if (IsParrying)
+	{
+		ParryAttack();
+
+		DestroyShieldEffect();
+
+		PCParryEffect = UGameplayStatics::SpawnEmitterAttached(PSParryEffect, GetMesh(), NAME_None,
+			FVector(0.0f, 70.0f, 100.0f),
+			FRotator::ZeroRotator,
+			EAttachLocation::KeepRelativeOffset,
+			true
+		);
+		PCParryEffect->SetRelativeScale3D(FVector(1.7f));
+
+		IsParrying = false;
+		KRAnim->bIsGuarding = false;
+
+		UGameplayStatics::SpawnSoundAtLocation(this, ParrySound, GetActorLocation(), FRotator::ZeroRotator, 1.0f);
+
+		AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetController());
+		if (PC)
+		{
+			// 강조선 위젯 애니메이션 출력
+			PC->PlayParryWidgetEffect();
+
+			// 카메라 쉐이크 출력
+			PC->PlayParryCameraShake();
+
+			// 패리 테스트 표기
+			UDamageTextWidget* DamageWidget = CreateWidget<UDamageTextWidget>(PC, DamageTextWidgetClass);
+			if (DamageWidget)
+			{
+				DamageWidget->AddToViewport();
+				DamageWidget->SetTargetLocation(GetActorLocation());
+				DamageWidget->SetTextParry(); // MISS 텍스트 표시
+			}
+
+		}
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool AKeroroCharacter::GuardCheck()
+{
+	// 가드 체크
+	if (IsGuarding)
+	{
+		DestroyShieldEffect();
+
+		NCGuardEffect = UNiagaraFunctionLibrary::SpawnSystemAttached(
+			NSGuardEffect,
+			GetMesh(),
+			NAME_None,
+			FVector(0.0f, 20.0f, 100.0f),
+			FRotator(0.0f, 90.0f, 0.0f),
+			EAttachLocation::KeepRelativeOffset,
+			true
+		);
+		IsGuarding = false;
+		KRAnim->bIsGuarding = false;
+
+		UGameplayStatics::SpawnSoundAtLocation(this, GuardSound, GetActorLocation(), FRotator::ZeroRotator, 1.0f);
+
+		AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetController());
+		if (PC)
+		{
+			UDamageTextWidget* DamageWidget = CreateWidget<UDamageTextWidget>(PC, DamageTextWidgetClass);
+			if (DamageWidget)
+			{
+				DamageWidget->AddToViewport();
+				DamageWidget->SetTargetLocation(GetActorLocation());
+				DamageWidget->SetTextGuard();
+			}
+		}
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void AKeroroCharacter::ShowDamageText(FDamageEvent const& DamageEvent, float Damage)
+{
+	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetController());
+	if (!PC) return;
+	UDamageTextWidget* DamageWidget = CreateWidget<UDamageTextWidget>(PC, DamageTextWidgetClass);
+	DamageWidget->AddToViewport();
+	DamageWidget->SetTargetLocation(GetActorLocation());
+	if (DamageEvent.DamageTypeClass && DamageEvent.DamageTypeClass->GetDefaultObject()->IsA(UCriticalDamageType::StaticClass()))
+	{
+		DamageWidget->SetTextFromCritDamage(Damage);
+	}
+	else {
+		DamageWidget->SetTextFromDamage(Damage);
+	}
+}
+
+void AKeroroCharacter::ShowDamageTextinvincible()
+{
+	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetController());
+	if (!PC) return;
+	
+	UDamageTextWidget* DamageWidget = CreateWidget<UDamageTextWidget>(PC, DamageTextWidgetClass);
+	DamageWidget->AddToViewport();
+	DamageWidget->SetTargetLocation(GetActorLocation());
+	DamageWidget->SetTextinvincible();
+}
+
+void AKeroroCharacter::ShowDamageTextMiss()
+{
+	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetController());
+	if (!PC) return;
+
+	UDamageTextWidget* DamageWidget = CreateWidget<UDamageTextWidget>(PC, DamageTextWidgetClass);
+	DamageWidget->AddToViewport();
+	DamageWidget->SetTargetLocation(GetActorLocation());
+	DamageWidget->SetTextMiss();
 }
 
 void AKeroroCharacter::ParryAttack()

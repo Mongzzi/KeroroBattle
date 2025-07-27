@@ -31,7 +31,7 @@ public:
 	void UpdateStatCardEnhanced(class AKeroroPlayerState* PlayerState);
 	void SetLevel(int32 lv,class AKeroroPlayerState* PlayerState = nullptr);
 	void SetDamage(float Damage);
-	float SetFinalDamage(float Damage);
+	FDamageResult SetFinalDamage(float Damage);
 	void SetHP(float hp);
 	void SetMP(float mp);
 	float GetHpRatio();
