@@ -9,9 +9,8 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Engine/DamageEvents.h"
-#include "DrawDebugHelpers.h"	// 디버그 드로잉 기능 사용하기위한 헤더
 #include "Kismet/GameplayStatics.h"
-
+#include "CriticalDamageType.h"
 
 
 AImpactWeapon::AImpactWeapon()
@@ -40,7 +39,7 @@ void AImpactWeapon::PlayEffect(AKeroroCharacter* Character)
 
 	if (ImpactPS)
 	{
-		ImpactPC = UGameplayStatics::SpawnEmitterAttached(ImpactPS, Character->GetMesh(), FName("TamamaImpact"), FVector::ZeroVector, FRotator(0.0f,0.0f,-15.0f), EAttachLocation::SnapToTarget, true);
+		ImpactPC = UGameplayStatics::SpawnEmitterAttached(ImpactPS, Character->GetMesh(), FName("TamamaImpact"), FVector::ZeroVector, FRotator(0.0f, 0.0f, -15.0f), EAttachLocation::SnapToTarget, true);
 		ImpactPC->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.5f));
 	}
 
@@ -55,8 +54,7 @@ void AImpactWeapon::PlayEffect(AKeroroCharacter* Character)
 
 void AImpactWeapon::AttackCheck_Impact()
 {
-	if (!OwnerKero) return;
-	if (!OwnerKero->KRStat) return;
+	if (!OwnerKero || !OwnerKero->KRStat) return;
 	UKeroroStatComponent* OwnerKRStat = OwnerKero->KRStat;
 
 	FVector Start = OwnerKero->GetMesh()->GetSocketLocation("TamamaImpact");
@@ -85,12 +83,14 @@ void AImpactWeapon::AttackCheck_Impact()
 			{
 
 				float FinalDamage = OwnerKRStat->AttackPower;
-				float Rand = FMath::FRand();
-				if (Rand < OwnerKRStat->CritChanceRate)
+				bool bIsCritical = (FMath::FRand() < OwnerKRStat->CritChanceRate);
+
+				FDamageEvent DamageEvent;
+				if (bIsCritical)
 				{
 					FinalDamage *= OwnerKRStat->CritDamageRate;
+					DamageEvent.DamageTypeClass = UCriticalDamageType::StaticClass();
 				}
-				FDamageEvent DamageEvent;
 				HitActor->TakeDamage(FinalDamage, DamageEvent, OwnerKero->GetController(), this);
 			}
 		}
@@ -99,7 +99,4 @@ void AImpactWeapon::AttackCheck_Impact()
 			UGameplayStatics::PlaySoundAtLocation(this, UltiHitSound, GetActorLocation(), 0.6f);
 		}
 	}
-	//DrawDebugPoint(GetWorld(), Start, 15.0f, FColor::Red, false, 1.0f);
-	//DrawDebugPoint(GetWorld(), End, 15.0f, FColor::Red, false, 1.0f);
-
 }

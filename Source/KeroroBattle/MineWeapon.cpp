@@ -9,7 +9,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "CriticalDamageType.h"
 
 AMineWeapon::AMineWeapon()
 {
@@ -41,14 +41,12 @@ AMineWeapon::AMineWeapon()
 void AMineWeapon::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (!OtherActor || OtherActor == this) return;
-	if (!OwnerKero.IsValid())return;
+
 
 	if (OtherActor->IsA(AKeroroEnemyCharacter::StaticClass()))
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSEffect, GetActorLocation(), GetActorRotation());
-		Destroy();
 
-		// 데미지 처리
 		TArray<FHitResult> HitResults;
 		float DamageRadius = 300.0f;
 
@@ -61,15 +59,29 @@ void AMineWeapon::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 			FCollisionShape::MakeSphere(DamageRadius)
 		);
 
-		float Damage = OwnerKero->KRStat->AttackPower;
+
+		AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetInstigator());
+		if (kero == nullptr) return;
+
+		UKeroroStatComponent* KRStat = kero->KRStat;
+		if (KRStat == nullptr) return;
+
+		float FinalDamage = KRStat->AttackPower;
+		bool bIsCritical = (FMath::FRand() < KRStat->CritChanceRate);
+
 		FDamageEvent DamageEvent;
+		if (bIsCritical)
+		{
+			FinalDamage *= KRStat->CritDamageRate;
+			DamageEvent.DamageTypeClass = UCriticalDamageType::StaticClass();
+		}
 
 		for (auto& Hit : HitResults)
 		{
 			AKeroroEnemyCharacter* Enemy = Cast<AKeroroEnemyCharacter>(Hit.GetActor());
 			if (Enemy)
 			{
-				Enemy->TakeDamage(Damage*5, DamageEvent, OwnerKero->GetController(), OwnerKero.Get());
+				Enemy->TakeDamage(FinalDamage*5, DamageEvent,GetInstigatorController(), GetInstigator());
 			}
 			
 		}
@@ -77,5 +89,6 @@ void AMineWeapon::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		{
 			UGameplayStatics::PlaySoundAtLocation(this, UltiHitSound, GetActorLocation(), 3.0f);
 		}
+		Destroy();
 	}
 }

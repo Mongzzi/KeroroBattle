@@ -9,6 +9,7 @@
 #include "NiagaraComponent.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
+#include "CriticalDamageType.h"
 
 ARotateWeapon::ARotateWeapon()
 {
@@ -22,7 +23,7 @@ ARotateWeapon::ARotateWeapon()
 		TEXT("/Game/InfinityBladeWeapons/Weapons/Blade/Swords/Blade_HeroSword17/SK_Blade_HeroSword17.SK_Blade_HeroSword17")
 	};
 	WeaponNum = Paths.Num();
-	
+
 	USceneComponent* Root = CreateDefaultSubobject<USceneComponent>(TEXT("ROOT"));
 	RootComponent = Root;
 
@@ -127,7 +128,7 @@ void ARotateWeapon::PlayEffect(AKeroroCharacter* Character)
 	OwnerKero = Character;
 	CreateNSEffect();
 	FTimerHandle DurationHandle;
-	
+
 	GetWorld()->GetTimerManager().SetTimer(DurationHandle, [this]() {
 		OwnerKero->ChangeCameraDefault();
 		Destroy();
@@ -137,16 +138,29 @@ void ARotateWeapon::PlayEffect(AKeroroCharacter* Character)
 void ARotateWeapon::OnWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AKeroroEnemyCharacter* Enemy = Cast<AKeroroEnemyCharacter>(OtherActor);
-	if (!Enemy|| !OwnerKero.IsValid()) return;
-	
-	float Damage = OwnerKero->KRStat->AttackPower;
-
-	FDamageEvent DamageEvent;
-	Enemy->TakeDamage(Damage, DamageEvent, OwnerKero->GetController(), this);
-
-	if (UltiHitSound)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, UltiHitSound, GetActorLocation(), 0.5f);
+		AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetInstigator());
+		if (kero == nullptr) return;
+
+		UKeroroStatComponent* KRStat = kero->KRStat;
+		if (KRStat == nullptr) return;
+
+		float FinalDamage = KRStat->AttackPower;
+		bool bIsCritical = (FMath::FRand() < KRStat->CritChanceRate);
+
+		FDamageEvent DamageEvent;
+		if (bIsCritical)
+		{
+			FinalDamage *= KRStat->CritDamageRate;
+			DamageEvent.DamageTypeClass = UCriticalDamageType::StaticClass();
+		}
+
+		Enemy->TakeDamage(FinalDamage, DamageEvent, GetInstigatorController(), this);
+
+		if (UltiHitSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, UltiHitSound, GetActorLocation(), 0.5f);
+		}
 	}
 }
 

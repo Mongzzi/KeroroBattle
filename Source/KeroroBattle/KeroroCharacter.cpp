@@ -18,6 +18,7 @@
 #include "KR_MovingObject.h"
 #include "RifleBullet.h"
 #include "KeroroPlayerState.h"
+#include "CriticalDamageType.h"
 #include "KeroroStatComponent.h"
 #include "KeroroHPBarWidget.h"
 #include "KeroroAIController.h"
@@ -804,14 +805,16 @@ void AKeroroCharacter::AttackCheck_Sword()
 			if (IsValid(HitActor) && Cast<AKeroroEnemyCharacter>(Hit.GetActor()))
 			{
 				float FinalDamage = KRStat->AttackPower;
-				float Rand = FMath::FRand();
-				if (Rand < KRStat->CritChanceRate)
+				bool bIsCritical = (FMath::FRand() < KRStat->CritChanceRate);
+				
+				FDamageEvent DamageEvent;
+				if (bIsCritical)
 				{
 					FinalDamage *= KRStat->CritDamageRate;
-					UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f"), FinalDamage, KRStat->AttackPower, KRStat->CritDamageRate);
+					DamageEvent.DamageTypeClass = UCriticalDamageType::StaticClass();
 				}
-				FDamageEvent DamageEvent;
-				HitActor->TakeDamage(FinalDamage, DamageEvent, GetController(), this);
+
+				HitActor->TakeDamage(FinalDamage*2, DamageEvent, GetController(), this);
 				PlayHitEffect(Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), FVector(0.5f));
 			}
 		}
@@ -905,14 +908,15 @@ void AKeroroCharacter::AttackCheck_Fist()
 		{
 
 			float FinalDamage = KRStat->AttackPower;
-			float Rand = FMath::FRand();
-			if (Rand < KRStat->CritChanceRate)
-			{
-				FinalDamage *= KRStat->CritDamageRate;
-				UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f"), FinalDamage, KRStat->AttackPower, KRStat->CritDamageRate);
-			}
+			bool bIsCritical = (FMath::FRand() < KRStat->CritChanceRate);
 
 			FDamageEvent DamageEvent;
+			if (bIsCritical)
+			{
+				FinalDamage *= KRStat->CritDamageRate;
+				DamageEvent.DamageTypeClass = UCriticalDamageType::StaticClass();
+			}
+
 			HitActor->TakeDamage(FinalDamage * 3, DamageEvent, GetController(), this);
 
 			PlayHitEffect(HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());

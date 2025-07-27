@@ -9,10 +9,11 @@
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/Character.h"
+#include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
+#include "CriticalDamageType.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
-
 
 ARifleBullet::ARifleBullet()
 {
@@ -90,19 +91,19 @@ void ARifleBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 		AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetInstigator());
 		if (kero == nullptr) return;
 
-		UKeroroStatComponent* kero_stat = kero->KRStat;
-		if (kero_stat == nullptr) return;
+		UKeroroStatComponent* KRStat = kero->KRStat;
+		if (KRStat == nullptr) return;
 
-		float Damage = kero_stat->AttackPower;
-		float Rand = FMath::FRand();
-		if (Rand < kero_stat->CritChanceRate)
+		float FinalDamage = KRStat->AttackPower;
+		bool bIsCritical = (FMath::FRand() < KRStat->CritChanceRate);
+
+		FDamageEvent DamageEvent;
+		if (bIsCritical)
 		{
-			Damage *= kero_stat->CritDamageRate;
-			UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f /// Critical Chance Rate = %f"),
-				Damage, kero_stat->AttackPower, kero_stat->CritDamageRate, kero_stat->CritChanceRate);
+			FinalDamage *= KRStat->CritDamageRate;
+			DamageEvent.DamageTypeClass = UCriticalDamageType::StaticClass();
 		}
-
-		UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigatorController(), this, nullptr);
+		OtherActor->TakeDamage(FinalDamage, DamageEvent, GetInstigatorController(), this);
 
 		if (HitEffect)
 		{

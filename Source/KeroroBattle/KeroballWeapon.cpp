@@ -8,6 +8,8 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/DamageEvents.h"
+#include "CriticalDamageType.h"
 
 AKeroballWeapon::AKeroballWeapon()
 {
@@ -81,15 +83,17 @@ void AKeroballWeapon::Explode()
 		AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetInstigator());
 		if (kero == nullptr) return;
 
-		UKeroroStatComponent* kero_stat = kero->KRStat;
-		if (kero_stat == nullptr) return;
+		UKeroroStatComponent* KRStat = kero->KRStat;
+		if (KRStat == nullptr) return;
 
-		float Damage = kero_stat->AttackPower;
-		float Rand = FMath::FRand();
+		float FinalDamage = KRStat->AttackPower;
+		bool bIsCritical = (FMath::FRand() < KRStat->CritChanceRate);
 
-		if (Rand < kero_stat->CritChanceRate)
+		FDamageEvent DamageEvent;
+		if (bIsCritical)
 		{
-			Damage *= kero_stat->CritDamageRate;
+			FinalDamage *= KRStat->CritDamageRate;
+			DamageEvent.DamageTypeClass = UCriticalDamageType::StaticClass();
 		}
 
 		for (auto& Hit : HitResults)
@@ -97,7 +101,7 @@ void AKeroballWeapon::Explode()
 			AActor* HitActor = Hit.GetActor();
 			if (HitActor && HitActor->IsA(AKeroroEnemyCharacter::StaticClass()))
 			{
-				UGameplayStatics::ApplyDamage(HitActor, Damage, GetInstigatorController(), this, UDamageType::StaticClass());
+				HitActor->TakeDamage(FinalDamage * 3, DamageEvent, GetInstigatorController(), this);
 				GetWorldTimerManager().ClearTimer(ExplodeTimerHandle);
 			}
 		}
@@ -113,7 +117,7 @@ void AKeroballWeapon::Explode()
 void AKeroballWeapon::FallDown()
 {
 	StaticMeshComponent->SetSimulatePhysics(true);
-	StaticMeshComponent->AddImpulse(FVector(0.0f,0.0f,-100.0f), NAME_None, true);
+	StaticMeshComponent->AddImpulse(FVector(0.0f, 0.0f, -100.0f), NAME_None, true);
 	BombSoundVolume = 0.5f;
 	GetWorldTimerManager().SetTimer(ExplodeTimerHandle, this, &AKeroballWeapon::Explode, 3.0f, false);
 }

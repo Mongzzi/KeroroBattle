@@ -11,6 +11,9 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/AudioComponent.h"
+#include "Engine/DamageEvents.h"
+#include "CriticalDamageType.h"
+
 
 ANoteBookWeapon::ANoteBookWeapon()
 {
@@ -209,17 +212,17 @@ void ANoteBookWeapon::AttackCheck_NoteBook()
 		AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetInstigator());
 		if (kero == nullptr) return;
 
-		UKeroroStatComponent* kero_stat = kero->KRStat;
-		if (kero_stat == nullptr) return;
+		UKeroroStatComponent* KRStat = kero->KRStat;
+		if (KRStat == nullptr) return;
 
-		float Damage = kero_stat->AttackPower;
-		float Rand = FMath::FRand();
+		float FinalDamage = KRStat->AttackPower;
+		bool bIsCritical = (FMath::FRand() < KRStat->CritChanceRate);
 
-		if (Rand < kero_stat->CritChanceRate)
+		FDamageEvent DamageEvent;
+		if (bIsCritical)
 		{
-			Damage *= kero_stat->CritDamageRate;
-			UE_LOG(LogTemp, Error, TEXT("Critical~~~ Damage = %f // Default Damage = %f /// CriticalDamage Rate = %f /// Critical Chance Rate = %f"),
-				Damage, kero_stat->AttackPower, kero_stat->CritDamageRate, kero_stat->CritChanceRate);
+			FinalDamage *= KRStat->CritDamageRate;
+			DamageEvent.DamageTypeClass = UCriticalDamageType::StaticClass();
 		}
 
 		for (const FHitResult& Hit : HitResults)
@@ -227,24 +230,10 @@ void ANoteBookWeapon::AttackCheck_NoteBook()
 			AActor* HitActor = Hit.GetActor();
 			if (IsValid(HitActor) && Cast<AKeroroEnemyCharacter>(Hit.GetActor()))
 			{
-				FDamageEvent DamageEvent;
-				HitActor->TakeDamage(Damage/3, DamageEvent, OwnerKero->GetController(), this);
-				//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *HitActor->GetName());
+				HitActor->TakeDamage(FinalDamage /3, DamageEvent, OwnerKero->GetController(), this);
 			}
 		}
-
-		//DrawDebugCapsule(
-		//	GetWorld(),
-		//	FinalEffectLoc + FVector::UpVector * 350.0f,
-		//	350.0f,
-		//	AttackRadius,
-		//	FQuat::Identity,
-		//	FColor::Red,
-		//	false,
-		//	EffectRemainTime
-		//);
 	}
-
 }
 
 void ANoteBookWeapon::DeactivateMagicCircle()

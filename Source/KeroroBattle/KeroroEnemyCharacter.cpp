@@ -11,6 +11,7 @@
 #include "DamageTextWidget.h"
 #include "KeroroAnimInstance.h"
 #include "KeroroHPBarWidget.h"
+#include "CriticalDamageType.h"
 #include "ExpObject.h"
 #include "DamageTextWidget.h"
 #include "DropGold.h"
@@ -117,28 +118,36 @@ float AKeroroEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& 
 	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
 	if (!PC) return 0.0f;
 
+	// 데미지 표시 위젯 생성
+	UDamageTextWidget* DamageWidget = CreateWidget<UDamageTextWidget>(PC, DamageTextWidgetClass);
+
 	// 회피 판정
 	float RandEvasion = FMath::FRand();
 	if (RandEvasion < EnemyStat->EvasionRate)
 	{
-		if (UDamageTextWidget* DamageWidget = CreateWidget<UDamageTextWidget>(PC, DamageTextWidgetClass))
+		if (DamageWidget)
 		{
 			DamageWidget->AddToViewport();
-			DamageWidget->SetTextMiss(); // MISS 텍스트 표시
 			DamageWidget->SetTargetLocation(GetActorLocation());
+			DamageWidget->SetTextMiss(); // MISS 텍스트 표시
 		}
 		return 0.0f;
 	}
 
-	// 데미지 계산
 	float FinalDamage = DamageAmount * (1.0f - EnemyStat->DefenseRate);
 	EnemyStat->SetDamage(FinalDamage);
 
-	if (UDamageTextWidget* DamageWidget = CreateWidget<UDamageTextWidget>(PC, DamageTextWidgetClass))
+	if (DamageWidget)
 	{
 		DamageWidget->AddToViewport();
-		DamageWidget->SetTextFromDamage(FinalDamage);// 일반 데미지 텍스트 표시
 		DamageWidget->SetTargetLocation(GetActorLocation());
+		if (DamageEvent.DamageTypeClass && DamageEvent.DamageTypeClass->GetDefaultObject()->IsA(UCriticalDamageType::StaticClass()))
+		{
+			DamageWidget->SetTextFromCritDamage(FinalDamage);// 크리티컬 데미지 텍스트 표시
+		}
+		else {
+			DamageWidget->SetTextFromDamage(FinalDamage);// 일반 데미지 텍스트 표시
+		}
 	}
 
 	// 사망 처리
