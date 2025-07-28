@@ -776,6 +776,7 @@ void AKeroroCharacter::AttackCheck_Sword()
 				}
 
 				HitActor->TakeDamage(FinalDamage * 2, DamageEvent, GetController(), this);
+
 				PlayHitEffect(Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), FVector(0.5f));
 			}
 		}

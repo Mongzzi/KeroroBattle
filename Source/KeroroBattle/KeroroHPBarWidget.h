@@ -16,6 +16,9 @@ class KEROROBATTLE_API UKeroroHPBarWidget : public UUserWidget
 	
 public:
 	void BindKRStat(class UKeroroStatComponent* NewKRStat);
+	void SetHPBarText();
+	void SetHPBarTextVisible();
+	void SetHpBarTextHidden();
 
 protected:
 	virtual void NativeConstruct() override;
@@ -25,8 +28,13 @@ protected:
 private:
 	TWeakObjectPtr<class UKeroroStatComponent> CurrentKRStat;
 
-	// 블루프린트에 있는 변수명 그대로 가져와야함
+	UPROPERTY(meta= (BindWidget))
+	class UTextBlock* HP_TEXT;
+
 	UPROPERTY(meta= (BindWidget))
 	class UProgressBar* Hp_Bar;
 
+private:
+	bool IsVisible = false;
+	FTimerHandle TextVisibleHandle;
 };

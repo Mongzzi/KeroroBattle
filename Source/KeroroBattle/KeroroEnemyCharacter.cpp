@@ -162,6 +162,12 @@ float AKeroroEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& 
 		}
 	}
 
+	auto EnemyHpBar = Cast<UKeroroHPBarWidget>(HPBar->GetUserWidgetObject());
+	if (EnemyHpBar != nullptr)
+	{
+		EnemyHpBar->SetHPBarTextVisible();
+	}
+
 	// »ç¸Á Ã³¸®
 	if (EnemyStat->GetHpRatio() <= 0.0f)
 	{
