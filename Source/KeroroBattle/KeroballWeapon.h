@@ -14,6 +14,9 @@ class KEROROBATTLE_API AKeroballWeapon : public AKeroroWeapon
 {
 	GENERATED_BODY()
 
+protected:
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 public:
 	AKeroballWeapon();
 

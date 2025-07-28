@@ -104,6 +104,25 @@ void AKeroroPlayerController::BeginPlay()
 	UpdateStatWidget();
 }
 
+void AKeroroPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (KRPlayerState)
+	{
+		KRPlayerState->OnLevelChanged.RemoveAll(this);
+	}
+
+	if (AKeroroCharacter* KRCharacter = Cast<AKeroroCharacter>(GetCharacter()))
+	{
+		if (KRCharacter->KRStat)
+		{
+			KRCharacter->KRStat->OnHpIsChanged.RemoveAll(this);
+			KRCharacter->KRStat->OnMpIsChanged.RemoveAll(this);
+		}
+	}
+
+	Super::EndPlay(EndPlayReason);
+}
+
 void AKeroroPlayerController::UpdateStatCardEnhanced()
 {
 
@@ -245,11 +264,19 @@ void AKeroroPlayerController::TagCharacter()
 {
 	if (!KRPlayerState) return;
 
-	// 다음 캐릭터 타입
+	// 1. 기존 캐릭터 델리게이트 해제
+	AKeroroCharacter* PrevCharacter = Cast<AKeroroCharacter>(GetCharacter());
+	if (PrevCharacter && PrevCharacter->KRStat)
+	{
+		PrevCharacter->KRStat->OnHpIsChanged.RemoveAll(this);
+		PrevCharacter->KRStat->OnMpIsChanged.RemoveAll(this);
+	}
+
+	// 2. 다음 캐릭터 타입
 	EKeroroType NextType = KRPlayerState->SetNextCharacterType();
 	AKeroroCharacter* NewCharacter = nullptr;
 
-	// 이미 존재하는 캐릭터가 있는지 확인
+	// 3. 이미 존재하는 캐릭터가 있는지 확인
 	if (CharacterMap.Contains(NextType) && IsValid(CharacterMap[NextType]))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("character is in world"));
@@ -257,20 +284,18 @@ void AKeroroPlayerController::TagCharacter()
 	}
 	else
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("spawn new character"));
 		FVector SpawnLoc;
 		FRotator SpawnRot;
 
-		// 캐릭터 전혀없을때
-		if (GetCharacter() == nullptr)
+		if (PrevCharacter == nullptr)
 		{
-			SpawnLoc = FVector(0.0f, 0.0f, 0.0f);
+			SpawnLoc = FVector::ZeroVector;
 			SpawnRot = FRotator::ZeroRotator;
 		}
 		else
 		{
-			SpawnLoc = GetCharacter()->GetActorLocation() + FVector(0, 0, 300);
-			SpawnRot = GetCharacter()->GetActorRotation();
+			SpawnLoc = PrevCharacter->GetActorLocation() + FVector(0, 0, 300);
+			SpawnRot = PrevCharacter->GetActorRotation();
 		}
 		FTransform SpawnTransform = FTransform(SpawnRot, SpawnLoc);
 
@@ -280,46 +305,40 @@ void AKeroroPlayerController::TagCharacter()
 			NewCharacter->CurrentKeroroType = NextType;
 			UGameplayStatics::FinishSpawningActor(NewCharacter, SpawnTransform);
 
-			//NewCharacter->KRStat->SetLevel(KRPlayerState->CurrentLevel,KRPlayerState);
 			CharacterMap.Add(NextType, NewCharacter);
 		}
 	}
-	//--------------------------------------------------------------------------------------------------------
-	// AIController 할당
-	if (GetCharacter())
-	{
-		AKeroroCharacter* PreCharacter = Cast<AKeroroCharacter>(GetCharacter());
-		AKeroroAIController* AIController = GetWorld()->SpawnActor<AKeroroAIController>(AKeroroAIController::StaticClass());
 
+	// 4. 기존 캐릭터를 AIController로 변경
+	if (PrevCharacter)
+	{
+		AKeroroAIController* AIController = GetWorld()->SpawnActor<AKeroroAIController>(AKeroroAIController::StaticClass());
 		if (AIController)
 		{
-			AIController->Possess(PreCharacter);
+			AIController->Possess(PrevCharacter);
 		}
 	}
+
+	// 5. 새 캐릭터를 플레이어컨트롤러가 소유
 	Possess(NewCharacter);
-	//--------------------------------------------------------------------------------------------------------
-	// 캐릭터 스탯컴포넌트 HUD에 바인딩 및 체력 업데이트
+
+	// 6. 새 캐릭터의 델리게이트 바인딩 및 HUD 갱신
 	if (KRHUDWidget && NewCharacter)
 	{
-		// 새로운 캐릭터가 태그되었을 때, 해당 캐릭터의 HP 델리게이트를 바인딩
 		NewCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
 		NewCharacter->KRStat->OnMpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateMPWidget);
 
-		// 새로운 캐릭터에 대한 스탯 바인딩
-		// 초기 HP 값,레벨 갱신
 		KRHUDWidget->BindKRStat(NewCharacter->KRStat);
-
-		// 스킬 이미지 변경
 		KRHUDWidget->ChangeSkillImage();
 	}
-	//--------------------------------------------------------------------------------------------------------
-	// 태그 이펙트
+
+	// 7. 태그 이펙트 재생
 	if (NSTagEffect && GetCharacter() != nullptr)
 	{
 		FVector EffectLoc = GetCharacter()->GetActorLocation() + GetCharacter()->GetActorForwardVector() * 100.0f;
-		FRotator EffecRot = GetCharacter()->GetActorRotation();
+		FRotator EffectRot = GetCharacter()->GetActorRotation();
 
-		NCTagEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSTagEffect, EffectLoc, EffecRot, FVector(1.0f));
+		NCTagEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSTagEffect, EffectLoc, EffectRot, FVector(1.0f));
 	}
 }
 

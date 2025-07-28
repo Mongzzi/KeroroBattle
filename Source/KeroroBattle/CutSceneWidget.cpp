@@ -57,6 +57,16 @@ void UCutSceneWidget::NativeConstruct()
 	//}
 }
 
+void UCutSceneWidget::NativeDestruct()
+{
+	if (MediaPlayer)
+	{
+		MediaPlayer->OnEndReached.RemoveDynamic(this, &UCutSceneWidget::OnCutsceneFinished);
+	}
+
+	Super::NativeDestruct();
+}
+
 void UCutSceneWidget::PlayCutscene()
 {
 	if (!MediaPlayer) return;

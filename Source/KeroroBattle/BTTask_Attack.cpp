@@ -20,11 +20,11 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 
 	auto EnemyCharacter = Cast<AKeroroEnemyCharacter>(OwnerComp.GetAIOwner()->GetCharacter());
 	if (EnemyCharacter == nullptr) return EBTNodeResult::Failed;
-	
+
 	auto Target = Cast<AKeroroCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(AEnemyAIController::TargetKey));
-	if(Target == nullptr) return EBTNodeResult::Failed;
-	
-		// 타겟 방향으로 회전
+	if (Target == nullptr) return EBTNodeResult::Failed;
+
+	// 타겟 방향으로 회전
 	if (EnemyCharacter && Target)
 	{
 		FRotator LookRot = (Target->GetActorLocation() - EnemyCharacter->GetActorLocation()).Rotation();
@@ -35,10 +35,26 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	EnemyCharacter->Attack();
 	IsAttacking = true;
 
-	EnemyCharacter->EnemyAnim->OnMontageEnded.RemoveDynamic(this, &UBTTask_Attack::OnAttackMontageEnded);
-	EnemyCharacter->EnemyAnim->OnMontageEnded.AddDynamic(this, &UBTTask_Attack::OnAttackMontageEnded);
+	if (EnemyCharacter && EnemyCharacter->EnemyAnim)
+	{
+		EnemyCharacter->EnemyAnim->OnMontageEnded.RemoveDynamic(this, &UBTTask_Attack::OnAttackMontageEnded);
+		EnemyCharacter->EnemyAnim->OnMontageEnded.AddDynamic(this, &UBTTask_Attack::OnAttackMontageEnded);
+	}
 
 	return EBTNodeResult::InProgress;
+}
+
+void UBTTask_Attack::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
+{
+	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
+
+	auto EnemyCharacter = Cast<AKeroroEnemyCharacter>(OwnerComp.GetAIOwner()->GetCharacter());
+	if (EnemyCharacter && EnemyCharacter->EnemyAnim)
+	{
+		EnemyCharacter->EnemyAnim->OnMontageEnded.RemoveDynamic(this, &UBTTask_Attack::OnAttackMontageEnded);
+	}
+
+	IsAttacking = false;
 }
 
 void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)

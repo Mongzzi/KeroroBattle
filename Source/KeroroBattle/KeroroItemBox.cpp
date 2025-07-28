@@ -50,6 +50,16 @@ void AKeroroItemBox::PostInitializeComponents()
 	StaticMeshComponent->OnComponentBeginOverlap.AddDynamic(this, &AKeroroItemBox::OnCharacterBeginOverlap);
 }
 
+void AKeroroItemBox::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (StaticMeshComponent)
+	{
+		StaticMeshComponent->OnComponentBeginOverlap.RemoveDynamic(this, &AKeroroItemBox::OnCharacterBeginOverlap);
+
+	}
+	Super::EndPlay(EndPlayReason);
+}
+
 // Called every frame
 void AKeroroItemBox::Tick(float DeltaTime)
 {

@@ -95,6 +95,15 @@ void AKeroroEnemyCharacter::BeginPlay()
 	}
 }
 
+void AKeroroEnemyCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (EnemyAnim)
+	{
+		EnemyAnim->OnAttackHitCheck.RemoveAll(this);
+	}
+	Super::EndPlay(EndPlayReason);
+}
+
 // Called every frame
 void AKeroroEnemyCharacter::Tick(float DeltaTime)
 {
@@ -107,7 +116,10 @@ void AKeroroEnemyCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	EnemyAnim = Cast<UKeroroAnimInstance>(GetMesh()->GetAnimInstance());
-	EnemyAnim->OnAttackHitCheck.AddUObject(this, &AKeroroEnemyCharacter::AttackCheck);
+	if (EnemyAnim)
+	{
+		EnemyAnim->OnAttackHitCheck.AddUObject(this, &AKeroroEnemyCharacter::AttackCheck);
+	}
 }
 
 float AKeroroEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

@@ -72,6 +72,15 @@ void ADropGold::PostInitializeComponents()
 
 }
 
+void ADropGold::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (Trigger)
+	{
+		Trigger->OnComponentBeginOverlap.RemoveDynamic(this, &ADropGold::OnCharacterBeginOverlap);
+	}
+	Super::EndPlay(EndPlayReason);
+}
+
 // Called every frame
 void ADropGold::Tick(float DeltaTime)
 {

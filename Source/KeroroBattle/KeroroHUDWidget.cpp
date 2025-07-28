@@ -49,6 +49,28 @@ void UKeroroHUDWidget::NativeConstruct()
 	PlayDrawAnimation_AllCard();
 }
 
+void UKeroroHUDWidget::NativeDestruct()
+{
+	if (APlayerController* PC = GetOwningPlayer())
+	{
+		if (AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(PC->PlayerState))
+		{
+			PS->OnLevelChanged.RemoveAll(this);
+			PS->OnExpChanged.RemoveAll(this);
+			PS->OnKillNumChanged.RemoveAll(this);
+			PS->OnGoldChanged.RemoveAll(this);
+		}
+	}
+
+	if (CardWidget1)
+		CardWidget1->OnCardSelected.RemoveAll(this);
+	if (CardWidget2)
+		CardWidget2->OnCardSelected.RemoveAll(this);
+	if (CardWidget3)
+		CardWidget3->OnCardSelected.RemoveAll(this);
+	Super::NativeDestruct();
+}
+
 void UKeroroHUDWidget::UpdateHPWidget()
 {
 	// 프로그레스바 이미지 min 0.266 max 0.866이 0~100%처럼보임 그래서 보간해주고 SetPercent해줌

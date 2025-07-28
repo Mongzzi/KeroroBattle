@@ -83,6 +83,16 @@ void ARifleBullet::BeginPlay()
 	Super::BeginPlay();
 }
 
+void ARifleBullet::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (Collision)
+	{
+		Collision->OnComponentHit.RemoveDynamic(this, &ARifleBullet::OnHit);
+	}
+
+	Super::EndPlay(EndPlayReason);
+}
+
 void ARifleBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {

@@ -11,6 +11,15 @@
 #include "Kismet/GameplayStatics.h"
 #include "CriticalDamageType.h"
 
+void AMineWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (StaticMeshComponent)
+	{
+		StaticMeshComponent->OnComponentHit.RemoveDynamic(this, &AMineWeapon::OnHit);
+	}
+	Super::EndPlay(EndPlayReason);
+}
+
 AMineWeapon::AMineWeapon()
 {
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MINE"));

@@ -638,6 +638,7 @@ void AKeroroCharacter::BindCharacterEvents()
 	{
 		// 몽타주 끝났을 시 공격콤보 초기화
 		KRAnim->OnMontageEnded.AddDynamic(this, &AKeroroCharacter::OnAttackMontageEnded);
+
 		// 다음 공격 바인딩
 		KRAnim->OnNextAttackCheck.AddLambda([this]()->void {
 			CanNextCombo = false;
@@ -665,7 +666,6 @@ void AKeroroCharacter::BindCharacterEvents()
 		{
 			KRAnim->OnNextAttackCheck.AddUObject(this, &AKeroroCharacter::SpawnToHand);
 		}
-
 	}
 
 	if (KRStat)
@@ -679,14 +679,12 @@ void AKeroroCharacter::UnbindCharacterEvents()
 {
 	if (KRAnim)
 	{
-		// 몽타주 끝났을 시 공격콤보 초기화 해제
 		KRAnim->OnMontageEnded.RemoveDynamic(this, &AKeroroCharacter::OnAttackMontageEnded);
-		// 다음 공격 바인딩 해제
 		KRAnim->OnNextAttackCheck.RemoveAll(this);
-		// 공격 이펙트 바인딩 해제
 		KRAnim->OnEffectCreateCheck.RemoveAll(this);
-		// 공격 충돌 체크 바인딩 해제
 		KRAnim->OnAttackHitCheck.RemoveAll(this);
+		KRAnim->OnVoiceCheck.RemoveAll(this);
+		KRAnim->OnWeaponSoundCheck.RemoveAll(this);
 	}
 
 	if (KRStat)

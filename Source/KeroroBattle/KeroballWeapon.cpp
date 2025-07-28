@@ -11,6 +11,15 @@
 #include "Engine/DamageEvents.h"
 #include "CriticalDamageType.h"
 
+void AKeroballWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (StaticMeshComponent)
+	{
+		StaticMeshComponent->OnComponentHit.AddDynamic(this, &AKeroballWeapon::OnHit);
+	}
+	Super::EndPlay(EndPlayReason);
+}
+
 AKeroballWeapon::AKeroballWeapon()
 {
 	SocketNames.Add(TEXT("KeroballSocket"));

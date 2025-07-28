@@ -32,8 +32,11 @@ EBTNodeResult::Type UBTTask_AttackEnemy::ExecuteTask(UBehaviorTreeComponent& Own
 	KRCharacter->Attack();
 	IsAttacking = true;
 
-	KRCharacter->KRAnim->OnMontageEnded.RemoveDynamic(this, &UBTTask_AttackEnemy::OnAttackMontageEnded);
-	KRCharacter->KRAnim->OnMontageEnded.AddDynamic(this, &UBTTask_AttackEnemy::OnAttackMontageEnded);
+	if (KRCharacter && KRCharacter->KRAnim)
+	{
+		KRCharacter->KRAnim->OnMontageEnded.RemoveDynamic(this, &UBTTask_AttackEnemy::OnAttackMontageEnded);
+		KRCharacter->KRAnim->OnMontageEnded.AddDynamic(this, &UBTTask_AttackEnemy::OnAttackMontageEnded);
+	}
 
 
 	return EBTNodeResult::InProgress;
@@ -41,6 +44,19 @@ EBTNodeResult::Type UBTTask_AttackEnemy::ExecuteTask(UBehaviorTreeComponent& Own
 
 void UBTTask_AttackEnemy::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
+	IsAttacking = false;
+}
+
+void UBTTask_AttackEnemy::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
+{
+	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
+
+	auto KRCharacter = Cast<AKeroroCharacter>(OwnerComp.GetAIOwner()->GetCharacter());
+	if (KRCharacter && KRCharacter->KRAnim)
+	{
+		KRCharacter->KRAnim->OnMontageEnded.RemoveDynamic(this, &UBTTask_AttackEnemy::OnAttackMontageEnded);
+	}
+
 	IsAttacking = false;
 }
 

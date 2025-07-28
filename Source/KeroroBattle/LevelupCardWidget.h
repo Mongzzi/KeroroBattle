@@ -10,17 +10,18 @@
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnCardSelected, int32);
 
 /**
- * 
+ *
  */
 UCLASS()
 class KEROROBATTLE_API ULevelupCardWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:
-
+protected:
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 
+public:
 	UFUNCTION(BlueprintCallable)
 	void PlayDrawCardAnimation();
 	void PlaySelectCardAnimation();
@@ -34,7 +35,7 @@ public:
 	UPROPERTY()
 	int32 CardIndex;
 
-	UPROPERTY(BlueprintReadOnly,Category=Card)
+	UPROPERTY(BlueprintReadOnly, Category = Card)
 	ECardType CardType = ECardType::MAX;
 	float CardValue;
 

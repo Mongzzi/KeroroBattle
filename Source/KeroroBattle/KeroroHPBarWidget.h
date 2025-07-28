@@ -19,6 +19,7 @@ public:
 
 protected:
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 	void UpdateHPWidget();
 
 private:

@@ -20,6 +20,15 @@ void ULevelupCardWidget::NativeConstruct()
 	}
 }
 
+void ULevelupCardWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
+	if (CardButton)
+	{
+		CardButton->OnClicked.RemoveDynamic(this, &ULevelupCardWidget::OnSelectButtonClicked);
+	}
+}
+
 void ULevelupCardWidget::PlayDrawCardAnimation()
 {
 	if (DrawCardAnim)

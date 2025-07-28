@@ -23,6 +23,16 @@ void UKeroroHPBarWidget::NativeConstruct()
 	UpdateHPWidget();
 }
 
+void UKeroroHPBarWidget::NativeDestruct()
+{
+	if (CurrentKRStat.IsValid())
+	{
+		CurrentKRStat->OnHpIsChanged.RemoveAll(this);
+	}
+
+	Super::NativeDestruct();
+}
+
 void UKeroroHPBarWidget::UpdateHPWidget()
 {
 	if (CurrentKRStat.IsValid())

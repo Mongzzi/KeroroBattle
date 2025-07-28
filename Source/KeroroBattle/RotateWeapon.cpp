@@ -78,6 +78,18 @@ void ARotateWeapon::Tick(float DeltaTime)
 
 }
 
+void ARotateWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	for (USkeletalMeshComponent* WeaponComp : WeaponSKComponents)
+	{
+		if (WeaponComp)
+		{
+			WeaponComp->OnComponentBeginOverlap.RemoveDynamic(this, &ARotateWeapon::OnWeaponOverlap);
+		}
+	}
+	Super::EndPlay(EndPlayReason);
+}
+
 void ARotateWeapon::SetPositionWeapons()
 {
 	if (OwnerKero == nullptr)
