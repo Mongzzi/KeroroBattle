@@ -72,12 +72,19 @@ void UKeroroStatComponent::InitializeComponent()
 
 void UKeroroStatComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::EndPlay(EndPlayReason);
 
 	if (GetWorld())
 	{
 		GetWorld()->GetTimerManager().ClearTimer(HealTimerHandle);
+		GetWorld()->GetTimerManager().ClearTimer(MpHealTimerHandle);
+		GetWorld()->GetTimerManager().ClearTimer(InvincibilityTimerHandle);
 	}
+
+	OnHpIsChanged.Clear();
+	OnHpIsZero.Clear();
+	OnMpIsChanged.Clear();
+
+	Super::EndPlay(EndPlayReason);
 }
 
 void UKeroroStatComponent::UpdateStatCardEnhanced(AKeroroPlayerState* PlayerState)
@@ -373,7 +380,6 @@ void UKeroroStatComponent::StartAutoMpHeal()
 {
 	GetWorld()->GetTimerManager().SetTimer(MpHealTimerHandle, [this]() {
 		CurrentMp = FMath::Clamp(CurrentMp + MaxMp * MpHealPowerRate, 0.0f, MaxMp);
-		//UE_LOG(LogTemp, Log, TEXT("Auto mp heal amount : %f, current mp = %f"), MaxMp * MpHealPowerRate, CurrentMp);
 		if (OnMpIsChanged.IsBound())
 		{
 			OnMpIsChanged.Broadcast();
