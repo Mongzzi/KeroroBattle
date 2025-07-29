@@ -74,6 +74,28 @@ void UDamageTextWidget::SetTextGuard()
 	}
 }
 
+void UDamageTextWidget::SetTextHeal(float Hp, float Mp)
+{
+	if (DamageText)
+	{
+		DamageText->SetColorAndOpacity(FSlateColor(FLinearColor(1.0f, 0.0f, 1.0f)));
+		DamageText->SetRenderScale(FVector2D(0.7f));
+
+		FString Str;
+		if (Hp > 0.0f && Mp > 0.0f) {
+			Str = FString::Printf(TEXT("HP + %.2f\nMP + %.2f"), Hp, Mp);
+		}
+		else if (Hp > 0.0f && Mp <= 0.0f) {
+			Str = FString::Printf(TEXT("HP + %.2f"), Hp);
+		}
+		else if (Hp <= 0.0f && Mp > 0.0f) {
+			Str = FString::Printf(TEXT("MP + %.2f"), Mp);
+		}
+		else return;
+		DamageText->SetText(FText::FromString(Str));
+	}
+}
+
 void UDamageTextWidget::SetTextParry()
 {
 	if (DamageText)

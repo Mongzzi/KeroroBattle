@@ -21,8 +21,8 @@ UKeroroStatComponent::UKeroroStatComponent()
 	HealPowerRate = 0.03f;
 	HealPowerRate_Default = 0.03f;
 
-	HealPowerOnKill = 0.0f;
-	HealPowerOnKill_Default = 0.0f;
+	HealPowerOnKill = 0.005f;
+	HealPowerOnKill_Default = 0.005f;
 
 	MpHealPowerRate = 0.03f;
 	MpHealPowerRate_Default = 0.03f;
@@ -385,27 +385,43 @@ void UKeroroStatComponent::StartAutoMpHeal()
 
 void UKeroroStatComponent::AttackHeal()
 {
+	float HpHeal = AttackHPHeal();
+	float MpHeal = AttackMpHeal();
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwner());
+	kero->ShowHealText(HpHeal, MpHeal);
+}
+
+float UKeroroStatComponent::AttackHPHeal()
+{
 	if (HealPowerOnKill > 0.0f)
 	{
 		CurrentHp = FMath::Clamp(CurrentHp + MaxHp * HealPowerOnKill, 0.0f, MaxHp);
-		UE_LOG(LogTemp, Log, TEXT("Attack heal amount : %f, current hp = %f"), MaxHp * HealPowerOnKill, CurrentHp);
 		if (OnHpIsChanged.IsBound())
 		{
 			OnHpIsChanged.Broadcast();
 		}
+		return MaxHp * HealPowerOnKill;
+	}
+	else
+	{
+		return 0.0f;
 	}
 }
 
-void UKeroroStatComponent::AttackMpHeal()
+float UKeroroStatComponent::AttackMpHeal()
 {
 	if (MpHealPowerOnKill > 0.0f)
 	{
 		CurrentMp = FMath::Clamp(CurrentMp + MaxMp * MpHealPowerOnKill, 0.0f, MaxMp);
-		//UE_LOG(LogTemp, Log, TEXT("Attack Mpheal amount : %f, current Mp = %f"), MaxMp * MpHealPowerOnKill, CurrentMp);
 		if (OnMpIsChanged.IsBound())
 		{
 			OnMpIsChanged.Broadcast();
 		}
+		return MaxMp * MpHealPowerOnKill;
+	}
+	else
+	{
+		return 0.0f;
 	}
 }
 

@@ -23,6 +23,7 @@ public:
 	void SetTextFromCritDamage(float Damage);
 	void SetTextMiss();
 	void SetTextGuard();
+	void SetTextHeal(float Hp, float Mp);
 	void SetTextParry();
 	void SetTextinvincible();
 	void SetTargetLocation(FVector Loc);

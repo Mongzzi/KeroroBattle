@@ -59,7 +59,8 @@ public:
 	void StartAutoHeal();
 	void StartAutoMpHeal();
 	void AttackHeal();
-	void AttackMpHeal();
+	float AttackHPHeal();
+	float AttackMpHeal();
 
 	void StartInvincibility();
 	void EndInvincibility();

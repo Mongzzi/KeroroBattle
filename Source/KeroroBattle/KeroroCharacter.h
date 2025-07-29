@@ -73,6 +73,7 @@ public:
 	void ShowDamageText(FDamageEvent const& DamageEvent, float Damage);
 	void ShowDamageTextinvincible();
 	void ShowDamageTextMiss();
+	void ShowHealText(float Hp,float Mp);
 	void ParryAttack();
 	void ResetGuardCooldown();
 	void StartGuard();
@@ -91,6 +92,7 @@ public:
 	void PlayHittedSound();
 	void PlayHitSound(int32 Combo = 0);
 	void PlayHitEffect(FVector HitLocation, FRotator HitRotator, FVector Scale = FVector(1.0f));
+	void PlayHealEffect();
 	void PlayWeaponSound();
 	bool GetIsAttacking() { return IsAttacking; };
 
@@ -221,13 +223,17 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
 	class UNiagaraSystem* NSGuardEffect;
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
+	UPROPERTY()
+	class UNiagaraSystem* NSHPMPEffect;
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
 	class UNiagaraComponent* NCShieldEffect;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
-
 	class UNiagaraComponent* NCGuardEffect;
+
+	UPROPERTY()
+	class UNiagaraComponent* NCHPMPEffect;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Shield)
 	class UParticleSystem* PSParryEffect;

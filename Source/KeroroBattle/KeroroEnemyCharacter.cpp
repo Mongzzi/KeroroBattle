@@ -171,6 +171,12 @@ float AKeroroEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& 
 	// 사망 처리
 	if (EnemyStat->GetHpRatio() <= 0.0f)
 	{
+		AKeroroCharacter* kero = Cast<AKeroroCharacter>(DamageCauser);
+		if (kero && kero->KRStat)
+		{
+			kero->KRStat->AttackHeal();
+			kero->PlayHealEffect();
+		}
 		Die();
 	}
 
@@ -207,12 +213,7 @@ void AKeroroEnemyCharacter::Die()
 			PS->AddKillEnemyNum();
 
 			AKeroroCharacter* KR = Cast<AKeroroCharacter>(PC->GetCharacter());
-			// 처치시 Mp,Hp 회복
-			if (KR->KRStat)
-			{
-				KR->KRStat->AttackMpHeal();
-				KR->KRStat->AttackHeal();
-			}
+			if (!IsValid(KR)) return;
 
 			// exp 오브젝트 생성
 			AExpObject* ExpObj = GetWorld()->SpawnActor<AExpObject>(AExpObject::StaticClass(), GetActorLocation(), FRotator::ZeroRotator);

@@ -92,6 +92,12 @@ AKeroroCharacter::AKeroroCharacter()
 		NSGuardEffect = NE4.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NE5(TEXT("/Game/KTP_Effect/Particles/Fly/Others/energy_06_01.energy_06_01"));
+	if (NE5.Succeeded())
+	{
+		NSHPMPEffect = NE5.Object;
+	}
+
 	static ConstructorHelpers::FObjectFinder<UParticleSystem> PS1(TEXT("/Game/FXVarietyPack/Particles/P_ky_hit1.P_ky_hit1"));
 	if (PS1.Succeeded())
 	{
@@ -385,6 +391,29 @@ void AKeroroCharacter::PlayHitEffect(FVector HitLocation, FRotator HitRotator, F
 	}
 }
 
+void AKeroroCharacter::PlayHealEffect()
+{
+	if (NSHPMPEffect)
+	{
+		if (NCHPMPEffect)
+		{
+			NCHPMPEffect->Deactivate();
+			NCHPMPEffect->DestroyComponent();
+			NCHPMPEffect = nullptr;
+		}
+
+		NCHPMPEffect = UNiagaraFunctionLibrary::SpawnSystemAttached(
+			NSHPMPEffect,
+			GetMesh(),
+			NAME_None,
+			FVector(0.0f, 0.0f, 50.0f),
+			FRotator(0.0f, 0.0f, 90.0f),
+			EAttachLocation::KeepRelativeOffset,
+			true);
+		NCHPMPEffect->SetRelativeScale3D(FVector(0.1f));
+	}
+}
+
 void AKeroroCharacter::PlayWeaponSound()
 {
 	if (Weapon)
@@ -536,8 +565,8 @@ void AKeroroCharacter::LookAttackDir()
 void AKeroroCharacter::ChangeCameraNoteBookAttack()
 {
 	SpringArm->bInheritPitch = false;
-	SpringArm->TargetArmLength = 1000.0f;
-	SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 0.0f), FRotator(-45.0f, 0.0f, 0.0f));
+	SpringArm->TargetArmLength = 1500.0f;
+	SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 0.0f), FRotator(-25.0f, 0.0f, 0.0f));
 }
 
 float AKeroroCharacter::GetRemainingGuardCooldown()
@@ -1003,7 +1032,7 @@ void AKeroroCharacter::ShowDamageTextinvincible()
 {
 	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetController());
 	if (!PC) return;
-	
+
 	UDamageTextWidget* DamageWidget = CreateWidget<UDamageTextWidget>(PC, DamageTextWidgetClass);
 	DamageWidget->AddToViewport();
 	DamageWidget->SetTargetLocation(GetActorLocation());
@@ -1019,6 +1048,18 @@ void AKeroroCharacter::ShowDamageTextMiss()
 	DamageWidget->AddToViewport();
 	DamageWidget->SetTargetLocation(GetActorLocation());
 	DamageWidget->SetTextMiss();
+}
+
+void AKeroroCharacter::ShowHealText(float Hp, float Mp)
+{
+	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetController());
+	if (!PC) return;
+
+	UDamageTextWidget* DamageWidget = CreateWidget<UDamageTextWidget>(PC, DamageTextWidgetClass);
+	DamageWidget->AddToViewport();
+	FVector Dir = GetActorForwardVector();
+	DamageWidget->SetTargetLocation(GetActorLocation() + FVector(Dir.X * -50, 0.0f, -50.0f));
+	DamageWidget->SetTextHeal(Hp,Mp);
 }
 
 void AKeroroCharacter::ParryAttack()
