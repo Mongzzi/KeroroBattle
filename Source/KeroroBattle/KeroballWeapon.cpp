@@ -15,7 +15,7 @@ void AKeroballWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (StaticMeshComponent)
 	{
-		StaticMeshComponent->OnComponentHit.AddDynamic(this, &AKeroballWeapon::OnHit);
+		StaticMeshComponent->OnComponentHit.RemoveDynamic(this, &AKeroballWeapon::OnHit);
 	}
 	Super::EndPlay(EndPlayReason);
 }
