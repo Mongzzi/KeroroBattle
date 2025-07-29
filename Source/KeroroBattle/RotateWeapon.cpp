@@ -167,7 +167,7 @@ void ARotateWeapon::OnWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AA
 			DamageEvent.DamageTypeClass = UCriticalDamageType::StaticClass();
 		}
 
-		Enemy->TakeDamage(FinalDamage, DamageEvent, GetInstigatorController(), this);
+		Enemy->TakeDamage(FinalDamage, DamageEvent, GetInstigatorController(), GetInstigator());
 
 		if (UltiHitSound)
 		{

@@ -113,7 +113,7 @@ void ARifleBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 			FinalDamage *= KRStat->CritDamageRate;
 			DamageEvent.DamageTypeClass = UCriticalDamageType::StaticClass();
 		}
-		OtherActor->TakeDamage(FinalDamage, DamageEvent, GetInstigatorController(), this);
+		OtherActor->TakeDamage(FinalDamage, DamageEvent, GetInstigatorController(), GetInstigator());
 
 		if (HitEffect)
 		{

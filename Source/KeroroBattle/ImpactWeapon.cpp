@@ -91,7 +91,7 @@ void AImpactWeapon::AttackCheck_Impact()
 					FinalDamage *= OwnerKRStat->CritDamageRate;
 					DamageEvent.DamageTypeClass = UCriticalDamageType::StaticClass();
 				}
-				HitActor->TakeDamage(FinalDamage, DamageEvent, OwnerKero->GetController(), this);
+				HitActor->TakeDamage(FinalDamage, DamageEvent, OwnerKero->GetController(), GetInstigator());
 			}
 		}
 		if (UltiHitSound)

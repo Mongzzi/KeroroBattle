@@ -230,7 +230,7 @@ void ANoteBookWeapon::AttackCheck_NoteBook()
 			AActor* HitActor = Hit.GetActor();
 			if (IsValid(HitActor) && Cast<AKeroroEnemyCharacter>(Hit.GetActor()))
 			{
-				HitActor->TakeDamage(FinalDamage /3, DamageEvent, OwnerKero->GetController(), this);
+				HitActor->TakeDamage(FinalDamage /3, DamageEvent, OwnerKero->GetController(), GetInstigator());
 			}
 		}
 	}

@@ -110,7 +110,7 @@ void AKeroballWeapon::Explode()
 			AActor* HitActor = Hit.GetActor();
 			if (HitActor && HitActor->IsA(AKeroroEnemyCharacter::StaticClass()))
 			{
-				HitActor->TakeDamage(FinalDamage * 3, DamageEvent, GetInstigatorController(), this);
+				HitActor->TakeDamage(FinalDamage * 3, DamageEvent, GetInstigatorController(), GetInstigator());
 				GetWorldTimerManager().ClearTimer(ExplodeTimerHandle);
 			}
 		}
