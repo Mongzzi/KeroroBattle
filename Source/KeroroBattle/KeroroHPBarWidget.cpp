@@ -18,7 +18,7 @@ void UKeroroHPBarWidget::BindKRStat(UKeroroStatComponent* NewKRStat)
 	NewKRStat->OnHpIsChanged.AddUObject(this, &UKeroroHPBarWidget::UpdateHPWidget);
 }
 
-void UKeroroHPBarWidget::SetHPBarTextVisible()
+void UKeroroHPBarWidget::SetHPBarTextVisibleTimer()
 {
 	IsVisible = true;
 	UpdateHPWidget();
@@ -30,6 +30,12 @@ void UKeroroHPBarWidget::SetHPBarTextVisible()
 void UKeroroHPBarWidget::SetHpBarTextHidden()
 {
 	IsVisible = false;
+	UpdateHPWidget();
+}
+
+void UKeroroHPBarWidget::SetHPBarTextVisible()
+{
+	IsVisible = true;
 	UpdateHPWidget();
 }
 

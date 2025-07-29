@@ -100,7 +100,7 @@ void ADropGold::OnCharacterBeginOverlap(UPrimitiveComponent* OverlappedComponent
 		if (PS)
 		{
 			PS->AddGold(static_cast<int32>(DropGoldMount*PS->GoldGainRate)); // 임시 골드 수치
-			UE_LOG(LogTemp, Error, TEXT("kero get gold %d gold ,  Gold Get Rate = %f"), static_cast<int32>(DropGoldMount * PS->GoldGainRate),PS->GoldGainRate);
+			//UE_LOG(LogTemp, Error, TEXT("kero get gold %d gold ,  Gold Get Rate = %f"), static_cast<int32>(DropGoldMount * PS->GoldGainRate),PS->GoldGainRate);
 		}
 
 		UNiagaraComponent* TempEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(

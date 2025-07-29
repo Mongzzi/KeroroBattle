@@ -197,7 +197,7 @@ void AKeroroCharacter::BeginPlay()
 	if (HpBarWidget != nullptr)
 	{
 		HpBarWidget->BindKRStat(KRStat);
-		//UE_LOG(LogTemp, Warning, TEXT("Bind KRStat Succeced"));
+		HpBarWidget->SetHPBarTextVisible();
 	}
 
 }

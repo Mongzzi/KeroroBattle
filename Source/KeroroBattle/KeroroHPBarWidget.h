@@ -17,8 +17,9 @@ class KEROROBATTLE_API UKeroroHPBarWidget : public UUserWidget
 public:
 	void BindKRStat(class UKeroroStatComponent* NewKRStat);
 	void SetHPBarText();
-	void SetHPBarTextVisible();
+	void SetHPBarTextVisibleTimer();
 	void SetHpBarTextHidden();
+	void SetHPBarTextVisible();
 
 protected:
 	virtual void NativeConstruct() override;

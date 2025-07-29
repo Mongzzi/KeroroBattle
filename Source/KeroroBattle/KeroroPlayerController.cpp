@@ -399,6 +399,7 @@ void AKeroroPlayerController::Die()
 
 void AKeroroPlayerController::SetUIMode()
 {
+	SetPause(true);
 
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
@@ -409,17 +410,21 @@ void AKeroroPlayerController::SetUIMode()
 	SetInputMode(InputMode);
 
 	bShowMouseCursor = true;
-	GetPawn()->DisableInput(this);
 }
+
+
 
 void AKeroroPlayerController::SetGameMode()
 {
+	SetPause(false);
+
 	FInputModeGameOnly InputMode;
 	SetInputMode(InputMode);
 
 	bShowMouseCursor = false;
-	GetPawn()->EnableInput(this);
 }
+
+
 
 
 // 플레이어 스테이트에서 레벨업할시 델리게이트에의해 호출하여
