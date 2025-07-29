@@ -41,7 +41,7 @@ ADropGold::ADropGold()
 		Gold->SetCollisionProfileName(TEXT("ItemBox"));
 	}
 
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem>NS(TEXT("/Game/Basic_VFX/Niagara/NS_Basic_6.NS_Basic_6"));
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem>NS(TEXT("/Game/sA_PickupSet_1/Fx/NiagaraSystems/NS_CoinBurst.NS_CoinBurst"));
 	if (NS.Succeeded())
 	{
 		NSEffect = NS.Object;
