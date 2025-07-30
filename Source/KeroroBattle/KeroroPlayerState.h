@@ -41,6 +41,7 @@ public:
 	float GetExpRatio() const;
 	bool AddExp(int32 exp);
 	void AddGold(int32 gold);
+	bool PayGold(int32 gold);
 	void AddKillEnemyNum();
 	void SetLevel(int32 lv);
 

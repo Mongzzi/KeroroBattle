@@ -38,7 +38,7 @@ public:
 	void UpdateLevelWidget();
 	void PlayCardAnimation(int32 SelectedIndex);
 	void PlayDrawAnimation_AllCard();
-
+	
 private:
 	TWeakObjectPtr<class UKeroroStatComponent> CurrentKRStat;
 	TWeakObjectPtr<class AKeroroPlayerState> CurrentKRPlayerState;
@@ -77,6 +77,9 @@ private:
 
 	UPROPERTY(meta= (BindWidget))
 	class USkill_Widget* SkillWidget;
+
+	UPROPERTY(meta = (BindWidget))
+	class UReRollButton* ReRollWidget;
 
 public:
 	UPROPERTY(meta = (BindWidget))

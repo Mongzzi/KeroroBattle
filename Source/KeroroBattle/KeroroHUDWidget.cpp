@@ -7,6 +7,7 @@
 #include "KeroroCharacter.h"
 #include "LevelupCardWidget.h"
 #include "Skill_Widget.h"
+#include "ReRollButton.h"
 #include "Components/ProgressBar.h"
 #include "Components/Image.h"
 #include "Components/EditableTextBox.h"
@@ -45,6 +46,10 @@ void UKeroroHUDWidget::NativeConstruct()
 	if (CardWidget2) CardWidget2->OnCardSelected.AddUObject(this, &UKeroroHUDWidget::PlayCardAnimation);
 	if (CardWidget3) CardWidget3->OnCardSelected.AddUObject(this, &UKeroroHUDWidget::PlayCardAnimation);
 
+	// 리롤 델리게이트 바인딩
+	if (ReRollWidget) ReRollWidget->OnRerollButtonSelected.AddUObject(this, &UKeroroHUDWidget::PlayDrawAnimation_AllCard);
+
+
 	// 처음 Draw 애니메이션 실행
 	PlayDrawAnimation_AllCard();
 }
@@ -68,6 +73,8 @@ void UKeroroHUDWidget::NativeDestruct()
 		CardWidget2->OnCardSelected.RemoveAll(this);
 	if (CardWidget3)
 		CardWidget3->OnCardSelected.RemoveAll(this);
+	if (ReRollWidget)
+		ReRollWidget->OnRerollButtonSelected.RemoveAll(this);
 	Super::NativeDestruct();
 }
 
@@ -126,6 +133,8 @@ void UKeroroHUDWidget::PlayCardAnimation(int32 SelectedIndex)
 	{
 		CardWidget3->PlayAnotherSelectCardAnimation();
 	}
+
+	ReRollWidget->PlayFadeOutAnim();
 }
 
 void UKeroroHUDWidget::PlayDrawAnimation_AllCard()
@@ -133,6 +142,7 @@ void UKeroroHUDWidget::PlayDrawAnimation_AllCard()
 	if (CardWidget1) CardWidget1->PlayDrawCardAnimation();
 	if (CardWidget2) CardWidget2->PlayDrawCardAnimation();
 	if (CardWidget3) CardWidget3->PlayDrawCardAnimation();
+	if (ReRollWidget) ReRollWidget->PlayFadeInAnim();
 }
 
 void UKeroroHUDWidget::UpdateGoldWidget()

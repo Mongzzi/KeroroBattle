@@ -102,6 +102,26 @@ void AKeroroPlayerState::AddGold(int32 gold)
 	//UE_LOG(LogTemp, Error, TEXT("Gold = %d"), CurrentGold);
 }
 
+bool AKeroroPlayerState::PayGold(int32 gold)
+{
+	if (CurrentGold - gold >= 0)
+	{
+		CurrentGold -= gold;
+	}
+	else {
+		return false;
+	}
+	
+	if (OnGoldChanged.IsBound())
+	{
+		OnGoldChanged.Broadcast();
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 float AKeroroPlayerState::GetExpRatio() const
 {
 	if (StatData == nullptr)
