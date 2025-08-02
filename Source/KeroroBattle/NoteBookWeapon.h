@@ -51,9 +51,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Effect")
 	UParticleSystem* MagicCircleEffect3;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Effect")
-	FTimerHandle DamageTickHandle;
-
 	UPROPERTY()
 	USoundBase* FinalEffectSound;
 

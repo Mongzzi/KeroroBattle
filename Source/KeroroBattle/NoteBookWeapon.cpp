@@ -171,21 +171,21 @@ void ANoteBookWeapon::ActivateFinalEffect()
 		false
 	);
 
-	// DamageTickInterval 마다 데미지 체크 시작
+	FTimerHandle DamageTickHandle;
 	GetWorld()->GetTimerManager().SetTimer(
 		DamageTickHandle,
 		this,
 		&ANoteBookWeapon::AttackCheck_NoteBook,
 		DamageTickInterval,
-		true // 루프
+		true
 	);
 
-	// EffectRemainTime 시간 되면 데미지 핸들 초기화
 	FTimerHandle StopHandle;
-	GetWorld()->GetTimerManager().SetTimer(
-		StopHandle,
-		this,
-		&ANoteBookWeapon::StopNoteBookAttack,
+	GetWorld()->GetTimerManager().SetTimer(StopHandle,
+		[this, Handle = DamageTickHandle]() mutable
+		{
+			GetWorld()->GetTimerManager().ClearTimer(Handle);
+		},
 		EffectRemainTime,
 		false
 	);
@@ -230,7 +230,7 @@ void ANoteBookWeapon::AttackCheck_NoteBook()
 			AActor* HitActor = Hit.GetActor();
 			if (IsValid(HitActor) && Cast<AKeroroEnemyCharacter>(Hit.GetActor()))
 			{
-				HitActor->TakeDamage(FinalDamage /3, DamageEvent, OwnerKero->GetController(), GetInstigator());
+				HitActor->TakeDamage(FinalDamage / 3, DamageEvent, OwnerKero->GetController(), GetInstigator());
 			}
 		}
 	}
@@ -316,5 +316,5 @@ void ANoteBookWeapon::SpawnOrUpdateEffect_Particle(FVector Location, FRotator Ro
 
 void ANoteBookWeapon::StopNoteBookAttack()
 {
-	GetWorld()->GetTimerManager().ClearTimer(DamageTickHandle);
+	//GetWorld()->GetTimerManager().ClearTimer(DamageTickHandle);
 }
