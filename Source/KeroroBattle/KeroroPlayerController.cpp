@@ -12,6 +12,7 @@
 #include "KeroroAIController.h"
 #include "NoteBookWeapon.h"
 #include "LevelupCardWidget.h"
+#include "StatusWidget.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
@@ -22,7 +23,6 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
-
 #include "KeroroAnimInstance.h"
 
 AKeroroPlayerController::AKeroroPlayerController()
@@ -61,7 +61,12 @@ AKeroroPlayerController::AKeroroPlayerController()
 	{
 		KRCutSceneClass = CUTSCENECLASS.Class;
 	}
-
+	static ConstructorHelpers::FClassFinder<UStatusWidget>STATUSCLASS(TEXT("/Game/Blueprints/StatusWidget.StatusWidget_C"));
+	if (STATUSCLASS.Succeeded())
+	{
+		KRStatusWidgetClass = STATUSCLASS.Class;
+	}
+	IsMagicCircleActivated = false;
 }
 
 void AKeroroPlayerController::OnPossess(APawn* PawnToPossess)
@@ -140,7 +145,6 @@ void AKeroroPlayerController::UpdateStatCardEnhanced()
 			Kero->KRStat->UpdateStatCardEnhanced(PS);
 		}
 	}
-
 }
 
 // 처음초기화용
@@ -245,6 +249,18 @@ void AKeroroPlayerController::PlayUltiSkillCameraShake()
 {
 	PlayerCameraManager->StartCameraShake(KRUltiSkillCameraShakeClass, 1.0f);
 	//UE_LOG(LogTemp, Warning, TEXT("PlayUltiSkillCameraShake"));
+}
+
+void AKeroroPlayerController::ShowStatusWidget()
+{
+	if (!KRStatusWidgetClass) return;
+
+	KRStatusWidget = CreateWidget<UStatusWidget>(this, KRStatusWidgetClass);
+	if (KRStatusWidget)
+	{
+		KRStatusWidget->AddToViewport(101);
+	}
+	SetUIMode();
 }
 
 float AKeroroPlayerController::GetGameStateRemainingTime()
@@ -499,6 +515,9 @@ void AKeroroPlayerController::LoadInputActionAndMappingContext()
 
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_SKILL(TEXT("/Game/Input/IA_Keroro_Ultimate_Skill.IA_Keroro_Ultimate_Skill"));
 	if (IA_SKILL.Succeeded())SkillAction = IA_SKILL.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_STATUS(TEXT("/Game/Input/IA_Keroro_Status.IA_Keroro_Status"));
+	if (IA_STATUS.Succeeded())ShowStatus = IA_STATUS.Object;
 }
 
 
@@ -525,6 +544,7 @@ void AKeroroPlayerController::SetupInputComponent()
 		Input->BindAction(MouseRight, ETriggerEvent::Started, this, &AKeroroPlayerController::OnMagicCircleActivated);
 		Input->BindAction(Guarding, ETriggerEvent::Started, this, &AKeroroPlayerController::Guard);
 		Input->BindAction(SkillAction, ETriggerEvent::Started, this, &AKeroroPlayerController::UltimateSkill);
+		Input->BindAction(ShowStatus, ETriggerEvent::Started, this, &AKeroroPlayerController::ShowStatusWidget);
 	}
 }
 

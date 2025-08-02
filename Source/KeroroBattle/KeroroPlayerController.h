@@ -54,27 +54,32 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<class UKeroroHUDWidget> KRHUDWidgetClass;
 
-	UPROPERTY()
-	class UKeroroHUDWidget* KRHUDWidget;
-
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<class UKeroroEffectWidget> KRParryWidgetClass;
 
-	UPROPERTY()
-	class UKeroroEffectWidget* KRParryWidget;
-
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UCameraShakeBase> KRParryCameraShakeClass;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UCameraShakeBase> KRUltiSkillCameraShakeClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<class UCutSceneWidget> KRCutSceneClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<class UStatusWidget> KRStatusWidgetClass;
+
+	UPROPERTY()
+	class UKeroroHUDWidget* KRHUDWidget;
+
+	UPROPERTY()
+	class UKeroroEffectWidget* KRParryWidget;
+
 	UPROPERTY()
 	class UCutSceneWidget* KRUltimateCutSceneWidget;
 
+	UPROPERTY()
+	class UStatusWidget* KRStatusWidget;
 
 	void UpdateStatCardEnhanced();
 	void UpdateStatWidget();
@@ -92,6 +97,7 @@ public:
 	void PlayParryWidgetEffect();
 	void PlayParryCameraShake();
 	void PlayUltiSkillCameraShake();
+	void ShowStatusWidget();
 	float GetGameStateRemainingTime();
 	
 	void SetUIMode();
@@ -134,4 +140,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* SkillAction;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category= Input)
+	class UInputAction* ShowStatus;
 };

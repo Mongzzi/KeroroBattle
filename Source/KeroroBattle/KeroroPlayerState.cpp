@@ -27,6 +27,7 @@ AKeroroPlayerState::AKeroroPlayerState()
 	MaxMP_Enhanced = 0.0f;
 	MaxMoveSpeed_Enhanced = 0.0f;
 	CritChanceRate_Enhanced = 0.0f;
+	CritDamageRate_Enhanced = 0.0f;
 	AttackSpeedRate = 1.0f;
 	SkillCooldownRate_Enhanced = 0.0f;
 	EvasionRate_Enhanced = 0.0f;
@@ -34,6 +35,9 @@ AKeroroPlayerState::AKeroroPlayerState()
 	GuardCoolTime_Enhanced = 0.0f;
 	GuardTime_Enhanced = 0.0f;
 	ParryTime_Enhanced = 0.0f;
+	InvincibilityTime_Enhanced = 0.0f;
+	ProjectileCount_Enhanced = 0;
+	ProjectileScale_Enhanced = 0.0f;
 }
 
 void AKeroroPlayerState::PostInitializeComponents()
