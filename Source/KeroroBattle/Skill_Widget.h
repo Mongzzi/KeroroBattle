@@ -16,13 +16,22 @@ class KEROROBATTLE_API USkill_Widget : public UUserWidget
 	
 public:
 	virtual void NativeConstruct() override;
-
+	
+	void UseItem();
+	EItemType GetItemType() { return ItemType; };
+	void SetItem(EItemType type);
+	void SetItemType(EItemType type) { ItemType = type; };
+	void SetItemImage(EItemType type);
+	void SetSkillImageNon();
 	void SetSkillImage(int32 Image_num);
 	void SetBorderImage(EWidgetType Type);
+	void SetItemSlotNum(int32 num);
 	void UpdateCoolTimeText(float Time);
 	void UpdateCoolTimeProgressBar(float Percent);
 
 protected:
+	EItemType ItemType;
+
 	UPROPERTY(meta=(BindWidget))
 	class UImage* SkillImage;
 
@@ -31,6 +40,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* CoolTimeText;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* SlotName;
 
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* CoolTImeProgressBar;

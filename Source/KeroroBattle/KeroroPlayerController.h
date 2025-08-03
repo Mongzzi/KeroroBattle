@@ -98,10 +98,13 @@ public:
 	void PlayParryCameraShake();
 	void PlayUltiSkillCameraShake();
 	void ShowStatusWidget();
-	float GetGameStateRemainingTime();
-	
+	void UseItemSlot1();
+	void UseItemSlot2();
+	void UseItemSlot3();
+
 	void SetUIMode();
 	void SetGameMode();
+	float GetGameStateRemainingTime();
 
 protected:
 
@@ -143,4 +146,13 @@ protected:
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category= Input)
 	class UInputAction* ShowStatus;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* Num1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* Num2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* Num3;
 };

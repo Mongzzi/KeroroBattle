@@ -53,18 +53,20 @@ UENUM(BlueprintType)
 enum class EWidgetType : uint8
 {
 	SKILL_IMAGE				UMETA(DisplayName = "SKILL_IMAGE"),
-	SHIELD_IMAGE			UMETA(DisplayName = "SHIELD_IMAGE")
+	SHIELD_IMAGE			UMETA(DisplayName = "SHIELD_IMAGE"),
+	ITEM_IMAGE				UMETA(DisplayName = "ITEM_IMAGE")
 };
 
 UENUM(BlueprintType)
 
 enum class EItemType : uint8
 {
+	None					UMETA(DisplayName = "None"),
 	HP						UMETA(DisplayName = "HP"),
 	MP						UMETA(DisplayName = "MP"),
 	GOLD					UMETA(DisplayName = "GOLD"),
-	SKILL					UMETA(DisplayName = "SKILL"),
-	GUARD					UMETA(DisplayName = "GUARD"),
+	SKILLCOOL				UMETA(DisplayName = "SKILLCOOL"),
+	GUARDCOOL				UMETA(DisplayName = "GUARDCOOL"),
 	MAX						UMETA(Hidden) // 순환 계산용
 };
 

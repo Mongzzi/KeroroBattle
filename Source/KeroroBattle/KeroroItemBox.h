@@ -41,8 +41,6 @@ public:
 	UPROPERTY()
 	class UNiagaraComponent* NCOpenEffect;
 
-	EItemType ItemType;
-
 private:
 	UFUNCTION()
 	void OnCharacterBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,

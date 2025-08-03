@@ -263,6 +263,24 @@ void AKeroroPlayerController::ShowStatusWidget()
 	SetUIMode();
 }
 
+void AKeroroPlayerController::UseItemSlot1()
+{
+	if (!KRHUDWidget) return;
+	KRHUDWidget->UseItem(1);
+}
+
+void AKeroroPlayerController::UseItemSlot2()
+{
+	if (!KRHUDWidget) return;
+	KRHUDWidget->UseItem(2);
+}
+
+void AKeroroPlayerController::UseItemSlot3()
+{
+	if (!KRHUDWidget) return;
+	KRHUDWidget->UseItem(3);
+}
+
 float AKeroroPlayerController::GetGameStateRemainingTime()
 {
 	if (GetWorld())
@@ -514,10 +532,19 @@ void AKeroroPlayerController::LoadInputActionAndMappingContext()
 	if (IA_GUARD.Succeeded()) Guarding = IA_GUARD.Object;
 
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_SKILL(TEXT("/Game/Input/IA_Keroro_Ultimate_Skill.IA_Keroro_Ultimate_Skill"));
-	if (IA_SKILL.Succeeded())SkillAction = IA_SKILL.Object;
+	if (IA_SKILL.Succeeded()) SkillAction = IA_SKILL.Object;
 
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_STATUS(TEXT("/Game/Input/IA_Keroro_Status.IA_Keroro_Status"));
-	if (IA_STATUS.Succeeded())ShowStatus = IA_STATUS.Object;
+	if (IA_STATUS.Succeeded()) ShowStatus = IA_STATUS.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_NUM1(TEXT("/Game/Input/IA_NUM1.IA_NUM1"));
+	if (IA_NUM1.Succeeded()) Num1 = IA_NUM1.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_NUM2(TEXT("/Game/Input/IA_NUM2.IA_NUM2"));
+	if (IA_NUM2.Succeeded()) Num2 = IA_NUM2.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_NUM3(TEXT("/Game/Input/IA_NUM3.IA_NUM3"));
+	if (IA_NUM3.Succeeded()) Num3 = IA_NUM3.Object;
 }
 
 
@@ -545,6 +572,9 @@ void AKeroroPlayerController::SetupInputComponent()
 		Input->BindAction(Guarding, ETriggerEvent::Started, this, &AKeroroPlayerController::Guard);
 		Input->BindAction(SkillAction, ETriggerEvent::Started, this, &AKeroroPlayerController::UltimateSkill);
 		Input->BindAction(ShowStatus, ETriggerEvent::Started, this, &AKeroroPlayerController::ShowStatusWidget);
+		Input->BindAction(Num1, ETriggerEvent::Started, this, &AKeroroPlayerController::UseItemSlot1);
+		Input->BindAction(Num2, ETriggerEvent::Started, this, &AKeroroPlayerController::UseItemSlot2);
+		Input->BindAction(Num3, ETriggerEvent::Started, this, &AKeroroPlayerController::UseItemSlot3);
 	}
 }
 

@@ -8,6 +8,9 @@
 #include "KeroroWeapon.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "KeroroPlayerController.h"
+#include "KeroroHUDWidget.h"
+#include "Skill_Widget.h"
 
 // Sets default values
 AKeroroItemBox::AKeroroItemBox()
@@ -38,10 +41,6 @@ AKeroroItemBox::AKeroroItemBox()
 void AKeroroItemBox::BeginPlay()
 {
 	Super::BeginPlay();
-
-	int32 RandIndex = FMath::RandRange(0, static_cast<int32>(EItemType::MAX) - 1);
-	ItemType = static_cast<EItemType>(RandIndex);
-
 }
 
 void AKeroroItemBox::PostInitializeComponents()
@@ -78,7 +77,30 @@ void AKeroroItemBox::SetPhysics()
 
 void AKeroroItemBox::OnCharacterBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (!Cast<AKeroroCharacter>(OtherActor)) return;
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(OtherActor);
+	if (!kero) return;
+
+	// æ∆¿Ã≈€ »πµÊ - ¡æ∑˘ ∫∞ √≥∏Æ
+	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(kero->GetController());
+	if (PC && PC->KRHUDWidget)
+	{
+		TArray<USkill_Widget*> ItemSlots = { PC->KRHUDWidget->ItemWidget1,PC->KRHUDWidget->ItemWidget2,PC->KRHUDWidget->ItemWidget3 };
+
+		// ∫Û ΩΩ∑‘¿ª √£æ∆º≠ √≥∏Æ
+		for (auto& Slot : ItemSlots)
+		{
+			if (Slot && Slot->GetItemType() == EItemType::None)
+			{
+				int32 MinIdx = static_cast<int32>(EItemType::None) + 1;
+				int32 MaxIdx = static_cast<int32>(EItemType::MAX) - 1;
+				int32 RandIdx = FMath::RandRange(MinIdx, MaxIdx);
+				EItemType RandomType = static_cast<EItemType>(RandIdx);
+
+				Slot->SetItem(RandomType);
+				break;
+			}
+		}
+	}
 
 	UE_LOG(LogTemp, Warning, TEXT("item box overlapped"));
 

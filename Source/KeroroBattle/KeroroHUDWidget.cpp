@@ -33,9 +33,27 @@ void UKeroroHUDWidget::NativeConstruct()
 		}
 	}
 
-	// 가드, 스킬 아이콘
-	GuardWidget->SetBorderImage(EWidgetType::SHIELD_IMAGE);
+	// 가드, 스킬 , 아이템 슬롯
+	if (GuardWidget) GuardWidget->SetBorderImage(EWidgetType::SHIELD_IMAGE);
+	if (ItemWidget1)
+	{
+		ItemWidget1->SetBorderImage(EWidgetType::ITEM_IMAGE);
+		ItemWidget1->SetItemSlotNum(1);
+		ItemWidget1->SetSkillImageNon();
+	}
 
+	if (ItemWidget2)
+	{
+		ItemWidget2->SetBorderImage(EWidgetType::ITEM_IMAGE);
+		ItemWidget2->SetItemSlotNum(2);
+		ItemWidget2->SetSkillImageNon();
+	}
+	if (ItemWidget3)
+	{
+		ItemWidget3->SetBorderImage(EWidgetType::ITEM_IMAGE);
+		ItemWidget3->SetItemSlotNum(3);
+		ItemWidget3->SetSkillImageNon();
+	}
 	// 카드 인덱스 부여
 	if (CardWidget1) CardWidget1->SetCardIndex(1);
 	if (CardWidget2) CardWidget2->SetCardIndex(2);
@@ -256,6 +274,40 @@ void UKeroroHUDWidget::ChangeSkillImage()
 			}
 			SkillWidget->SetSkillImage(texture_num);
 		}
+	}
+}
+
+void UKeroroHUDWidget::UseItem(int32 slot_num)
+{
+	if (slot_num == 1)
+	{
+		if (ItemWidget1)
+		{
+			ItemWidget1->UseItem();
+		}
+	}
+	if (slot_num == 2)
+	{
+		if (ItemWidget2)
+		{
+			ItemWidget2->UseItem();
+
+		}
+	}
+	if (slot_num == 3)
+	{
+		if (ItemWidget3)
+		{
+			ItemWidget3->UseItem();
+		}
+	}
+}
+
+void UKeroroHUDWidget::ChangeItemImage(int32 slot_num,EItemType type)
+{
+	if (slot_num == 1)
+	{
+		ItemWidget1->SetItemImage(type);
 	}
 }
 

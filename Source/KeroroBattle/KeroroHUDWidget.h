@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "KeroroBattle.h"
 #include "Blueprint/UserWidget.h"
 #include "KeroroHUDWidget.generated.h"
 
@@ -33,6 +33,9 @@ public:
 	void UpdateKillWidget();
 	void UpdateSkillCoolTimeWidget();
 	void ChangeSkillImage();
+
+	void UseItem(int32 slot_num);
+	void ChangeItemImage(int32 slot_num,EItemType type);
 
 	UFUNCTION()
 	void UpdateLevelWidget();
@@ -90,5 +93,14 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	class ULevelupCardWidget* CardWidget3;
+
+	UPROPERTY(meta = (BindWidget))
+	class USkill_Widget* ItemWidget1;
+
+	UPROPERTY(meta = (BindWidget))
+	class USkill_Widget* ItemWidget2;
+
+	UPROPERTY(meta = (BindWidget))
+	class USkill_Widget* ItemWidget3;
 
 };
