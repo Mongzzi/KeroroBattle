@@ -267,7 +267,7 @@ void USkill_Widget::ItemGold()
 	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
 	if (PC)
 	{
-		AKeroroPlayerState* PS=Cast<AKeroroPlayerState>(PC->PlayerState);
+		AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(PC->PlayerState);
 		if (PS)
 		{
 			PS->AddGold(300);
@@ -290,23 +290,127 @@ void USkill_Widget::ItemGroupEnemies()
 void USkill_Widget::ItemLevelUp()
 {
 	UE_LOG(LogTemp, Log, TEXT("레벨업 처리"));
-	// 경험치 += 필요량 → 레벨업
+	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
+	if (PC)
+	{
+		AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(PC->PlayerState);
+		if (PS)
+		{
+			PS->SetLevel(PS->CurrentLevel + 1);	// clamp 처리 추가해야할듯 나중에 최대레벨 생기면
+		}
+	}
 }
 
 void USkill_Widget::ItemAttackUp()
 {
 	UE_LOG(LogTemp, Log, TEXT("공격력 증가"));
-	// 공격력 += 강화치
+	
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
+	if (!kero) return;
+
+	UKeroroStatComponent* krstat = kero->KRStat;
+	if (!krstat)return;
+
+	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
+	if (!PC) return;
+	
+	AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(PC->PlayerState);
+	if (!PS) return;
+
+	PS->AttackPower_Enhanced += EnhanceValue_AttackUp;
+
+	FTimerHandle  AttackUpEndHandle;
+	GetWorld()->GetTimerManager().SetTimer(AttackUpEndHandle, this, &USkill_Widget::EndAttackUp, 5.0f, false);
+	krstat->UpdateStatCardEnhanced(PS);
 }
 
 void USkill_Widget::ItemMoveSpeedUp()
 {
 	UE_LOG(LogTemp, Log, TEXT("이동속도 증가"));
-	// 이동속도 += 강화치
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
+	if (!kero) return;
+
+	UKeroroStatComponent* krstat = kero->KRStat;
+	if (!krstat)return;
+
+	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
+	if (!PC) return;
+
+	AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(PC->PlayerState);
+	if (!PS) return;
+
+	PS->MaxMoveSpeed_Enhanced += EnhanceValue_SpeedUp;
+
+	FTimerHandle  SpeedUpEndHandle;
+	GetWorld()->GetTimerManager().SetTimer(SpeedUpEndHandle, this, &USkill_Widget::EndSpeedUp, 7.0f, false);
+	krstat->UpdateStatCardEnhanced(PS);
 }
 
 void USkill_Widget::ItemDefenseUp()
 {
 	UE_LOG(LogTemp, Log, TEXT("방어력 증가"));
-	// 방어력 += 강화치
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
+	if (!kero) return;
+
+	UKeroroStatComponent* krstat = kero->KRStat;
+	if (!krstat)return;
+
+	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
+	if (!PC) return;
+
+	AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(PC->PlayerState);
+	if (!PS) return;
+
+	PS->DefenseRate_Enhanced += EnhanceValue_DefenceUp;
+
+	FTimerHandle  DefenceUpEndHandle;
+	GetWorld()->GetTimerManager().SetTimer(DefenceUpEndHandle, this, &USkill_Widget::EndDefenceUp, 5.0f, false);
+	krstat->UpdateStatCardEnhanced(PS);
+}
+
+void USkill_Widget::EndAttackUp()
+{
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
+	if (!kero) return;
+	UKeroroStatComponent* krstat = kero->KRStat;
+	if (!krstat)return;
+	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
+	if (!PC) return;
+	AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(PC->PlayerState);
+	if (!PS) return;
+	PS->AttackPower_Enhanced -= EnhanceValue_AttackUp;
+	krstat->UpdateStatCardEnhanced(PS);
+	UE_LOG(LogTemp, Log, TEXT("공업끝"));
+
+}
+
+void USkill_Widget::EndSpeedUp()
+{
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
+	if (!kero) return;
+	UKeroroStatComponent* krstat = kero->KRStat;
+	if (!krstat)return;
+	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
+	if (!PC) return;
+	AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(PC->PlayerState);
+	if (!PS) return;
+	PS->MaxMoveSpeed_Enhanced -= EnhanceValue_SpeedUp;
+	krstat->UpdateStatCardEnhanced(PS);
+	UE_LOG(LogTemp, Log, TEXT("이속업끝"));
+}
+
+void USkill_Widget::EndDefenceUp()
+{
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
+	if (!kero) return;
+	UKeroroStatComponent* krstat = kero->KRStat;
+	if (!krstat)return;
+	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
+	if (!PC) return;
+	AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(PC->PlayerState);
+	if (!PS) return;
+	PS->DefenseRate_Enhanced -= EnhanceValue_DefenceUp;
+	krstat->UpdateStatCardEnhanced(PS);
+	UE_LOG(LogTemp, Log, TEXT("방어업끝"));
+
 }

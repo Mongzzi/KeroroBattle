@@ -41,7 +41,16 @@ public:
 	void ItemMoveSpeedUp();
 	void ItemDefenseUp();
 
+	void EndAttackUp();
+	void EndSpeedUp();
+	void EndDefenceUp();
+
 	EItemType GetItemType() { return ItemType; };
+
+private:
+	float EnhanceValue_AttackUp = 50.0f;
+	float EnhanceValue_SpeedUp = 500.0f;
+	float EnhanceValue_DefenceUp = 0.3f;
 
 protected:
 	EItemType ItemType;

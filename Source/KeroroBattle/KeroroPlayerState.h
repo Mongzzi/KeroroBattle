@@ -76,7 +76,9 @@ public:
 
 
 public:
-	// --------------------------------------- 아래로는 카드로 얻을 수 있는 스탯 (발사체 제외)------------------------------------------------------------------------------
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
+	float AttackPower_Enhanced;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	float HealPowerRate_Enhanced;
 

@@ -101,7 +101,7 @@ void UKeroroStatComponent::UpdateStatCardEnhanced(AKeroroPlayerState* PlayerStat
 		return;
 	}
 	// 스탯데이터테이블 존재 스탯
-	AttackPower = StatData->AttackPower;
+	AttackPower = StatData->AttackPower + PlayerState->AttackPower_Enhanced;
 	DropExp = StatData->DropExp;
 	NextExp = StatData->NextExp;
 
