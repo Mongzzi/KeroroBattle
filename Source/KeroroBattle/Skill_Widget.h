@@ -18,7 +18,6 @@ public:
 	virtual void NativeConstruct() override;
 	
 	void UseItem();
-	EItemType GetItemType() { return ItemType; };
 	void SetItem(EItemType type);
 	void SetItemType(EItemType type) { ItemType = type; };
 	void SetItemImage(EItemType type);
@@ -28,6 +27,21 @@ public:
 	void SetItemSlotNum(int32 num);
 	void UpdateCoolTimeText(float Time);
 	void UpdateCoolTimeProgressBar(float Percent);
+	
+	void ItemHP();
+	void ItemMP();
+	void ItemShieldCoolZero();
+	void ItemUltCoolZero();
+	void ItemGold();
+	void ItemKillAllEnemies();
+	void ItemGroupEnemies();
+
+	void ItemLevelUp();
+	void ItemAttackUp();
+	void ItemMoveSpeedUp();
+	void ItemDefenseUp();
+
+	EItemType GetItemType() { return ItemType; };
 
 protected:
 	EItemType ItemType;

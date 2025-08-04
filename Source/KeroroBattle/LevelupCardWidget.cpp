@@ -59,7 +59,7 @@ void ULevelupCardWidget::PlayAnotherSelectCardAnimation()
 
 void ULevelupCardWidget::SetCardInfo()
 {
-	int32 CardID = FMath::RandRange(1, 80);  // Ä«µå ID ·£´ý
+	int32 CardID = FMath::RandRange(1, 79);  // Ä«µå ID ·£´ý
 	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
 	FCardData* CardData = PC->GetGameInstance<UKeroroGameInstance>()->GetCardData(CardID);
 

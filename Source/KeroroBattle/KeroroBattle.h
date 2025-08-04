@@ -62,12 +62,18 @@ UENUM(BlueprintType)
 enum class EItemType : uint8
 {
 	None					UMETA(DisplayName = "None"),
-	HP						UMETA(DisplayName = "HP"),
-	MP						UMETA(DisplayName = "MP"),
-	GOLD					UMETA(DisplayName = "GOLD"),
-	SKILLCOOL				UMETA(DisplayName = "SKILLCOOL"),
-	GUARDCOOL				UMETA(DisplayName = "GUARDCOOL"),
-	MAX						UMETA(Hidden) // 순환 계산용
+	HP						UMETA(DisplayName = "HP Recovery"),             // 1. 체력 회복
+	MP						UMETA(DisplayName = "MP Recovery"),             // 2. 마나 회복
+	ShieldCoolZero			UMETA(DisplayName = "Shield Cooldown 0"),       // 3. 쉴드 쿨타임 0
+	UltCoolZero				UMETA(DisplayName = "Ultimate Cooldown 0"),     // 4. 궁극기 쿨타임 0
+	Gold					UMETA(DisplayName = "Gold Gain"),               // 5. 골드 획득
+	KillAll					UMETA(DisplayName = "Kill All Enemies"),        // 6. 적 전체 처치
+	GroupEnemies			UMETA(DisplayName = "Group All Enemies"),       // 7. 적 한곳에 몰기
+	LevelUp					UMETA(DisplayName = "Level Up"),                // 8. 레벨업
+	AttackUp				UMETA(DisplayName = "Attack Up"),               // 9. 공격력 업
+	MoveSpeedUp				UMETA(DisplayName = "Move Speed Up"),           // 10. 이동속도 업
+	DefenseUp				UMETA(DisplayName = "Defense Up"),              // 11. 방어력 업
+	MAX						UMETA(Hidden)
 };
 
 

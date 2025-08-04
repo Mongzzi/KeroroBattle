@@ -111,6 +111,8 @@ public:
 public:
 	float GetRemainingGuardCooldown();
 	float GetRemainingUltimateSkillCooldown(); // 궁극기 쿨타임 가져오는함수 추후 사용예정
+	void SetUltiCooldownReset();
+	void SetGuardCooldownReset();
 
 public:
 	EKeroroType GetKeroroCharacterType() { return CurrentKeroroType; }

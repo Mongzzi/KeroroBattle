@@ -575,6 +575,22 @@ float AKeroroCharacter::GetRemainingGuardCooldown()
 	return GetWorld()->GetTimerManager().GetTimerRemaining(GuardCooldownTimer);
 }
 
+void AKeroroCharacter::SetUltiCooldownReset()
+{
+	if (!GetWorld())return;
+	GetWorld()->GetTimerManager().ClearTimer(UltimateSkillCooldownTimer);
+
+	//auto a = GetWorld()->GetTimerManager().GetTimerRemaining(UltimateSkillCooldownTimer);
+	//UE_LOG(LogTemp, Error, TEXT("Return value %f"), a);
+}
+
+void AKeroroCharacter::SetGuardCooldownReset()
+{
+	if (!GetWorld())return;
+	GetWorld()->GetTimerManager().ClearTimer(GuardCooldownTimer);
+	CanGuarding = true;
+}
+
 float AKeroroCharacter::GetRemainingUltimateSkillCooldown()
 {
 	if (!GetWorld()) return 0.0f;
@@ -1143,6 +1159,7 @@ void AKeroroCharacter::StartGuard()
 bool AKeroroCharacter::StartUltimateSkill()
 {
 	if (KRStat == nullptr) return false;
+
 	float SkillCoolTimeCheck = GetRemainingUltimateSkillCooldown();
 	if (SkillCoolTimeCheck != -1)return false;	// -1값이어야 타이머 안돌아감
 

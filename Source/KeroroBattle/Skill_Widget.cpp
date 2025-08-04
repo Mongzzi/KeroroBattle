@@ -4,9 +4,13 @@
 #include "Skill_Widget.h"
 #include "KeroroGameInstance.h"
 #include "KeroroPlayerController.h"
+#include "KeroroPlayerState.h"
+#include "KeroroCharacter.h"
+#include "KeroroStatComponent.h"
 #include "Components/ProgressBar.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+
 
 
 void USkill_Widget::NativeConstruct()
@@ -19,16 +23,41 @@ void USkill_Widget::UseItem()
 {
 	switch (ItemType)
 	{
+	case EItemType::None:
+		UE_LOG(LogTemp, Error, TEXT("Losing ticket~"))
+			break;
 	case EItemType::HP:
-		UE_LOG(LogTemp, Error, TEXT("Use HP Item"));
+		ItemHP();
 		break;
 	case EItemType::MP:
+		ItemMP();
 		break;
-	case EItemType::GOLD:
+	case EItemType::ShieldCoolZero:
+		ItemShieldCoolZero();
 		break;
-	case EItemType::SKILLCOOL:
+	case EItemType::UltCoolZero:
+		ItemUltCoolZero();
 		break;
-	case EItemType::GUARDCOOL:
+	case EItemType::Gold:
+		ItemGold();
+		break;
+	case EItemType::KillAll:
+		ItemKillAllEnemies();
+		break;
+	case EItemType::GroupEnemies:
+		ItemGroupEnemies();
+		break;
+	case EItemType::LevelUp:
+		ItemLevelUp();
+		break;
+	case EItemType::AttackUp:
+		ItemAttackUp();
+		break;
+	case EItemType::MoveSpeedUp:
+		ItemMoveSpeedUp();
+		break;
+	case EItemType::DefenseUp:
+		ItemDefenseUp();
 		break;
 	}
 	ItemType = EItemType::None;
@@ -43,31 +72,46 @@ void USkill_Widget::SetItem(EItemType type)
 
 void USkill_Widget::SetItemImage(EItemType type)
 {
-	UTexture2D* Image;
+	UTexture2D* Image = nullptr;
 
 	switch (type)
 	{
 	case EItemType::HP:
-		Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/67.67"));
-		if (Image) SkillImage->SetBrushFromTexture(Image);
+		Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/itemhp.itemhp"));
 		break;
 	case EItemType::MP:
-		Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/68.68"));
-		if (Image) SkillImage->SetBrushFromTexture(Image);
+		Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/itemmp.itemmp"));
 		break;
-	case EItemType::GOLD:
-		Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/14.14"));
-		if (Image) SkillImage->SetBrushFromTexture(Image);
+	case EItemType::ShieldCoolZero:
+		Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/itemguard.itemguard"));
 		break;
-	case EItemType::SKILLCOOL:
-		Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/16.16"));
-		if (Image) SkillImage->SetBrushFromTexture(Image);
+	case EItemType::UltCoolZero:
+		Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/itemulticool.itemulticool"));
 		break;
-	case EItemType::GUARDCOOL:
-		Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/17.17"));
-		if (Image) SkillImage->SetBrushFromTexture(Image);
+	case EItemType::Gold:
+		Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/itemgold.itemgold"));
+		break;
+	case EItemType::KillAll:
+		Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/itemalldeath.itemalldeath"));
+		break;
+	case EItemType::GroupEnemies:
+		Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/itemgroup.itemgroup"));
+		break;
+	case EItemType::LevelUp:
+		Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/itemlevelup.itemlevelup"));
+		break;
+	case EItemType::AttackUp:
+		Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/itemattackup.itemattackup"));
+		break;
+	case EItemType::MoveSpeedUp:
+		Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/itemspeedup.itemspeedup"));
+		break;
+	case EItemType::DefenseUp:
+		Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/itemguardup.itemguardup"));
 		break;
 	}
+	if (Image) SkillImage->SetBrushFromTexture(Image);
+
 	FLinearColor TransparentColor = SkillImage->ColorAndOpacity;
 	TransparentColor.A = 1.0f;
 	SkillImage->SetColorAndOpacity(TransparentColor);
@@ -165,4 +209,104 @@ void USkill_Widget::UpdateCoolTimeProgressBar(float Percent)
 	{
 		CoolTImeProgressBar->SetPercent(Percent);
 	}
+}
+
+
+void USkill_Widget::ItemHP()
+{
+	UE_LOG(LogTemp, Log, TEXT("HP 회복 아이템 적용"));
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
+	if (kero)
+	{
+		UKeroroStatComponent* krstat = kero->KRStat;
+		if (krstat)
+		{
+			krstat->SetHP(krstat->MaxHp);
+		}
+	}
+}
+
+void USkill_Widget::ItemMP()
+{
+	UE_LOG(LogTemp, Log, TEXT("MP 회복 아이템 적용"));
+	// 플레이어 MP += 회복량
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
+	if (kero)
+	{
+		UKeroroStatComponent* krstat = kero->KRStat;
+		if (krstat)
+		{
+			krstat->SetMP(krstat->MaxMp);
+		}
+	}
+}
+
+void USkill_Widget::ItemShieldCoolZero()
+{
+	UE_LOG(LogTemp, Log, TEXT("쉴드 쿨타임 초기화"));
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
+	if (kero)
+	{
+		kero->SetGuardCooldownReset();
+	}
+}
+
+void USkill_Widget::ItemUltCoolZero()
+{
+	UE_LOG(LogTemp, Log, TEXT("궁극기 쿨타임 초기화"));
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
+	if (kero)
+	{
+		kero->SetUltiCooldownReset();
+	}
+}
+
+void USkill_Widget::ItemGold()
+{
+	UE_LOG(LogTemp, Log, TEXT("골드 획득"));
+	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
+	if (PC)
+	{
+		AKeroroPlayerState* PS=Cast<AKeroroPlayerState>(PC->PlayerState);
+		if (PS)
+		{
+			PS->AddGold(300);
+		}
+	}
+}
+
+void USkill_Widget::ItemKillAllEnemies()
+{
+	UE_LOG(LogTemp, Log, TEXT("모든 적 처치"));
+	// 월드 내 적 액터들을 찾아서 제거
+}
+
+void USkill_Widget::ItemGroupEnemies()
+{
+	UE_LOG(LogTemp, Log, TEXT("적 한 곳으로 모으기"));
+	// 모든 적 위치를 특정 지점으로 이동
+}
+
+void USkill_Widget::ItemLevelUp()
+{
+	UE_LOG(LogTemp, Log, TEXT("레벨업 처리"));
+	// 경험치 += 필요량 → 레벨업
+}
+
+void USkill_Widget::ItemAttackUp()
+{
+	UE_LOG(LogTemp, Log, TEXT("공격력 증가"));
+	// 공격력 += 강화치
+}
+
+void USkill_Widget::ItemMoveSpeedUp()
+{
+	UE_LOG(LogTemp, Log, TEXT("이동속도 증가"));
+	// 이동속도 += 강화치
+}
+
+void USkill_Widget::ItemDefenseUp()
+{
+	UE_LOG(LogTemp, Log, TEXT("방어력 증가"));
+	// 방어력 += 강화치
 }
