@@ -52,6 +52,7 @@ private:
 	float EnhanceValue_SpeedUp = 500.0f;
 	float EnhanceValue_DefenceUp = 0.3f;
 
+
 protected:
 	EItemType ItemType;
 

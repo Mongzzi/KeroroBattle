@@ -6,11 +6,14 @@
 #include "KeroroPlayerController.h"
 #include "KeroroPlayerState.h"
 #include "KeroroCharacter.h"
+#include "KeroroEnemyCharacter.h"
 #include "KeroroStatComponent.h"
 #include "Components/ProgressBar.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
-
+#include "Kismet/GameplayStatics.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 
 void USkill_Widget::NativeConstruct()
@@ -278,13 +281,42 @@ void USkill_Widget::ItemGold()
 void USkill_Widget::ItemKillAllEnemies()
 {
 	UE_LOG(LogTemp, Log, TEXT("모든 적 처치"));
-	// 월드 내 적 액터들을 찾아서 제거
+
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
+	if (!kero) return;
+
+	const FVector Kero_Loc = kero->GetActorLocation();
+	float KillRadius = 2000.f;
+
+	TArray<FOverlapResult> HitResults;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(kero);
+
+	bool bHit = GetWorld()->OverlapMultiByChannel(
+		HitResults,
+		Kero_Loc,
+		FQuat::Identity,
+		ECC_GameTraceChannel3,
+		FCollisionShape::MakeSphere(KillRadius),
+		Params
+	);
+
+	if (bHit)
+	{
+		for (auto& Hit : HitResults)
+		{
+			AKeroroEnemyCharacter* Enemy = Cast<AKeroroEnemyCharacter>(Hit.GetActor());
+			if (Enemy)
+			{
+				Enemy->Die();
+			}
+		}
+	}
 }
 
 void USkill_Widget::ItemGroupEnemies()
 {
 	UE_LOG(LogTemp, Log, TEXT("적 한 곳으로 모으기"));
-	// 모든 적 위치를 특정 지점으로 이동
 }
 
 void USkill_Widget::ItemLevelUp()
