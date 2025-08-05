@@ -25,7 +25,7 @@ public:
 
 	void ActivateMagicCircle();
 	void ActivateFinalEffect();
-	void AttackCheck_NoteBook();
+	void AttackCheck_NoteBook(FVector Location);
 	void DeactivateMagicCircle();
 	void DeactivateMagicCircle2();
 	void SpawnOrUpdateEffect(FVector Location, FRotator Rotation);

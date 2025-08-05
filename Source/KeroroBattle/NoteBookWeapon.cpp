@@ -4,8 +4,6 @@
 #include "NoteBookWeapon.h"
 #include "KeroroCharacter.h"
 #include "KeroroStatComponent.h"
-#include "Engine/DamageEvents.h"
-#include "KeroroStatComponent.h"
 #include "KeroroEnemyCharacter.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
@@ -63,6 +61,7 @@ ANoteBookWeapon::ANoteBookWeapon()
 
 void ANoteBookWeapon::BeginPlay()
 {
+	Super::BeginPlay();
 }
 
 void ANoteBookWeapon::Tick(float DeltaTime)
@@ -174,24 +173,27 @@ void ANoteBookWeapon::ActivateFinalEffect()
 	FTimerHandle DamageTickHandle;
 	GetWorld()->GetTimerManager().SetTimer(
 		DamageTickHandle,
-		this,
-		&ANoteBookWeapon::AttackCheck_NoteBook,
+		[this, loc](){
+			AttackCheck_NoteBook(loc);
+		},
 		DamageTickInterval,
 		true
 	);
 
+
 	FTimerHandle StopHandle;
 	GetWorld()->GetTimerManager().SetTimer(StopHandle,
-		[this, Handle = DamageTickHandle]() mutable
+		[this,DamageTickHandle]() mutable
 		{
-			GetWorld()->GetTimerManager().ClearTimer(Handle);
+			GetWorld()->GetTimerManager().ClearTimer(DamageTickHandle);
 		},
 		EffectRemainTime,
 		false
 	);
 }
 
-void ANoteBookWeapon::AttackCheck_NoteBook()
+
+void ANoteBookWeapon::AttackCheck_NoteBook(FVector Location)
 {
 	TArray<FHitResult> HitResults;
 	FCollisionQueryParams Params;
@@ -199,8 +201,8 @@ void ANoteBookWeapon::AttackCheck_NoteBook()
 
 	bool bHit = GetWorld()->SweepMultiByChannel(
 		HitResults,
-		FinalEffectLoc,
-		FinalEffectLoc + FVector::UpVector * 700.0f,
+		Location,
+		Location + FVector::UpVector * 700.0f,
 		FQuat::Identity,
 		ECC_GameTraceChannel3,
 		FCollisionShape::MakeSphere(AttackRadius),
