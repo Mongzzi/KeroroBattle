@@ -317,6 +317,34 @@ void USkill_Widget::ItemKillAllEnemies()
 void USkill_Widget::ItemGroupEnemies()
 {
 	UE_LOG(LogTemp, Log, TEXT("적 한 곳으로 모으기"));
+	AKeroroCharacter* Kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
+	if (!Kero) return;
+
+	const FVector KeroLoc = Kero->GetActorLocation();
+	const FVector ForwardVector = Kero->GetActorForwardVector();
+	const float Radius = 3000.0f;
+	PullCenter = KeroLoc + ForwardVector * 800.0f + FVector(0, 0, 100);
+
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AKeroroEnemyCharacter::StaticClass(), FoundActors);
+
+	for (AActor* Actor : FoundActors)
+	{
+		auto* Enemy = Cast<AKeroroEnemyCharacter>(Actor);
+		if (!Enemy) continue;
+
+		float Dist = FVector::Dist(Enemy->GetActorLocation(), PullCenter);
+		if (Dist > Radius) continue;
+
+		FPullingEnemy Pulling_Info;
+		Pulling_Info.Enemy = Enemy;
+		Pulling_Info.InitialLocation = Enemy->GetActorLocation();
+		Pulling_Info.bHasArrived = false;
+
+		PulledEnemies.Add(Pulling_Info);
+	}
+
+	StartPull();
 }
 
 void USkill_Widget::ItemLevelUp()
@@ -336,7 +364,7 @@ void USkill_Widget::ItemLevelUp()
 void USkill_Widget::ItemAttackUp()
 {
 	UE_LOG(LogTemp, Log, TEXT("공격력 증가"));
-	
+
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
 	if (!kero) return;
 
@@ -345,7 +373,7 @@ void USkill_Widget::ItemAttackUp()
 
 	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
 	if (!PC) return;
-	
+
 	AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(PC->PlayerState);
 	if (!PS) return;
 
@@ -445,4 +473,63 @@ void USkill_Widget::EndDefenceUp()
 	krstat->UpdateStatCardEnhanced(PS);
 	UE_LOG(LogTemp, Log, TEXT("방어업끝"));
 
+}
+
+void USkill_Widget::StartPull()
+{
+	PullElapsed = 0.0f;
+	GetWorld()->GetTimerManager().SetTimer(
+		PullTimerHandle,
+		this,
+		&USkill_Widget::UpdatePull,
+		0.01f,
+		true
+	);
+
+}
+
+void USkill_Widget::UpdatePull()
+{
+	PullElapsed += 0.01f;
+	float Alpha = FMath::Clamp(PullElapsed / PullDuration, 0.0f, 1.0f);
+
+	for (FPullingEnemy& Enemy_Info : PulledEnemies)
+	{
+		if (!Enemy_Info.Enemy || Enemy_Info.bHasArrived) continue;
+
+		FVector NewLoc = FMath::Lerp(Enemy_Info.InitialLocation, PullCenter, Alpha);
+		Enemy_Info.Enemy->SetActorLocation(NewLoc);
+
+		if (FVector::Dist(NewLoc, PullCenter) < 50.0f)
+		{
+			Enemy_Info.bHasArrived = true;
+			Enemy_Info.Enemy->SetActorLocation(PullCenter);
+		}
+	}
+
+	if (PullElapsed >= PullDuration)
+	{
+		EndPull();
+	}
+}
+
+void USkill_Widget::EndPull()
+{
+	GetWorld()->GetTimerManager().ClearTimer(PullTimerHandle);
+
+	for (FPullingEnemy& Enemy_Info : PulledEnemies)
+	{
+		if (!Enemy_Info.Enemy) continue;
+
+		if (Enemy_Info.bHasArrived)
+		{
+			FVector Offset = FVector(
+				FMath::RandRange(-300.0f, 300.0f),
+				FMath::RandRange(-300.0f, 300.0f),
+				FMath::RandRange(0.0f, 200.0f)
+			);
+			Enemy_Info.Enemy->SetActorLocation(PullCenter + Offset);
+		}
+	}
+	PulledEnemies.Empty();
 }

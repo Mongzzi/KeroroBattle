@@ -6,9 +6,23 @@
 #include "Blueprint/UserWidget.h"
 #include "Skill_Widget.generated.h"
 
-/**
- * 
- */
+USTRUCT()
+struct FPullingEnemy
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	class AKeroroEnemyCharacter* Enemy = nullptr;
+
+	UPROPERTY()
+	FVector InitialLocation = FVector::ZeroVector;
+
+	UPROPERTY()
+	bool bHasArrived = false;
+};
+
+
+
 UCLASS()
 class KEROROBATTLE_API USkill_Widget : public UUserWidget
 {
@@ -51,6 +65,23 @@ private:
 	float EnhanceValue_AttackUp = 50.0f;
 	float EnhanceValue_SpeedUp = 500.0f;
 	float EnhanceValue_DefenceUp = 0.3f;
+
+private:
+
+	UPROPERTY()
+	TArray<FPullingEnemy> PulledEnemies;
+
+	FVector PullCenter;
+
+	FTimerHandle PullTimerHandle;
+
+	float PullDuration = 1.0f;
+	float PullElapsed = 0.0f;
+
+	void StartPull();
+	void UpdatePull();
+	void EndPull();
+
 
 
 protected:
