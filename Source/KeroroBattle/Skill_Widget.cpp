@@ -14,11 +14,28 @@
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "DamageTextWidget.h"
 
+
+USkill_Widget::USkill_Widget(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
+{
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem>NS1(TEXT("/Game/Basic_VFX/Niagara/NS_Basic_9.NS_Basic_9"));
+	if (NS1.Succeeded())
+	{
+		PullEffect = NS1.Object;
+	}
+
+	static ConstructorHelpers::FClassFinder<UDamageTextWidget> DAMAGETEXT(TEXT("/Game/Blueprints/KR_DamageWidget.KR_DamageWidget_C"));
+	if (DAMAGETEXT.Succeeded())
+	{
+		DamageTextWidgetClass = DAMAGETEXT.Class;
+	}
+}
 
 void USkill_Widget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
 	ItemType = EItemType::None;
 }
 
@@ -227,6 +244,7 @@ void USkill_Widget::ItemHP()
 			krstat->SetHP(krstat->MaxHp);
 		}
 	}
+	SetTextFromString(FString("HP RECHARGE"),FVector(1.0f,0.0f,0.0f),FVector2D(1.0f));
 }
 
 void USkill_Widget::ItemMP()
@@ -242,6 +260,7 @@ void USkill_Widget::ItemMP()
 			krstat->SetMP(krstat->MaxMp);
 		}
 	}
+	SetTextFromString(FString("MP RECHARGE"), FVector(0.0f, 0.0f, 1.0f), FVector2D(1.0f));
 }
 
 void USkill_Widget::ItemShieldCoolZero()
@@ -252,6 +271,7 @@ void USkill_Widget::ItemShieldCoolZero()
 	{
 		kero->SetGuardCooldownReset();
 	}
+	SetTextFromString(FString("RESET SHIELD"), FVector(0.0f, 0.0f, 1.0f), FVector2D(1.0f));
 }
 
 void USkill_Widget::ItemUltCoolZero()
@@ -262,6 +282,7 @@ void USkill_Widget::ItemUltCoolZero()
 	{
 		kero->SetUltiCooldownReset();
 	}
+	SetTextFromString(FString("RESET SKILL"), FVector(0.0f, 1.0f, 0.0f), FVector2D(1.0f));
 }
 
 void USkill_Widget::ItemGold()
@@ -276,6 +297,7 @@ void USkill_Widget::ItemGold()
 			PS->AddGold(300);
 		}
 	}
+	SetTextFromString(FString("300 GOLD GET"), FVector(1.0f, 1.0f, 0.0f), FVector2D(1.0f));
 }
 
 void USkill_Widget::ItemKillAllEnemies()
@@ -312,6 +334,8 @@ void USkill_Widget::ItemKillAllEnemies()
 			}
 		}
 	}
+	SetTextFromString(FString("ALL KILL"), FVector(0.0f, 0.0f, 0.0f), FVector2D(5.0f));
+
 }
 
 void USkill_Widget::ItemGroupEnemies()
@@ -320,9 +344,9 @@ void USkill_Widget::ItemGroupEnemies()
 	AKeroroCharacter* Kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
 	if (!Kero) return;
 
-	const FVector KeroLoc = Kero->GetActorLocation();
-	const FVector ForwardVector = Kero->GetActorForwardVector();
-	const float Radius = 3000.0f;
+	FVector KeroLoc = Kero->GetActorLocation();
+	FVector ForwardVector = Kero->GetActorForwardVector();
+	float Radius = 3000.0f;
 	PullCenter = KeroLoc + ForwardVector * 800.0f + FVector(0, 0, 100);
 
 	TArray<AActor*> FoundActors;
@@ -343,6 +367,11 @@ void USkill_Widget::ItemGroupEnemies()
 
 		PulledEnemies.Add(Pulling_Info);
 	}
+
+
+	PullEffectComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), PullEffect, PullCenter- FVector(0.0f,0.0f,500.0f), Kero->GetActorRotation(), FVector(10.0f), true);
+
+	GetWorld()->GetTimerManager().SetTimer(PullEffectTimerHandle, this, &USkill_Widget::EndPullEffect, PullDuration*3);
 
 	StartPull();
 }
@@ -382,6 +411,9 @@ void USkill_Widget::ItemAttackUp()
 	FTimerHandle  AttackUpEndHandle;
 	GetWorld()->GetTimerManager().SetTimer(AttackUpEndHandle, this, &USkill_Widget::EndAttackUp, 5.0f, false);
 	krstat->UpdateStatCardEnhanced(PS);
+	
+	SetTextFromString(FString("ATTACK POWER UP"), FVector(1.0f, 1.0f, 1.0f), FVector2D(1.0f));
+
 }
 
 void USkill_Widget::ItemMoveSpeedUp()
@@ -404,6 +436,9 @@ void USkill_Widget::ItemMoveSpeedUp()
 	FTimerHandle  SpeedUpEndHandle;
 	GetWorld()->GetTimerManager().SetTimer(SpeedUpEndHandle, this, &USkill_Widget::EndSpeedUp, 7.0f, false);
 	krstat->UpdateStatCardEnhanced(PS);
+
+	SetTextFromString(FString("SPEED POWER UP"), FVector(1.0f, 1.0f, 1.0f), FVector2D(1.0f));
+
 }
 
 void USkill_Widget::ItemDefenseUp()
@@ -426,6 +461,9 @@ void USkill_Widget::ItemDefenseUp()
 	FTimerHandle  DefenceUpEndHandle;
 	GetWorld()->GetTimerManager().SetTimer(DefenceUpEndHandle, this, &USkill_Widget::EndDefenceUp, 5.0f, false);
 	krstat->UpdateStatCardEnhanced(PS);
+
+	SetTextFromString(FString("DEFENCE POWER UP"), FVector(1.0f, 1.0f, 1.0f), FVector2D(1.0f));
+
 }
 
 void USkill_Widget::EndAttackUp()
@@ -440,8 +478,8 @@ void USkill_Widget::EndAttackUp()
 	if (!PS) return;
 	PS->AttackPower_Enhanced -= EnhanceValue_AttackUp;
 	krstat->UpdateStatCardEnhanced(PS);
-	UE_LOG(LogTemp, Log, TEXT("공업끝"));
 
+	SetTextFromString(FString("END ATTACK POWER"), FVector(1.0f, 1.0f, 1.0f), FVector2D(1.0f));
 }
 
 void USkill_Widget::EndSpeedUp()
@@ -456,7 +494,8 @@ void USkill_Widget::EndSpeedUp()
 	if (!PS) return;
 	PS->MaxMoveSpeed_Enhanced -= EnhanceValue_SpeedUp;
 	krstat->UpdateStatCardEnhanced(PS);
-	UE_LOG(LogTemp, Log, TEXT("이속업끝"));
+
+	SetTextFromString(FString("END SPEED POWER"), FVector(1.0f, 1.0f, 1.0f), FVector2D(1.0f));
 }
 
 void USkill_Widget::EndDefenceUp()
@@ -471,8 +510,23 @@ void USkill_Widget::EndDefenceUp()
 	if (!PS) return;
 	PS->DefenseRate_Enhanced -= EnhanceValue_DefenceUp;
 	krstat->UpdateStatCardEnhanced(PS);
-	UE_LOG(LogTemp, Log, TEXT("방어업끝"));
 
+	SetTextFromString(FString("END DEFENCE POWER"), FVector(1.0f, 1.0f, 1.0f), FVector2D(1.0f));
+}
+
+void USkill_Widget::SetTextFromString(FString Str, FVector Color, FVector2D Scale)
+{
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
+	if (!kero) return;
+
+	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
+	if (!PC) return;
+
+	UDamageTextWidget* DamageWidget = CreateWidget<UDamageTextWidget>(PC, DamageTextWidgetClass);
+	DamageWidget->AddToViewport();
+	FVector Dir = kero->GetActorForwardVector();
+	DamageWidget->SetTargetLocation(kero->GetActorLocation() + FVector(Dir.X * -50, 0.0f, -50.0f));
+	DamageWidget->SetTextFromString(Str,Color, Scale);
 }
 
 void USkill_Widget::StartPull()
@@ -532,4 +586,15 @@ void USkill_Widget::EndPull()
 		}
 	}
 	PulledEnemies.Empty();
+}
+
+void USkill_Widget::EndPullEffect()
+{
+	if (PullEffectComponent)
+	{
+		PullEffectComponent->Deactivate(); 
+		PullEffectComponent->DestroyComponent();
+		PullEffectComponent = nullptr;
+	}
+	GetWorld()->GetTimerManager().ClearTimer(PullEffectTimerHandle);
 }

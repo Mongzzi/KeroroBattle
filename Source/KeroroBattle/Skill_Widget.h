@@ -29,6 +29,8 @@ class KEROROBATTLE_API USkill_Widget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+
+	USkill_Widget(const FObjectInitializer& ObjectInitializer);
 	virtual void NativeConstruct() override;
 	
 	void UseItem();
@@ -59,6 +61,8 @@ public:
 	void EndSpeedUp();
 	void EndDefenceUp();
 
+	void SetTextFromString(FString Str,FVector Color = FVector(1.0f), FVector2D Scale= FVector2D(1.0f));
+
 	EItemType GetItemType() { return ItemType; };
 
 private:
@@ -67,6 +71,13 @@ private:
 	float EnhanceValue_DefenceUp = 0.3f;
 
 private:
+	TSubclassOf<class UDamageTextWidget> DamageTextWidgetClass;
+
+	UPROPERTY()
+	class UNiagaraComponent* PullEffectComponent;
+
+	UPROPERTY()
+	class UNiagaraSystem* PullEffect;
 
 	UPROPERTY()
 	TArray<FPullingEnemy> PulledEnemies;
@@ -74,6 +85,7 @@ private:
 	FVector PullCenter;
 
 	FTimerHandle PullTimerHandle;
+	FTimerHandle PullEffectTimerHandle;
 
 	float PullDuration = 1.0f;
 	float PullElapsed = 0.0f;
@@ -81,7 +93,7 @@ private:
 	void StartPull();
 	void UpdatePull();
 	void EndPull();
-
+	void EndPullEffect();
 
 
 protected:

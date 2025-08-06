@@ -35,6 +35,16 @@ void UDamageTextWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 	}
 }
 
+void UDamageTextWidget::SetTextFromString(FString Str, FVector Color , FVector2D Scale )
+{
+	if (DamageText)
+	{
+		DamageText->SetColorAndOpacity(FSlateColor(FLinearColor(Color)));
+		DamageText->SetRenderScale(FVector2D(Scale));
+		DamageText->SetText(FText::FromString(Str));
+	}
+}
+
 void UDamageTextWidget::SetTextFromDamage(float Damage)
 {
 	if (DamageText)

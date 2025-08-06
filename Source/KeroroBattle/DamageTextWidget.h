@@ -19,6 +19,7 @@ protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 public:
+	void SetTextFromString(FString Str, FVector Color = FVector(1.0f), FVector2D Scale = FVector2D(1.0f));
 	void SetTextFromDamage(float Damage);
 	void SetTextFromCritDamage(float Damage);
 	void SetTextMiss();
