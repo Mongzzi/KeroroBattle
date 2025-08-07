@@ -6,6 +6,9 @@
 #include "MediaTexture.h"
 #include "FileMediaSource.h"
 #include "MediaSoundComponent.h"
+#include "Components/TextBlock.h"
+#include "Components/Button.h"
+#include "Kismet/GameplayStatics.h"
 
 void UTitleWidget::NativeConstruct()
 {
@@ -17,11 +20,43 @@ void UTitleWidget::NativeConstruct()
 		MediaSound->SetMediaPlayer(MediaPlayer);
 		MediaSound->RegisterComponentWithWorld(GetWorld());
 	}
+
+	if (StartButton)
+	{
+		StartButton->OnHovered.AddDynamic(this, &UTitleWidget::OnStartHovered);
+		StartButton->OnUnhovered.AddDynamic(this, &UTitleWidget::OnStartUnhovered);
+		StartButton->OnPressed.AddDynamic(this, &UTitleWidget::OnStartPressed);
+		StartButton->OnReleased.AddDynamic(this, &UTitleWidget::OnStartReleased);
+	}
+
+	if (ExitButton)
+	{
+		ExitButton->OnHovered.AddDynamic(this, &UTitleWidget::OnExitHovered);
+		ExitButton->OnUnhovered.AddDynamic(this, &UTitleWidget::OnExitUnhovered);
+		ExitButton->OnPressed.AddDynamic(this, &UTitleWidget::OnExitPressed);
+		ExitButton->OnReleased.AddDynamic(this, &UTitleWidget::OnExitReleased);
+	}
+
 }
 
 void UTitleWidget::NativeDestruct()
 {
 	Super::NativeDestruct();
+	if (StartButton)
+	{
+		StartButton->OnHovered.RemoveAll(this);
+		StartButton->OnUnhovered.RemoveAll(this);
+		StartButton->OnPressed.RemoveAll(this);
+		StartButton->OnReleased.RemoveAll(this);
+	}
+
+	if (ExitButton)
+	{
+		ExitButton->OnHovered.RemoveAll(this);
+		ExitButton->OnUnhovered.RemoveAll(this);
+		ExitButton->OnPressed.RemoveAll(this);
+		ExitButton->OnReleased.RemoveAll(this);
+	}
 }
 
 UTitleWidget::UTitleWidget(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
@@ -45,4 +80,78 @@ void UTitleWidget::PlayTitleMedia()
 	{
 		MediaPlayer->Play();
 	}
+}
+
+void UTitleWidget::OnStartHovered()
+{
+	if (StartText)
+	{
+		StartText->SetColorAndOpacity(FSlateColor(FLinearColor(0.6f, 1.0f, 0.6f)));
+		StartText->SetRenderTranslation(FVector2D(0.0f, -5.0f));
+	}
+}
+
+void UTitleWidget::OnStartUnhovered()
+{
+	if (StartText)
+	{
+		StartText->SetColorAndOpacity(FSlateColor(FLinearColor(1.0f, 1.0f, 1.0f)));
+		StartText->SetRenderTranslation(FVector2D(0.0f, 0.0f));
+	}
+}
+
+void UTitleWidget::OnStartPressed()
+{
+	if (StartText)
+	{
+		StartText->SetColorAndOpacity(FSlateColor(FLinearColor(0.3f, 0.5f, 0.3f)));
+		StartText->SetRenderTranslation(FVector2D(0.0f, 5.0f));
+	}
+}
+
+void UTitleWidget::OnStartReleased()
+{
+	OnStartHovered();
+
+	// 로비씬으로 이동
+	//1. UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("/Game/EnglishCollege/Maps/SampleScene.SampleScene")), true, TEXT("?game=/Script/KeroroBattle.KeroroGameMode"));
+	
+	//2. UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("SampleScene")), true, TEXT("?game=/Script/KeroroBattle.KeroroGameMode"));
+	// 1번처럼 경로로 여는경우 게임모드가 잘안열리는 오류있음, 두번째 경우에는 잘됨 마지막인자 option으로 게임모드 설정가능
+	// 현재 사용 중인 코드는 에디터에서 게임모드 미리 설정해둔 상태라 잘 작동됨
+	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("SampleScene")));
+
+}
+
+void UTitleWidget::OnExitHovered()
+{
+	if (ExitText)
+	{
+		ExitText->SetColorAndOpacity(FSlateColor(FLinearColor(1.0f, 0.6f, 0.6f)));
+		ExitText->SetRenderTranslation(FVector2D(0.0f, -5.0f));
+	}
+}
+
+void UTitleWidget::OnExitUnhovered()
+{
+	if (ExitText)
+	{
+		ExitText->SetColorAndOpacity(FSlateColor(FLinearColor(1.0f, 1.0f, 1.0f)));
+		ExitText->SetRenderTranslation(FVector2D(0.0f, 0.0f));
+	}
+}
+
+void UTitleWidget::OnExitPressed()
+{
+	if (ExitText)
+	{
+		ExitText->SetColorAndOpacity(FSlateColor(FLinearColor(0.5f, 0.3f, 0.3f)));
+		ExitText->SetRenderTranslation(FVector2D(0.0f, 5.0f));
+	}
+}
+
+void UTitleWidget::OnExitReleased()
+{
+	OnExitHovered();
+	UKismetSystemLibrary::QuitGame(this, nullptr, EQuitPreference::Quit, false);
 }

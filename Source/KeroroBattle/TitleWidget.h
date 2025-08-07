@@ -34,4 +34,41 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Media)
 	class UFileMediaSource* TitleMediaSource;
 
+protected:
+	UPROPERTY(meta = (BindWidget))
+	class UButton* StartButton;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* StartText;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* ExitButton;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* ExitText;
+
+	UFUNCTION()
+	void OnStartHovered();
+
+	UFUNCTION()
+	void OnStartUnhovered();
+
+	UFUNCTION()
+	void OnStartPressed();
+
+	UFUNCTION()
+	void OnStartReleased();
+
+	UFUNCTION()
+	void OnExitHovered();
+
+	UFUNCTION()
+	void OnExitUnhovered();
+
+	UFUNCTION()
+	void OnExitPressed();
+
+	UFUNCTION()
+	void OnExitReleased();
+
 };
