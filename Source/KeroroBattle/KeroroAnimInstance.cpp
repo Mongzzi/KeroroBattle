@@ -257,13 +257,13 @@ void UKeroroAnimInstance::AnimNotify_HitDown()
 void UKeroroAnimInstance::AnimNotify_EndBlocking()
 {
 	bIsGuarding = false;
-	UE_LOG(LogTemp, Error, TEXT("HitDown"));
+	//UE_LOG(LogTemp, Error, TEXT("HitDown"));
 }
 
 void UKeroroAnimInstance::AnimNotify_EndUltiSkill()
 {
 	bIsUltiSkillPlaying = false;
-	UE_LOG(LogTemp, Error, TEXT("End Ulti Skill"));
+	//UE_LOG(LogTemp, Error, TEXT("End Ulti Skill"));
 	/*auto Pawn = TryGetPawnOwner();
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(Pawn);
 	if (kero->CurrentKeroroType == EKeroroType::Keroro|| kero->CurrentKeroroType == EKeroroType::Kururu)

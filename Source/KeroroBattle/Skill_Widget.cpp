@@ -234,7 +234,6 @@ void USkill_Widget::UpdateCoolTimeProgressBar(float Percent)
 
 void USkill_Widget::ItemHP()
 {
-	UE_LOG(LogTemp, Log, TEXT("HP 회복 아이템 적용"));
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
 	if (kero)
 	{
@@ -249,7 +248,6 @@ void USkill_Widget::ItemHP()
 
 void USkill_Widget::ItemMP()
 {
-	UE_LOG(LogTemp, Log, TEXT("MP 회복 아이템 적용"));
 	// 플레이어 MP += 회복량
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
 	if (kero)
@@ -265,7 +263,6 @@ void USkill_Widget::ItemMP()
 
 void USkill_Widget::ItemShieldCoolZero()
 {
-	UE_LOG(LogTemp, Log, TEXT("쉴드 쿨타임 초기화"));
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
 	if (kero)
 	{
@@ -276,7 +273,6 @@ void USkill_Widget::ItemShieldCoolZero()
 
 void USkill_Widget::ItemUltCoolZero()
 {
-	UE_LOG(LogTemp, Log, TEXT("궁극기 쿨타임 초기화"));
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
 	if (kero)
 	{
@@ -287,7 +283,6 @@ void USkill_Widget::ItemUltCoolZero()
 
 void USkill_Widget::ItemGold()
 {
-	UE_LOG(LogTemp, Log, TEXT("골드 획득"));
 	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
 	if (PC)
 	{
@@ -302,8 +297,6 @@ void USkill_Widget::ItemGold()
 
 void USkill_Widget::ItemKillAllEnemies()
 {
-	UE_LOG(LogTemp, Log, TEXT("모든 적 처치"));
-
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
 	if (!kero) return;
 
@@ -392,8 +385,6 @@ void USkill_Widget::ItemLevelUp()
 
 void USkill_Widget::ItemAttackUp()
 {
-	UE_LOG(LogTemp, Log, TEXT("공격력 증가"));
-
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
 	if (!kero) return;
 
@@ -418,7 +409,6 @@ void USkill_Widget::ItemAttackUp()
 
 void USkill_Widget::ItemMoveSpeedUp()
 {
-	UE_LOG(LogTemp, Log, TEXT("이동속도 증가"));
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
 	if (!kero) return;
 
@@ -443,7 +433,6 @@ void USkill_Widget::ItemMoveSpeedUp()
 
 void USkill_Widget::ItemDefenseUp()
 {
-	UE_LOG(LogTemp, Log, TEXT("방어력 증가"));
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
 	if (!kero) return;
 
