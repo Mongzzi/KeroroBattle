@@ -55,6 +55,8 @@ private:
 	FTimerHandle InvincibilityTimerHandle;
 	bool bIsInvincible = false;
 
+	bool bIsInitSetHpMp;
+
 public:
 	void StartAutoHeal();
 	void StartAutoMpHeal();

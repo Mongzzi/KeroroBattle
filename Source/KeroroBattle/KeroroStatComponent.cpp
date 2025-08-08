@@ -16,6 +16,8 @@ UKeroroStatComponent::UKeroroStatComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
 
+	bIsInitSetHpMp = false;
+
 	Level = 1;
 
 	HealPowerRate = 0.03f;
@@ -221,8 +223,12 @@ void UKeroroStatComponent::SetLevel(int32 lv, AKeroroPlayerState* PlayerState)
 		}
 	}
 
-	SetHP(MaxHp);
-	SetMP(MaxMp);
+	if (!bIsInitSetHpMp)
+	{
+		SetHP(MaxHp);
+		SetMP(MaxMp);
+		bIsInitSetHpMp = true;
+	}
 }
 
 void UKeroroStatComponent::SetDamage(float Damage)
