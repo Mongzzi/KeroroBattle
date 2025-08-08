@@ -433,7 +433,8 @@ void AKeroroPlayerController::Die()
 
 void AKeroroPlayerController::SetUIMode()
 {
-	SetPause(true);
+	//SetPause(true);
+	GetWorld()->GetWorldSettings()->SetTimeDilation(0.05f);
 
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
@@ -450,7 +451,8 @@ void AKeroroPlayerController::SetUIMode()
 
 void AKeroroPlayerController::SetGameMode()
 {
-	SetPause(false);
+	//SetPause(false);
+	GetWorld()->GetWorldSettings()->SetTimeDilation(1.0f);
 
 	FInputModeGameOnly InputMode;
 	SetInputMode(InputMode);

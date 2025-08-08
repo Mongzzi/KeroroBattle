@@ -119,7 +119,7 @@ void UTitleWidget::OnStartReleased()
 	//2. UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("SampleScene")), true, TEXT("?game=/Script/KeroroBattle.KeroroGameMode"));
 	// 1번처럼 경로로 여는경우 게임모드가 잘안열리는 오류있음, 두번째 경우에는 잘됨 마지막인자 option으로 게임모드 설정가능
 	// 현재 사용 중인 코드는 에디터에서 게임모드 미리 설정해둔 상태라 잘 작동됨
-	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("SampleScene")));
+	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("TamamaLevel")));
 
 }
 
