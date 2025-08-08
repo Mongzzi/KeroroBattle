@@ -41,11 +41,11 @@ ADropGold::ADropGold()
 		Gold->SetCollisionProfileName(TEXT("ItemBox"));
 	}
 
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem>NS(TEXT("/Game/sA_PickupSet_1/Fx/NiagaraSystems/NS_CoinBurst.NS_CoinBurst"));
-	if (NS.Succeeded())
-	{
-		NSEffect = NS.Object;
-	}
+	//static ConstructorHelpers::FObjectFinder<UNiagaraSystem>NS(TEXT("/Game/sA_PickupSet_1/Fx/NiagaraSystems/NS_CoinBurst.NS_CoinBurst"));
+	//if (NS.Succeeded())
+	//{
+	//	NSEffect = NS.Object;
+	//}
 }
 
 // 에디터에서 트리거박스 크기 직접 수정하기 위함
@@ -103,29 +103,29 @@ void ADropGold::OnCharacterBeginOverlap(UPrimitiveComponent* OverlappedComponent
 			//UE_LOG(LogTemp, Error, TEXT("kero get gold %d gold ,  Gold Get Rate = %f"), static_cast<int32>(DropGoldMount * PS->GoldGainRate),PS->GoldGainRate);
 		}
 
-		UNiagaraComponent* TempEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-			GetWorld(),
-			NSEffect, 
-			GetActorLocation(),
-			FRotator::ZeroRotator, 
-			FVector(3.0f)
-		);
+		//UNiagaraComponent* TempEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		//	GetWorld(),
+		//	NSEffect, 
+		//	GetActorLocation(),
+		//	FRotator::ZeroRotator, 
+		//	FVector(3.0f)
+		//);
 
-		if (TempEffect)
-		{
-			TempEffect->Activate();
+		//if (TempEffect)
+		//{
+		//	TempEffect->Activate();
 
-			FTimerHandle TimerHandle;
-			UNiagaraComponent* TempEffectComp = TempEffect;
+		//	FTimerHandle TimerHandle;
+		//	UNiagaraComponent* TempEffectComp = TempEffect;
 
-			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [TempEffectComp]()
-				{
-					if (TempEffectComp)
-					{
-						TempEffectComp->Deactivate();
-					}
-				}, 1.0f, false);
-		}
+		//	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [TempEffectComp]()
+		//		{
+		//			if (TempEffectComp)
+		//			{
+		//				TempEffectComp->Deactivate();
+		//			}
+		//		}, 1.0f, false);
+		//}
 
 		Destroy();
 	}
