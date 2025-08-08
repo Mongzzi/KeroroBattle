@@ -338,7 +338,7 @@ void USkill_Widget::ItemGroupEnemies()
 	if (!Kero) return;
 
 	FVector KeroLoc = Kero->GetActorLocation();
-	FVector ForwardVector = Kero->GetActorForwardVector();
+	FVector ForwardVector = Kero->GetControlRotation().RotateVector(FVector::ForwardVector);
 	float Radius = 3000.0f;
 	PullCenter = KeroLoc + ForwardVector * 800.0f + FVector(0, 0, 100);
 
