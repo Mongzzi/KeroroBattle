@@ -45,6 +45,9 @@ public:
 	void AddKillEnemyNum();
 	void SetLevel(int32 lv);
 
+	bool IsCharacterUnlocked(EKeroroType Type);
+	void UnlockCharacter(EKeroroType Type);
+
 private:
 	struct FKRStatData* StatData;
 
@@ -56,6 +59,10 @@ protected:
 	// 누적 점수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Keroro")
 	int32 TotalScore;
+
+	// 해금된 캐릭터
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TMap<EKeroroType, bool> UnlockedCharacters;	
 
 public:
 	// 플레이어 레벨
@@ -73,7 +80,6 @@ public:
 	// 적 처치 수
 	UPROPERTY(Transient, BlueprintReadOnly, Category = "Keroro")
 	int32 KilledEnemyNum;
-
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)

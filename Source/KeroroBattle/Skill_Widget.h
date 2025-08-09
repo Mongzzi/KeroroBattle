@@ -40,7 +40,7 @@ public:
 	void SetSkillImageNon();
 	void SetSkillImage(int32 Image_num);
 	void SetBorderImage(EWidgetType Type);
-	void SetItemSlotNum(int32 num);
+	void SetItemSlotNum(FString slot);
 	void UpdateCoolTimeText(float Time);
 	void UpdateCoolTimeProgressBar(float Percent);
 	

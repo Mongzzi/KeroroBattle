@@ -199,11 +199,11 @@ void USkill_Widget::SetBorderImage(EWidgetType Type)
 	}
 }
 
-void USkill_Widget::SetItemSlotNum(int32 num)
+void USkill_Widget::SetItemSlotNum(FString slot)
 {
 	if (SlotName)
 	{
-		FString Str = FString::FromInt(num) + TEXT("번 아이템");
+		FString Str = slot + TEXT(" 아이템");
 		SlotName->SetText(FText::FromString(Str));
 	}
 }

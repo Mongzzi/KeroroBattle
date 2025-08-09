@@ -39,6 +39,13 @@ AKeroroPlayerState::AKeroroPlayerState()
 	InvincibilityTime_Enhanced = 0.0f;
 	ProjectileCount_Enhanced = 0;
 	ProjectileScale_Enhanced = 0.0f;
+
+	UnlockCharacter(EKeroroType::Keroro);
+	UnlockCharacter(EKeroroType::Tamama);
+	UnlockCharacter(EKeroroType::Giroro);
+	UnlockCharacter(EKeroroType::Dororo);
+	UnlockCharacter(EKeroroType::Kururu);
+
 }
 
 void AKeroroPlayerState::PostInitializeComponents()
@@ -116,7 +123,7 @@ bool AKeroroPlayerState::PayGold(int32 gold)
 	else {
 		return false;
 	}
-	
+
 	if (OnGoldChanged.IsBound())
 	{
 		OnGoldChanged.Broadcast();
@@ -173,4 +180,20 @@ void AKeroroPlayerState::SetLevel(int32 lv)
 			OnLevelChanged.Broadcast();
 		}
 	}
+}
+
+bool AKeroroPlayerState::IsCharacterUnlocked(EKeroroType Type)
+{
+	if (UnlockedCharacters.Contains(Type))
+	{
+		return UnlockedCharacters[Type];
+	}
+	return false;
+}
+
+void AKeroroPlayerState::UnlockCharacter(EKeroroType Type)
+{
+	if (IsCharacterUnlocked(Type)) return;
+
+	UnlockedCharacters.Add(Type, true);
 }

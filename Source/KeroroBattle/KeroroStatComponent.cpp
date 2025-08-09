@@ -223,6 +223,9 @@ void UKeroroStatComponent::SetLevel(int32 lv, AKeroroPlayerState* PlayerState)
 		}
 	}
 
+	OnHpIsChanged.Broadcast();
+	OnMpIsChanged.Broadcast();
+
 	if (!bIsInitSetHpMp)
 	{
 		SetHP(MaxHp);
