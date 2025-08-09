@@ -25,6 +25,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "KeroroAnimInstance.h"
 
+
 AKeroroPlayerController::AKeroroPlayerController()
 {
 	// 입력
@@ -263,19 +264,19 @@ void AKeroroPlayerController::ShowStatusWidget()
 	SetUIMode();
 }
 
-void AKeroroPlayerController::UseItemSlot1()
+void AKeroroPlayerController::UseItemSlotZ()
 {
 	if (!KRHUDWidget) return;
 	KRHUDWidget->UseItem(1);
 }
 
-void AKeroroPlayerController::UseItemSlot2()
+void AKeroroPlayerController::UseItemSlotX()
 {
 	if (!KRHUDWidget) return;
 	KRHUDWidget->UseItem(2);
 }
 
-void AKeroroPlayerController::UseItemSlot3()
+void AKeroroPlayerController::UseItemSlotC()
 {
 	if (!KRHUDWidget) return;
 	KRHUDWidget->UseItem(3);
@@ -294,9 +295,16 @@ float AKeroroPlayerController::GetGameStateRemainingTime()
 	return 0.0f;
 }
 
-void AKeroroPlayerController::TagCharacter()
+void AKeroroPlayerController::TagCharacter(EKeroroType TargetType)
 {
 	if (!KRPlayerState) return;
+
+	// 아직 해금되지 않은 캐릭터면 return
+	if (!KRPlayerState->IsCharacterUnlocked(TargetType))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s is locked!"), *UEnum::GetValueAsString(TargetType));
+		return;
+	}
 
 	// 1. 기존 캐릭터 델리게이트 해제
 	AKeroroCharacter* PrevCharacter = Cast<AKeroroCharacter>(GetCharacter());
@@ -306,15 +314,13 @@ void AKeroroPlayerController::TagCharacter()
 		PrevCharacter->KRStat->OnMpIsChanged.RemoveAll(this);
 	}
 
-	// 2. 다음 캐릭터 타입
-	EKeroroType NextType = KRPlayerState->SetNextCharacterType();
 	AKeroroCharacter* NewCharacter = nullptr;
 
-	// 3. 이미 존재하는 캐릭터가 있는지 확인
-	if (CharacterMap.Contains(NextType) && IsValid(CharacterMap[NextType]))
+	// 2. 이미 존재하는 캐릭터 있는지 확인
+	if (CharacterMap.Contains(TargetType) && IsValid(CharacterMap[TargetType]))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("character is in world"));
-		NewCharacter = CharacterMap[NextType];
+		UE_LOG(LogTemp, Warning, TEXT("Character already exists in world"));
+		NewCharacter = CharacterMap[TargetType];
 	}
 	else
 	{
@@ -331,19 +337,22 @@ void AKeroroPlayerController::TagCharacter()
 			SpawnLoc = PrevCharacter->GetActorLocation() + FVector(0, 0, 300);
 			SpawnRot = PrevCharacter->GetActorRotation();
 		}
+
 		FTransform SpawnTransform = FTransform(SpawnRot, SpawnLoc);
 
-		NewCharacter = GetWorld()->SpawnActorDeferred<AKeroroCharacter>(AKeroroCharacter::StaticClass(), SpawnTransform, this, nullptr);
+		NewCharacter = GetWorld()->SpawnActorDeferred<AKeroroCharacter>(
+			AKeroroCharacter::StaticClass(), SpawnTransform, this, nullptr);
+
 		if (NewCharacter)
 		{
-			NewCharacter->CurrentKeroroType = NextType;
+			NewCharacter->CurrentKeroroType = TargetType;
 			UGameplayStatics::FinishSpawningActor(NewCharacter, SpawnTransform);
 
-			CharacterMap.Add(NextType, NewCharacter);
+			CharacterMap.Add(TargetType, NewCharacter);
 		}
 	}
 
-	// 4. 기존 캐릭터를 AIController로 변경
+	// 3. 기존 캐릭터를 AIController로 변경
 	if (PrevCharacter)
 	{
 		AKeroroAIController* AIController = GetWorld()->SpawnActor<AKeroroAIController>(AKeroroAIController::StaticClass());
@@ -353,10 +362,10 @@ void AKeroroPlayerController::TagCharacter()
 		}
 	}
 
-	// 5. 새 캐릭터를 플레이어컨트롤러가 소유
+	// 4. 새 캐릭터를 플레이어컨트롤러가 소유
 	Possess(NewCharacter);
 
-	// 6. 새 캐릭터의 델리게이트 바인딩 및 HUD 갱신
+	// 5. 새 캐릭터 델리게이트 바인딩 및 HUD 갱신
 	if (KRHUDWidget && NewCharacter)
 	{
 		NewCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
@@ -366,7 +375,7 @@ void AKeroroPlayerController::TagCharacter()
 		KRHUDWidget->ChangeSkillImage();
 	}
 
-	// 7. 태그 이펙트 재생
+	// 6. 태그 이펙트 재생
 	if (NSTagEffect && GetCharacter() != nullptr)
 	{
 		FVector EffectLoc = GetCharacter()->GetActorLocation() + GetCharacter()->GetActorForwardVector() * 100.0f;
@@ -472,12 +481,10 @@ void AKeroroPlayerController::OnPlayerLevelUpdated()
 	for (auto& pair : CharacterMap)
 	{
 		AKeroroCharacter* kero = pair.Value;
-		if (kero)
+		if (kero && kero->KRStat)
 		{
-			if (kero->KRStat)
-			{
-				kero->KRStat->SetLevel(Level);
-			}
+			kero->KRStat->SetLevel(Level, KRPlayerState);
+
 		}
 	}
 }
@@ -524,9 +531,6 @@ void AKeroroPlayerController::LoadInputActionAndMappingContext()
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_ATTACK(TEXT("/Game/Input/IA_Keroro_Attack.IA_Keroro_Attack"));
 	if (IA_ATTACK.Succeeded()) Attacking = IA_ATTACK.Object;
 
-	static ConstructorHelpers::FObjectFinder<UInputAction>IA_TAG(TEXT("/Game/Input/IA_Keroro_Tag.IA_Keroro_Tag"));
-	if (IA_TAG.Succeeded()) Tag = IA_TAG.Object;
-
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_MOUSE_RIGHT(TEXT("/Game/Input/IA_MOUSE_RIGHT_BUTTON.IA_MOUSE_RIGHT_BUTTON"));
 	if (IA_MOUSE_RIGHT.Succeeded()) MouseRight = IA_MOUSE_RIGHT.Object;
 
@@ -547,6 +551,21 @@ void AKeroroPlayerController::LoadInputActionAndMappingContext()
 
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_NUM3(TEXT("/Game/Input/IA_NUM3.IA_NUM3"));
 	if (IA_NUM3.Succeeded()) Num3 = IA_NUM3.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_NUM4(TEXT("/Game/Input/IA_NUM4.IA_NUM4"));
+	if (IA_NUM4.Succeeded()) Num4 = IA_NUM4.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_NUM5(TEXT("/Game/Input/IA_NUM5.IA_NUM5"));
+	if (IA_NUM5.Succeeded()) Num5 = IA_NUM5.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_ITEMZ(TEXT("/Game/Input/IA_ITEMZ.IA_ITEMZ"));
+	if (IA_ITEMZ.Succeeded()) ItemZ = IA_ITEMZ.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_ITEMX(TEXT("/Game/Input/IA_ITEMX.IA_ITEMX"));
+	if (IA_ITEMX.Succeeded()) ItemX = IA_ITEMX.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>IA_ITEMC(TEXT("/Game/Input/IA_ITEMC.IA_ITEMC"));
+	if (IA_ITEMC.Succeeded()) ItemC = IA_ITEMC.Object;
 }
 
 
@@ -569,14 +588,18 @@ void AKeroroPlayerController::SetupInputComponent()
 		Input->BindAction(Running, ETriggerEvent::Triggered, this, &AKeroroPlayerController::StartRun);
 		Input->BindAction(Running, ETriggerEvent::Completed, this, &AKeroroPlayerController::StopRun);
 		Input->BindAction(Attacking, ETriggerEvent::Started, this, &AKeroroPlayerController::Attack);
-		Input->BindAction(Tag, ETriggerEvent::Started, this, &AKeroroPlayerController::TagCharacter);
 		Input->BindAction(MouseRight, ETriggerEvent::Started, this, &AKeroroPlayerController::OnMagicCircleActivated);
 		Input->BindAction(Guarding, ETriggerEvent::Started, this, &AKeroroPlayerController::Guard);
 		Input->BindAction(SkillAction, ETriggerEvent::Started, this, &AKeroroPlayerController::UltimateSkill);
 		Input->BindAction(ShowStatus, ETriggerEvent::Started, this, &AKeroroPlayerController::ShowStatusWidget);
-		Input->BindAction(Num1, ETriggerEvent::Started, this, &AKeroroPlayerController::UseItemSlot1);
-		Input->BindAction(Num2, ETriggerEvent::Started, this, &AKeroroPlayerController::UseItemSlot2);
-		Input->BindAction(Num3, ETriggerEvent::Started, this, &AKeroroPlayerController::UseItemSlot3);
+		Input->BindAction(ItemZ, ETriggerEvent::Started, this, &AKeroroPlayerController::UseItemSlotZ);
+		Input->BindAction(ItemX, ETriggerEvent::Started, this, &AKeroroPlayerController::UseItemSlotX);
+		Input->BindAction(ItemC, ETriggerEvent::Started, this, &AKeroroPlayerController::UseItemSlotC);
+		Input->BindAction(Num1, ETriggerEvent::Started, this,&AKeroroPlayerController::TagKeroro);
+		Input->BindAction(Num2, ETriggerEvent::Started, this,&AKeroroPlayerController::TagTamama);
+		Input->BindAction(Num3, ETriggerEvent::Started, this,&AKeroroPlayerController::TagGiroro);
+		Input->BindAction(Num4, ETriggerEvent::Started, this,&AKeroroPlayerController::TagDororo);
+		Input->BindAction(Num5, ETriggerEvent::Started, this,&AKeroroPlayerController::TagKururu);
 	}
 }
 
@@ -687,6 +710,31 @@ void AKeroroPlayerController::Attack()
 	{
 		kero->Attack();
 	}
+}
+
+void AKeroroPlayerController::TagKeroro()
+{
+	TagCharacter(EKeroroType::Keroro);
+}
+
+void AKeroroPlayerController::TagTamama()
+{
+	TagCharacter(EKeroroType::Tamama);
+}
+
+void AKeroroPlayerController::TagGiroro()
+{
+	TagCharacter(EKeroroType::Giroro);
+}
+
+void AKeroroPlayerController::TagDororo()
+{
+	TagCharacter(EKeroroType::Dororo);
+}
+
+void AKeroroPlayerController::TagKururu()
+{
+	TagCharacter(EKeroroType::Kururu);
 }
 
 

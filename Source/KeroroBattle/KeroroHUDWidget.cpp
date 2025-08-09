@@ -38,20 +38,20 @@ void UKeroroHUDWidget::NativeConstruct()
 	if (ItemWidget1)
 	{
 		ItemWidget1->SetBorderImage(EWidgetType::ITEM_IMAGE);
-		ItemWidget1->SetItemSlotNum(1);
+		ItemWidget1->SetItemSlotNum("Z");
 		ItemWidget1->SetSkillImageNon();
 	}
 
 	if (ItemWidget2)
 	{
 		ItemWidget2->SetBorderImage(EWidgetType::ITEM_IMAGE);
-		ItemWidget2->SetItemSlotNum(2);
+		ItemWidget2->SetItemSlotNum("X");
 		ItemWidget2->SetSkillImageNon();
 	}
 	if (ItemWidget3)
 	{
 		ItemWidget3->SetBorderImage(EWidgetType::ITEM_IMAGE);
-		ItemWidget3->SetItemSlotNum(3);
+		ItemWidget3->SetItemSlotNum("C");
 		ItemWidget3->SetSkillImageNon();
 	}
 	// 카드 인덱스 부여

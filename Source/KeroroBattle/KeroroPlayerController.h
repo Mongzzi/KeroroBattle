@@ -37,7 +37,7 @@ private:
 	void StartRun();
 	void StopRun();
 	void Attack();
-	void TagCharacter();
+	void TagCharacter(EKeroroType TargetType);
 	void Guard();
 	void UltimateSkill();
 	void OnPlayerLevelUpdated();
@@ -48,6 +48,7 @@ private:
 public:
 	class UNiagaraSystem* NSTagEffect;
 	class UNiagaraComponent* NCTagEffect;
+
 	UPROPERTY()
 	TMap<EKeroroType, class AKeroroCharacter*> CharacterMap;
 
@@ -98,13 +99,19 @@ public:
 	void PlayParryCameraShake();
 	void PlayUltiSkillCameraShake();
 	void ShowStatusWidget();
-	void UseItemSlot1();
-	void UseItemSlot2();
-	void UseItemSlot3();
+	void UseItemSlotZ();
+	void UseItemSlotX();
+	void UseItemSlotC();
 
 	void SetUIMode();
 	void SetGameMode();
 	float GetGameStateRemainingTime();
+
+	void TagKeroro();
+	void TagTamama();
+	void TagGiroro();
+	void TagDororo();
+	void TagKururu();
 
 protected:
 
@@ -132,9 +139,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* Attacking;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	class UInputAction* Tag;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category= Input)
 	class UInputAction* MouseRight;
 
@@ -155,4 +159,19 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* Num3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* Num4;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* Num5;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* ItemZ;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* ItemX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* ItemC;
 };
