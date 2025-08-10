@@ -479,7 +479,7 @@ void AKeroroPlayerController::DieAIKero(EKeroroType type)
 void AKeroroPlayerController::SetUIMode()
 {
 	if (!KRHUDWidget) return;
-	GetWorld()->GetWorldSettings()->SetTimeDilation(0.05f);
+	GetWorld()->GetWorldSettings()->SetTimeDilation(0.1f);
 
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;

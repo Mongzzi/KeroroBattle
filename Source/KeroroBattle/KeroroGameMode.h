@@ -18,4 +18,15 @@ class KEROROBATTLE_API AKeroroGameMode : public AGameModeBase
 	
 protected:
 	virtual void BeginPlay() override;
+
+public:
+	void OnTimeOver();
+
+private:
+	UPROPERTY()
+	class AKeroroGameState* KeroroGameState;
+
+	float SurvivalTime = 180.0f;
+
+	void EndGame(bool bIsVictory);
 };

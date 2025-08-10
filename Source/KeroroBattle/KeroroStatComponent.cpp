@@ -223,8 +223,14 @@ void UKeroroStatComponent::SetLevel(int32 lv, AKeroroPlayerState* PlayerState)
 		}
 	}
 
-	OnHpIsChanged.Broadcast();
-	OnMpIsChanged.Broadcast();
+	if (OnHpIsChanged.IsBound())
+	{
+		OnHpIsChanged.Broadcast();
+	}
+	if (OnMpIsChanged.IsBound())
+	{
+		OnMpIsChanged.Broadcast();
+	}
 
 	if (!bIsInitSetHpMp)
 	{
@@ -376,7 +382,7 @@ void UKeroroStatComponent::StartAutoHeal()
 	GetWorld()->GetTimerManager().SetTimer(HealTimerHandle, [this]() {
 		CurrentHp = FMath::Clamp(CurrentHp + MaxHp * HealPowerRate, 0.0f, MaxHp);
 		//UE_LOG(LogTemp, Log, TEXT("Auto heal amount : %f, current hp = %f"), MaxHp * HealPowerRate, CurrentHp);
-			OnHpIsChanged.Broadcast();
+		OnHpIsChanged.Broadcast();
 		},
 		HealIntervalTime,
 		true);
@@ -386,7 +392,7 @@ void UKeroroStatComponent::StartAutoMpHeal()
 {
 	GetWorld()->GetTimerManager().SetTimer(MpHealTimerHandle, [this]() {
 		CurrentMp = FMath::Clamp(CurrentMp + MaxMp * MpHealPowerRate, 0.0f, MaxMp);
-			OnMpIsChanged.Broadcast();
+		OnMpIsChanged.Broadcast();
 		},
 		MpHealIntervalTime,
 		true);

@@ -7,7 +7,7 @@
 #include "KeroroGameState.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class KEROROBATTLE_API AKeroroGameState : public AGameStateBase
@@ -19,14 +19,11 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void BeginPlay() override;
-
 	float GetRemainingTime() { return RemainingTime; }
-	
 
-protected:
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GameRules)
-	float TotalTime = 300.0f;
+public:
 	float RemainingTime;
+	bool bIsTimeUp;
+
 	void OnTimeOver();
 };

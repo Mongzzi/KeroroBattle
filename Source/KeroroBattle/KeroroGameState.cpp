@@ -3,11 +3,13 @@
 
 #include "KeroroGameState.h"
 #include "KeroroPlayerController.h"
+#include "KeroroGameMode.h"
 
 AKeroroGameState::AKeroroGameState()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	RemainingTime = 30.0f;
+	bIsTimeUp = false;
 }
 
 void AKeroroGameState::Tick(float DeltaSeconds)
@@ -16,9 +18,10 @@ void AKeroroGameState::Tick(float DeltaSeconds)
 	if (RemainingTime > 0.0f)
 	{
 		RemainingTime -= DeltaSeconds;
-		if (RemainingTime < 0.0f)
+		if (RemainingTime < 0.0f&&!bIsTimeUp)
 		{
 			RemainingTime = 0.0f;
+			bIsTimeUp = true;
 			OnTimeOver();
 		}
 	}
@@ -37,10 +40,18 @@ void AKeroroGameState::Tick(float DeltaSeconds)
 void AKeroroGameState::BeginPlay()
 {
 	Super::BeginPlay();
-
+	bIsTimeUp = false;
 }
 
 void AKeroroGameState::OnTimeOver()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Time Over!"));
+	AGameModeBase* GM = GetWorld()->GetAuthGameMode();
+	if (GM)
+	{
+		AKeroroGameMode* KeroGM = Cast<AKeroroGameMode>(GM);
+		if (KeroGM)
+		{
+			KeroGM->OnTimeOver();
+		}
+	}
 }
