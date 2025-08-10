@@ -341,7 +341,6 @@ void AKeroroPlayerController::TagCharacter(EKeroroType TargetType)
 	// 2. 이미 존재하는 캐릭터 있는지 확인
 	if (CharacterMap.Contains(TargetType) && IsValid(CharacterMap[TargetType].KeroroCharacter))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Character already exists in world"));
 		NewCharacter = CharacterMap[TargetType].KeroroCharacter;
 	}
 	else if (CharacterMap.Contains(TargetType) && CharacterMap[TargetType].KeroroCharacter == nullptr && CharacterMap[TargetType].bIsSpawnedOnce == true)
@@ -381,6 +380,9 @@ void AKeroroPlayerController::TagCharacter(EKeroroType TargetType)
 			CharacterMap.Add(TargetType, SpawnKero);
 		}
 	}
+
+	// 2.5 플레이어스테이트에 현재 케로로 타입 저장
+	KRPlayerState->SetCharacterType(TargetType);
 
 	// 3. 기존 캐릭터를 AIController로 변경
 	if (PrevCharacter)

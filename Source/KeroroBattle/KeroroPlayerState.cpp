@@ -64,19 +64,9 @@ void AKeroroPlayerState::BeginPlay()
 	// hud 레벨 부분 업데이트
 }
 
-EKeroroType AKeroroPlayerState::SetNextCharacterType()
+void AKeroroPlayerState::SetCharacterType(EKeroroType type)
 {
-	int32 NextType = static_cast<int32>(CurrentKeroro) + 1;
-
-	if (NextType >= static_cast<int32>(EKeroroType::MAX))
-	{
-		CurrentKeroro = EKeroroType::Keroro;
-	}
-	else
-	{
-		CurrentKeroro = static_cast<EKeroroType>(NextType);
-	}
-	return CurrentKeroro;
+	CurrentKeroro = type;
 }
 
 bool AKeroroPlayerState::AddExp(int32 exp)

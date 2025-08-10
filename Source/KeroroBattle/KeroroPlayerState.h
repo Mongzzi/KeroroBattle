@@ -36,7 +36,7 @@ public:
 public:
 	EKeroroType GetCurrentCharacterType() const { return CurrentKeroro; }
 	void SetCurrentCharacterType(EKeroroType type) { CurrentKeroro = type; }
-	EKeroroType SetNextCharacterType();
+	void SetCharacterType(EKeroroType type);
 
 	float GetExpRatio() const;
 	bool AddExp(int32 exp);
