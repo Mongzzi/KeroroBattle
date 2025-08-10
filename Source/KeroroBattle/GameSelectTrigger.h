@@ -36,6 +36,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> GameSelectWidgetClass;
 
+	UPROPERTY()
+	class UGameSelectWidget* GameSelectWidget;
+
 private:
 	bool bHasTriggered = false;
 };

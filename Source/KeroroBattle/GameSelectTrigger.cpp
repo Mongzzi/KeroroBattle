@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "KeroroCharacter.h"
+#include "GameSelectWidget.h"
 
 
 // Sets default values
@@ -19,6 +20,13 @@ AGameSelectTrigger::AGameSelectTrigger()
 	TriggerBox->SetCollisionProfileName(TEXT("Trigger"));
 	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &AGameSelectTrigger::OnOverlapBegin);
 	TriggerBox->OnComponentEndOverlap.AddDynamic(this, &AGameSelectTrigger::OnOverlapEnd);
+
+
+	static ConstructorHelpers::FClassFinder<UGameSelectWidget>WIDGET1(TEXT("/Game/Blueprints/KR_GameSelectWidget.KR_GameSelectWidget_C"));
+	if (WIDGET1.Succeeded())
+	{
+		GameSelectWidgetClass = WIDGET1.Class;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -52,26 +60,24 @@ void AGameSelectTrigger::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 	{
 		bHasTriggered = true;
 
-		UE_LOG(LogTemp, Error, TEXT("Trigger~~~~"));
-		//if (GameSelectWidgetClass)
-		//{
-		//	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), GameSelectWidgetClass);
-		//	if (Widget)
-		//	{
-		//		Widget->AddToViewport();
+		if (GameSelectWidgetClass)
+		{
+			GameSelectWidget = CreateWidget<UGameSelectWidget>(GetWorld(), GameSelectWidgetClass);
+			if (GameSelectWidget)
+			{
+				GameSelectWidget->AddToViewport();
 
-		//		APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-		//		if (PC)
-		//		{
-		//			PC->SetPause(true);
-		//			PC->bShowMouseCursor = true;
+				APlayerController* PC = GetWorld()->GetFirstPlayerController();
+				if (PC)
+				{
+					PC->bShowMouseCursor = true;
+					PC->SetInputMode(FInputModeUIOnly());
+					PC->SetIgnoreMoveInput(true);
+					PC->SetIgnoreLookInput(true);
 
-		//			FInputModeUIOnly InputMode;
-		//			InputMode.SetWidgetToFocus(Widget->TakeWidget());
-		//			PC->SetInputMode(InputMode);
-		//		}
-		//	}
-		//}
+				}
+			}
+		}
 	}
 }
 
@@ -80,6 +86,19 @@ void AGameSelectTrigger::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActo
 	if (OtherActor && OtherActor->IsA<AKeroroCharacter>())
 	{
 		bHasTriggered = false;
+		APlayerController* PC = GetWorld()->GetFirstPlayerController();
+		if (PC)
+		{
+			PC->bShowMouseCursor = false;
+			PC->SetInputMode(FInputModeGameOnly());
+			PC->SetIgnoreMoveInput(false);
+			PC->SetIgnoreLookInput(false);
+
+		}
+		if (GameSelectWidget)
+		{
+			GameSelectWidget->RemoveFromParent();
+		}
 	}
 }
 

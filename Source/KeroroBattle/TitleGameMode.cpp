@@ -28,7 +28,7 @@ void ATitleGameMode::BeginPlay()
             if (PC)
             {
                 PC->bShowMouseCursor = true;
-                PC->SetInputMode(FInputModeUIOnly().SetWidgetToFocus(TitleWidget->TakeWidget()));
+                PC->SetInputMode(FInputModeUIOnly());
             }
         }
     }

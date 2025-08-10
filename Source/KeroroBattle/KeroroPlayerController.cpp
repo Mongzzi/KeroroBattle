@@ -277,7 +277,7 @@ void AKeroroPlayerController::PlayUltiSkillCameraShake()
 void AKeroroPlayerController::ShowStatusWidget()
 {
 	if (!KRStatusWidgetClass) return;
-
+	if (IsRobbyMap) return;
 	KRStatusWidget = CreateWidget<UStatusWidget>(this, KRStatusWidgetClass);
 	if (KRStatusWidget)
 	{
@@ -319,7 +319,7 @@ float AKeroroPlayerController::GetGameStateRemainingTime()
 
 void AKeroroPlayerController::TagCharacter(EKeroroType TargetType)
 {
-	if (!KRPlayerState) return;
+	if (!KRPlayerState || IsRobbyMap) return;
 
 	// 아직 해금되지 않은 캐릭터면 return
 	if (!KRPlayerState->IsCharacterUnlocked(TargetType) && IsRobbyMap)
@@ -476,7 +476,7 @@ void AKeroroPlayerController::DieAIKero(EKeroroType type)
 
 void AKeroroPlayerController::SetUIMode()
 {
-	//SetPause(true);
+	if (!KRHUDWidget) return;
 	GetWorld()->GetWorldSettings()->SetTimeDilation(0.05f);
 
 	bEnableClickEvents = true;
