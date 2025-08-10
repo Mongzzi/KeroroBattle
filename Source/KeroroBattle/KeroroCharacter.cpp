@@ -192,12 +192,14 @@ void AKeroroCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// HP바 위젯
-	auto HpBarWidget = Cast<UKeroroHPBarWidget>(HPBar->GetUserWidgetObject());
-	if (HpBarWidget != nullptr)
+	if (HPBar)
 	{
-		HpBarWidget->BindKRStat(KRStat);
-		HpBarWidget->SetHPBarTextVisible();
+		auto HpBarWidget = Cast<UKeroroHPBarWidget>(HPBar->GetUserWidgetObject());
+		if (HpBarWidget != nullptr)
+		{
+			HpBarWidget->BindKRStat(KRStat);
+			HpBarWidget->SetHPBarTextVisible();
+		}
 	}
 
 }
@@ -275,14 +277,21 @@ float AKeroroCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 
 void AKeroroCharacter::Die()
 {
+	IsDie = true;
 	KRAnim->SetDeadAnim();
 
-	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetController());
-	if (PC)
+	if (AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetController()))
 	{
-		// 플레이어 컨트롤러에서 다음 캐릭으로 포제스하고  캐릭터 맵 목록 업데이트
 		PC->Die();
 	}
+	else if (AKeroroAIController* AC = Cast<AKeroroAIController>(GetController()))
+	{
+		AKeroroPlayerController* PC2 = Cast<AKeroroPlayerController>(GetWorld()->GetFirstPlayerController());
+		if (PC2) {
+			PC2->DieAIKero(CurrentKeroroType);
+		}
+	}
+
 	// 바인딩된 함수들 다 해제
 	UnbindCharacterEvents();
 	// 콜리전 끄기
@@ -419,6 +428,14 @@ void AKeroroCharacter::PlayWeaponSound()
 	if (Weapon)
 	{
 		Weapon->PlaySound(CurrentCombo);
+	}
+}
+
+void AKeroroCharacter::HiddenHPBarOnHead()
+{
+	if (HPBar)
+	{
+		HPBar->SetVisibility(false);
 	}
 }
 
@@ -1075,7 +1092,7 @@ void AKeroroCharacter::ShowHealText(float Hp, float Mp)
 	DamageWidget->AddToViewport();
 	FVector Dir = GetActorForwardVector();
 	DamageWidget->SetTargetLocation(GetActorLocation() + FVector(Dir.X * -50, 0.0f, -50.0f));
-	DamageWidget->SetTextHeal(Hp,Mp);
+	DamageWidget->SetTextHeal(Hp, Mp);
 }
 
 void AKeroroCharacter::ParryAttack()

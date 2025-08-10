@@ -95,6 +95,7 @@ public:
 	void PlayHealEffect();
 	void PlayWeaponSound();
 	bool GetIsAttacking() { return IsAttacking; };
+	void HiddenHPBarOnHead();
 
 public:
 	void KeroBallUlti();
@@ -117,7 +118,7 @@ public:
 public:
 	EKeroroType GetKeroroCharacterType() { return CurrentKeroroType; }
 	void SetKeroroCharacterType(EKeroroType type) { CurrentKeroroType = type; }
-
+	bool IsDie= false;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))

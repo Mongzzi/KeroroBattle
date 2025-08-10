@@ -6,9 +6,22 @@
 #include "GameFramework/PlayerController.h"
 #include "KeroroPlayerController.generated.h"
 
-/**
- * 
- */
+
+USTRUCT(BlueprintType)
+struct FSpawnKero
+{
+	GENERATED_BODY()
+
+public:
+	FSpawnKero() : KeroroCharacter(nullptr), bIsSpawnedOnce(false) {};
+	UPROPERTY()
+	class AKeroroCharacter* KeroroCharacter;
+
+	UPROPERTY()
+	bool bIsSpawnedOnce;
+};
+
+
 UCLASS()
 class KEROROBATTLE_API AKeroroPlayerController : public APlayerController
 {
@@ -44,13 +57,14 @@ private:
 	void OnMagicCircleActivated();
 
 	bool IsMagicCircleActivated;
+	bool IsRobbyMap = true;
 
 public:
 	class UNiagaraSystem* NSTagEffect;
 	class UNiagaraComponent* NCTagEffect;
 
 	UPROPERTY()
-	TMap<EKeroroType, class AKeroroCharacter*> CharacterMap;
+	TMap<EKeroroType, FSpawnKero> CharacterMap;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<class UKeroroHUDWidget> KRHUDWidgetClass;
@@ -93,7 +107,8 @@ public:
 	void UpdateKillWidget();
 
 	void Die();
-	
+	void DieAIKero(EKeroroType type);
+
 	void PlayUltimateCutScene();
 	void PlayParryWidgetEffect();
 	void PlayParryCameraShake();

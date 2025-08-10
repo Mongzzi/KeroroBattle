@@ -95,19 +95,38 @@ void AKeroroPlayerController::BeginPlay()
 
 	// 캐릭터가 자신의 타입 알려주는 함수
 	EKeroroType MyType = KRCharacter->GetKeroroCharacterType();
-	CharacterMap.Add(MyType, KRCharacter); // TMap에 미리 등록
+	FSpawnKero SpawnKero;
+	SpawnKero.KeroroCharacter = KRCharacter;
+	SpawnKero.bIsSpawnedOnce = true;
+	CharacterMap.Add(MyType, SpawnKero); // TMap에 미리 등록
 
-	KRHUDWidget = CreateWidget<UKeroroHUDWidget>(this, KRHUDWidgetClass);
-	if (KRHUDWidget == nullptr) return;
 
-	KRHUDWidget->AddToViewport();
-	KRHUDWidget->BindKRStat(KRCharacter->KRStat);
-	KRHUDWidget->BindPlayerState(KRPlayerState);
+	// 현재 맵이름 가져옴 (로비면 hud ,캐릭터 머리위 hp바 히든으로 변경)
+	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
+	if (CurrentLevelName == TEXT("RobbyLevel"))
+	{
+		IsRobbyMap = true;
+		KRCharacter->HiddenHPBarOnHead();
+	}
+	else {
+		IsRobbyMap = false;
+	}
+
+
+	if (!IsRobbyMap)
+	{
+		KRHUDWidget = CreateWidget<UKeroroHUDWidget>(this, KRHUDWidgetClass);
+		if (KRHUDWidget == nullptr) return;
+
+		KRHUDWidget->AddToViewport();
+		KRHUDWidget->BindKRStat(KRCharacter->KRStat);
+		KRHUDWidget->BindPlayerState(KRPlayerState);
+		UpdateStatWidget();
+	}
 
 	KRCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
 	KRCharacter->KRStat->OnMpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateMPWidget);
 	KRPlayerState->OnLevelChanged.AddUObject(this, &AKeroroPlayerController::OnPlayerLevelUpdated);
-	UpdateStatWidget();
 }
 
 void AKeroroPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -194,7 +213,10 @@ void AKeroroPlayerController::UpdateLevelWidget()
 
 void AKeroroPlayerController::UpdateTimeWidget(float RemainTime)
 {
-	KRHUDWidget->UpdateTimeWidget(GetGameStateRemainingTime());
+	if (IsValid(KRHUDWidget))
+	{
+		KRHUDWidget->UpdateTimeWidget(GetGameStateRemainingTime());
+	}
 }
 
 void AKeroroPlayerController::UpdateEXPWidget()
@@ -300,7 +322,7 @@ void AKeroroPlayerController::TagCharacter(EKeroroType TargetType)
 	if (!KRPlayerState) return;
 
 	// 아직 해금되지 않은 캐릭터면 return
-	if (!KRPlayerState->IsCharacterUnlocked(TargetType))
+	if (!KRPlayerState->IsCharacterUnlocked(TargetType) && IsRobbyMap)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s is locked!"), *UEnum::GetValueAsString(TargetType));
 		return;
@@ -317,10 +339,15 @@ void AKeroroPlayerController::TagCharacter(EKeroroType TargetType)
 	AKeroroCharacter* NewCharacter = nullptr;
 
 	// 2. 이미 존재하는 캐릭터 있는지 확인
-	if (CharacterMap.Contains(TargetType) && IsValid(CharacterMap[TargetType]))
+	if (CharacterMap.Contains(TargetType) && IsValid(CharacterMap[TargetType].KeroroCharacter))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Character already exists in world"));
-		NewCharacter = CharacterMap[TargetType];
+		NewCharacter = CharacterMap[TargetType].KeroroCharacter;
+	}
+	else if (CharacterMap.Contains(TargetType) && CharacterMap[TargetType].KeroroCharacter == nullptr && CharacterMap[TargetType].bIsSpawnedOnce == true)
+	{
+		// 이미 생성됐었고 죽었으면 더이상 스폰 x
+		return;
 	}
 	else
 	{
@@ -347,8 +374,11 @@ void AKeroroPlayerController::TagCharacter(EKeroroType TargetType)
 		{
 			NewCharacter->CurrentKeroroType = TargetType;
 			UGameplayStatics::FinishSpawningActor(NewCharacter, SpawnTransform);
+			FSpawnKero SpawnKero;
+			SpawnKero.KeroroCharacter = NewCharacter;
+			SpawnKero.bIsSpawnedOnce = true;
 
-			CharacterMap.Add(TargetType, NewCharacter);
+			CharacterMap.Add(TargetType, SpawnKero);
 		}
 	}
 
@@ -415,29 +445,33 @@ void AKeroroPlayerController::Die()
 	UnPossess();
 	if (CharacterMap.Contains(CurrentKeroroType))
 	{
-		CharacterMap.Remove(CurrentKeroroType);
+		CharacterMap[CurrentKeroroType].KeroroCharacter = nullptr;
 	}
 
 	// 다음 캐릭터 탐색 (순환)
 	int Max = static_cast<int32>(EKeroroType::MAX); // enum 마지막 값
 	for (int i = 1; i < Max; ++i)
 	{
-		EKeroroType NextType = static_cast<EKeroroType>((static_cast<int>(CurrentKeroroType) + i) % Max);
+		EKeroroType NextType = static_cast<EKeroroType>(i);
 
 		if (CharacterMap.Contains(NextType))
 		{
-			AKeroroCharacter* NextCharacter = CharacterMap[NextType];
+			AKeroroCharacter* NextCharacter = CharacterMap[NextType].KeroroCharacter;
 			if (IsValid(NextCharacter))
 			{
 				Possess(NextCharacter);
 				KRPlayerState->SetCurrentCharacterType(NextType);
 				KRHUDWidget->BindKRStat(NextCharacter->KRStat);
-				//UpdateStatWidget();
 				return;
 			}
 		}
 	}
+}
 
+void AKeroroPlayerController::DieAIKero(EKeroroType type)
+{
+	CharacterMap[type].KeroroCharacter = nullptr;
+	CharacterMap[type].bIsSpawnedOnce = true;
 }
 
 void AKeroroPlayerController::SetUIMode()
@@ -480,7 +514,7 @@ void AKeroroPlayerController::OnPlayerLevelUpdated()
 
 	for (auto& pair : CharacterMap)
 	{
-		AKeroroCharacter* kero = pair.Value;
+		AKeroroCharacter* kero = pair.Value.KeroroCharacter;
 		if (kero && kero->KRStat)
 		{
 			kero->KRStat->SetLevel(Level, KRPlayerState);
@@ -595,11 +629,11 @@ void AKeroroPlayerController::SetupInputComponent()
 		Input->BindAction(ItemZ, ETriggerEvent::Started, this, &AKeroroPlayerController::UseItemSlotZ);
 		Input->BindAction(ItemX, ETriggerEvent::Started, this, &AKeroroPlayerController::UseItemSlotX);
 		Input->BindAction(ItemC, ETriggerEvent::Started, this, &AKeroroPlayerController::UseItemSlotC);
-		Input->BindAction(Num1, ETriggerEvent::Started, this,&AKeroroPlayerController::TagKeroro);
-		Input->BindAction(Num2, ETriggerEvent::Started, this,&AKeroroPlayerController::TagTamama);
-		Input->BindAction(Num3, ETriggerEvent::Started, this,&AKeroroPlayerController::TagGiroro);
-		Input->BindAction(Num4, ETriggerEvent::Started, this,&AKeroroPlayerController::TagDororo);
-		Input->BindAction(Num5, ETriggerEvent::Started, this,&AKeroroPlayerController::TagKururu);
+		Input->BindAction(Num1, ETriggerEvent::Started, this, &AKeroroPlayerController::TagKeroro);
+		Input->BindAction(Num2, ETriggerEvent::Started, this, &AKeroroPlayerController::TagTamama);
+		Input->BindAction(Num3, ETriggerEvent::Started, this, &AKeroroPlayerController::TagGiroro);
+		Input->BindAction(Num4, ETriggerEvent::Started, this, &AKeroroPlayerController::TagDororo);
+		Input->BindAction(Num5, ETriggerEvent::Started, this, &AKeroroPlayerController::TagKururu);
 	}
 }
 
