@@ -54,6 +54,7 @@ AKeroroEnemyCharacter::AKeroroEnemyCharacter()
 	HPBar->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
 	HPBar->SetWidgetSpace(EWidgetSpace::Screen);
 	HPBar->SetDrawSize(FVector2D(300.0f, 50.0f));
+	HPBar->SetVisibility(false);
 
 	static ConstructorHelpers::FClassFinder<UUserWidget>HUD(TEXT("/Game/Blueprints/KR_HPBar.KR_HPBar_C"));
 	if (HUD.Succeeded())
@@ -148,6 +149,7 @@ float AKeroroEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& 
 
 	float FinalDamage = DamageAmount * (1.0f - EnemyStat->DefenseRate);
 	EnemyStat->SetDamage(FinalDamage);
+	HPBar->SetVisibility(true);
 
 	if (DamageWidget)
 	{
