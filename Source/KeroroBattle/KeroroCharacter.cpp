@@ -695,22 +695,29 @@ void AKeroroCharacter::PlayEffect()
 
 void AKeroroCharacter::BindCharacterEvents()
 {
+	// 기존 이벤트 해제 (중복 바인딩 방지)
 	UnbindCharacterEvents();
-	if (KRAnim)
+
+	// 애님 인스턴스 유효성 체크
+	if (IsValid(KRAnim))
 	{
-		// 몽타주 끝났을 시 공격콤보 초기화
+		// 몽타주 끝났을 시 공격 콤보 초기화
 		KRAnim->OnMontageEnded.AddDynamic(this, &AKeroroCharacter::OnAttackMontageEnded);
 
 		// 다음 공격 바인딩
-		KRAnim->OnNextAttackCheck.AddLambda([this]()->void {
-			CanNextCombo = false;
-			if (IsComboInputOn)
+		KRAnim->OnNextAttackCheck.AddLambda([this]()
 			{
-				AttackStartComboState();
-				KRAnim->JumptoAttackMontageSection(CurrentCombo);
-				IsAttacking = true;
-			}
+				if (!IsValid(this) || !IsValid(KRAnim)) return; // 람다 내부 재검사
+
+				CanNextCombo = false;
+				if (IsComboInputOn)
+				{
+					AttackStartComboState();
+					KRAnim->JumptoAttackMontageSection(CurrentCombo);
+					IsAttacking = true;
+				}
 			});
+
 		// 공격 이펙트 바인딩
 		KRAnim->OnEffectCreateCheck.AddUObject(this, &AKeroroCharacter::PlayEffect);
 
@@ -723,23 +730,23 @@ void AKeroroCharacter::BindCharacterEvents()
 		// 무기 공격 사운드 바인딩
 		KRAnim->OnWeaponSoundCheck.AddUObject(this, &AKeroroCharacter::PlayWeaponSound);
 
-		// 무기 다시생성
+		// 무기 다시 생성 (케로볼일 경우)
 		if (WeaponType == EWeaponType::KEROBALL)
 		{
 			KRAnim->OnNextAttackCheck.AddUObject(this, &AKeroroCharacter::SpawnToHand);
 		}
 	}
 
-	if (KRStat)
+	// 스탯 컴포넌트 유효성 체크
+	if (IsValid(KRStat))
 	{
-		// 스탯컴포넌트 체력0 델리게이트 바인딩
 		KRStat->OnHpIsZero.AddUObject(this, &AKeroroCharacter::Die);
 	}
 }
 
 void AKeroroCharacter::UnbindCharacterEvents()
 {
-	if (KRAnim)
+	if (IsValid(KRAnim))
 	{
 		KRAnim->OnMontageEnded.RemoveDynamic(this, &AKeroroCharacter::OnAttackMontageEnded);
 		KRAnim->OnNextAttackCheck.RemoveAll(this);
@@ -749,12 +756,11 @@ void AKeroroCharacter::UnbindCharacterEvents()
 		KRAnim->OnWeaponSoundCheck.RemoveAll(this);
 	}
 
-	if (KRStat)
+	if (IsValid(KRStat))
 	{
-		KRStat->OnHpIsChanged.RemoveAll(this);
+		KRStat->OnHpIsZero.RemoveAll(this);
 	}
 }
-
 
 void AKeroroCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
