@@ -103,7 +103,7 @@ void AKeroroPlayerController::BeginPlay()
 
 	// 현재 맵이름 가져옴 (로비면 hud ,캐릭터 머리위 hp바 히든으로 변경)
 	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
-	if (CurrentLevelName == TEXT("RobbyLevel"))
+	if (CurrentLevelName == TEXT("Robby1Level"))
 	{
 		IsRobbyMap = true;
 		KRCharacter->HiddenHPBarOnHead();

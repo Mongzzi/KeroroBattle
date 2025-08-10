@@ -107,7 +107,7 @@ void UKeroroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 					if (PS)
 					{
 						KRPlayerState = PS;
-						UE_LOG(LogTemp, Error, TEXT("Set PS Success"));
+						//UE_LOG(LogTemp, Error, TEXT("Set PS Success"));
 
 					}
 				}
