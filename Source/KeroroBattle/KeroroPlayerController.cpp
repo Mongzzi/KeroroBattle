@@ -472,6 +472,8 @@ void AKeroroPlayerController::Die()
 
 void AKeroroPlayerController::DieAIKero(EKeroroType type)
 {
+	// bIsSpawnedOnce는 사실 안해도됨 태그캐릭터에서 하고있으니
+	// 캐릭터 = 널포인트 , bIsSpawnedOnce = true면 스폰됐으나 죽었다는 뜻
 	CharacterMap[type].KeroroCharacter = nullptr;
 	CharacterMap[type].bIsSpawnedOnce = true;
 }
