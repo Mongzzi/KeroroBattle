@@ -134,9 +134,11 @@ public:
 	FSoftObjectPath GetFaceAssetPath(EKeroroType KeroroType, EFaceType FaceType);
 	FSoftObjectPath GetVoiceSoundAssetPath(EKeroroType KeroroType, int32 index);
 	FStreamableManager& GetStreamableManager();
+	void LoadLevelWithLoadingScreen(FName MapName);
 
-private:
+public:
 	FStreamableManager StreamableManager;
+	FName NextMapName;
 
 private:
 	UPROPERTY()

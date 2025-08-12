@@ -3,6 +3,8 @@
 
 #include "KeroroGameInstance.h"
 #include "Engine/StreamableManager.h"
+#include "Kismet/GameplayStatics.h"
+
 
 UKeroroGameInstance::UKeroroGameInstance()
 {
@@ -114,6 +116,12 @@ FSoftObjectPath UKeroroGameInstance::GetVoiceSoundAssetPath(EKeroroType KeroroTy
 FStreamableManager& UKeroroGameInstance::GetStreamableManager()
 {
 	return StreamableManager;
+}
+
+void UKeroroGameInstance::LoadLevelWithLoadingScreen(FName MapName)
+{
+	NextMapName = MapName;
+	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("LoadingLevel")));
 }
 
 FKRStatData::FKRStatData()

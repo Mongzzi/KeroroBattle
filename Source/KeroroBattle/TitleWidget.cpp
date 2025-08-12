@@ -9,6 +9,7 @@
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
+#include "KeroroGameInstance.h"
 
 void UTitleWidget::NativeConstruct()
 {
@@ -128,8 +129,12 @@ void UTitleWidget::OnStartReleased()
 		PC->SetInputMode(FInputModeGameOnly());
 	}
 
-	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("Robby1Level")));
+	//UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("Robby1Level")));
 
+	if (UKeroroGameInstance* GI = Cast<UKeroroGameInstance>(GetGameInstance()))
+	{
+		GI->LoadLevelWithLoadingScreen(TEXT("Robby1Level"));
+	}
 }
 
 void UTitleWidget::OnExitHovered()

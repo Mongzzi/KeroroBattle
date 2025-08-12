@@ -4,6 +4,7 @@
 #include "GameSelectWidget.h"
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
+#include "KeroroGameInstance.h"
 
 void UGameSelectWidget::NativeConstruct()
 {
@@ -63,7 +64,11 @@ void UGameSelectWidget::OnSelectButton1Clicked()
 		PC->bShowMouseCursor = false;
 		PC->SetInputMode(FInputModeGameOnly());
 	}
-	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("MainLevel1")));
+	//UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("MainLevel1")));
+	if (UKeroroGameInstance* GI = Cast<UKeroroGameInstance>(GetGameInstance()))
+	{
+		GI->LoadLevelWithLoadingScreen(FName(TEXT("MainLevel1")));
+	}
 }
 
 void UGameSelectWidget::OnSelectButton2Clicked()
@@ -74,7 +79,11 @@ void UGameSelectWidget::OnSelectButton2Clicked()
 		PC->bShowMouseCursor = false;
 		PC->SetInputMode(FInputModeGameOnly());
 	}
-	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("MainLevel1")));
+	//UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("MainLevel1")));
+	if (UKeroroGameInstance* GI = Cast<UKeroroGameInstance>(GetGameInstance()))
+	{
+		GI->LoadLevelWithLoadingScreen(FName(TEXT("MainLevel1")));
+	}
 }
 
 void UGameSelectWidget::OnSelectButton3Clicked()
@@ -85,7 +94,11 @@ void UGameSelectWidget::OnSelectButton3Clicked()
 		PC->bShowMouseCursor = false;
 		PC->SetInputMode(FInputModeGameOnly());
 	}
-	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("MainLevel3")));
+	//UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("MainLevel3")));
+	if (UKeroroGameInstance* GI = Cast<UKeroroGameInstance>(GetGameInstance()))
+	{
+		GI->LoadLevelWithLoadingScreen(FName(TEXT("MainLevel3")));
+	}
 }
 
 void UGameSelectWidget::OnSelectButton4Clicked()
@@ -96,7 +109,10 @@ void UGameSelectWidget::OnSelectButton4Clicked()
 		PC->bShowMouseCursor = false;
 		PC->SetInputMode(FInputModeGameOnly());
 	}
-	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("MainLevel2")));
+	if (UKeroroGameInstance* GI = Cast<UKeroroGameInstance>(GetGameInstance()))
+	{
+		GI->LoadLevelWithLoadingScreen(FName(TEXT("MainLevel2")));
+	}
 }
 
 void UGameSelectWidget::OnSelectButton5Clicked()
@@ -107,5 +123,8 @@ void UGameSelectWidget::OnSelectButton5Clicked()
 		PC->bShowMouseCursor = false;
 		PC->SetInputMode(FInputModeGameOnly());
 	}
-	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("MainLevel3")));
+	if (UKeroroGameInstance* GI = Cast<UKeroroGameInstance>(GetGameInstance()))
+	{
+		GI->LoadLevelWithLoadingScreen(FName(TEXT("MainLevel3")));
+	}
 }
