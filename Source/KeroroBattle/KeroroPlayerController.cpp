@@ -24,6 +24,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "KeroroAnimInstance.h"
+#include "KeroroGameMode.h"
 
 
 AKeroroPlayerController::AKeroroPlayerController()
@@ -467,6 +468,11 @@ void AKeroroPlayerController::Die()
 				return;
 			}
 		}
+	}
+
+	if (AKeroroGameMode* GM = GetWorld()->GetAuthGameMode<AKeroroGameMode>())
+	{
+		GM->EndGame(false);
 	}
 }
 

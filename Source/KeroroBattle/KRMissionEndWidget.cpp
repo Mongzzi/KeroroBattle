@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "KRMissionEndWidget.h"
@@ -42,6 +42,23 @@ void UKRMissionEndWidget::PlayMissionEndAnim()
 	if (MissionAnim)
 	{
 		PlayAnimation(MissionAnim);
+	}
+}
+
+void UKRMissionEndWidget::ChangeDefeatImage()
+{
+	UTexture2D* Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/6.6"));
+	if (ResultImage && Image)
+	{
+		ResultImage->SetBrushFromTexture(Image);
+	}
+}
+
+void UKRMissionEndWidget::ChangeDefeatText()
+{
+	if (ResultText)
+	{
+		ResultText->SetText(FText::FromString(TEXT("미션 실패..")));
 	}
 }
 

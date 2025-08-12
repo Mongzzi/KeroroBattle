@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "KeroroGameMode.h"
@@ -69,10 +69,14 @@ void AKeroroGameMode::EndGame(bool bIsVictory)
 		}
 	}
 	else {
-		UE_LOG(LogTemp, Error, TEXT("Mission Failed"));
-		//if (UKeroroGameInstance* GI = Cast<UKeroroGameInstance>(GetGameInstance()))
-		//{
-		//    GI->LoadLevelWithLoadingScreen(FName(TEXT("Robby1Level")));
-		//}
+		MissionEndWidget = CreateWidget<UKRMissionEndWidget>(GetWorld(), MissionWidgetClass);
+		if (MissionEndWidget)
+		{
+			MissionEndWidget->AddToViewport();
+			MissionEndWidget->ChangeDefeatImage();
+			MissionEndWidget->ChangeDefeatText();
+			MissionEndWidget->PlayMissionEndAnim();
+			PC->SetUIMode();
+		}
 	}
 }

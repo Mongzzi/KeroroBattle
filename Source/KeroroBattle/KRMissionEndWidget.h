@@ -21,7 +21,9 @@ protected:
 
 public:
 	void PlayMissionEndAnim();
-	
+	void ChangeDefeatImage();
+	void ChangeDefeatText();
+
 	UFUNCTION()
 	void OnClickedRobbyButton();
 	
