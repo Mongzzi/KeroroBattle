@@ -7,14 +7,14 @@
 #include "ImpactWeapon.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class KEROROBATTLE_API AImpactWeapon : public AKeroroWeapon
 {
 	GENERATED_BODY()
-	
-public: 
+
+public:
 	AImpactWeapon();
 	virtual void PlayEffect(class AKeroroCharacter* Character) override;
 
@@ -26,15 +26,15 @@ private:
 	FTimerHandle AttackTimer;
 	FTimerHandle EffectTimer;
 
-	class AKeroroCharacter* OwnerKero;
+	TWeakObjectPtr<class AKeroroCharacter> OwnerKero;
 
 private:
 	UPROPERTY()
 	UParticleSystem* ImpactPS;
-	
+
 	UPROPERTY()
 	UParticleSystemComponent* ImpactPC;
-	
+
 	UPROPERTY()
 	USoundWave* UltiHitSound;
 

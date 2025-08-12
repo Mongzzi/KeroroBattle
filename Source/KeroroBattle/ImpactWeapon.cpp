@@ -46,15 +46,21 @@ void AImpactWeapon::PlayEffect(AKeroroCharacter* Character)
 	GetWorld()->GetTimerManager().SetTimer(AttackTimer, this, &AImpactWeapon::AttackCheck_Impact, 0.1f, true);
 
 	GetWorld()->GetTimerManager().SetTimer(EffectTimer, [this]() {
-		OwnerKero->ChangeCameraDefault();
-		ImpactPC->DestroyComponent();
+		if (OwnerKero.IsValid())
+		{
+			OwnerKero->ChangeCameraDefault();
+		}
+		if (ImpactPC)
+		{
+			ImpactPC->DestroyComponent();
+		}
 		GetWorld()->GetTimerManager().ClearTimer(AttackTimer);
 		}, UltiDuration, false);
 }
 
 void AImpactWeapon::AttackCheck_Impact()
 {
-	if (!OwnerKero || !OwnerKero->KRStat) return;
+	if (!OwnerKero.IsValid() || !OwnerKero->KRStat) return;
 	UKeroroStatComponent* OwnerKRStat = OwnerKero->KRStat;
 
 	FVector Start = OwnerKero->GetMesh()->GetSocketLocation("TamamaImpact");
