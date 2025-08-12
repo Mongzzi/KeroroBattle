@@ -21,12 +21,17 @@ protected:
 
 public:
 	void OnTimeOver();
+	void EndGame(bool bIsVictory);
 
 private:
 	UPROPERTY()
 	class AKeroroGameState* KeroroGameState;
 
-	float SurvivalTime = 180.0f;
+private:
+	UPROPERTY()
+	TSubclassOf<class UKRMissionEndWidget> MissionWidgetClass;
 
-	void EndGame(bool bIsVictory);
+	class UKRMissionEndWidget* MissionEndWidget;
+
+	float SurvivalTime = 180.0f;
 };
