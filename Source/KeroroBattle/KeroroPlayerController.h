@@ -57,7 +57,7 @@ private:
 	void OnMagicCircleActivated();
 
 	bool IsMagicCircleActivated;
-	bool IsRobbyMap = true;
+	bool IsMainMap = true;
 
 public:
 	class UNiagaraSystem* NSTagEffect;

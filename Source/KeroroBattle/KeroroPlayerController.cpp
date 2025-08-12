@@ -103,17 +103,17 @@ void AKeroroPlayerController::BeginPlay()
 
 	// 현재 맵이름 가져옴 (로비면 hud ,캐릭터 머리위 hp바 히든으로 변경)
 	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
-	if (CurrentLevelName == TEXT("Robby1Level"))
+	if (CurrentLevelName == TEXT("Robby1Level") || CurrentLevelName == TEXT("LoadingLevel"))
 	{
-		IsRobbyMap = true;
+		IsMainMap = false;
 		KRCharacter->HiddenHPBarOnHead();
 	}
 	else {
-		IsRobbyMap = false;
+		IsMainMap = true;
 	}
 
 
-	if (!IsRobbyMap)
+	if (IsMainMap)
 	{
 		KRHUDWidget = CreateWidget<UKeroroHUDWidget>(this, KRHUDWidgetClass);
 		if (KRHUDWidget == nullptr) return;
@@ -277,7 +277,7 @@ void AKeroroPlayerController::PlayUltiSkillCameraShake()
 void AKeroroPlayerController::ShowStatusWidget()
 {
 	if (!KRStatusWidgetClass) return;
-	if (IsRobbyMap) return;
+	if (!IsMainMap) return;
 	KRStatusWidget = CreateWidget<UStatusWidget>(this, KRStatusWidgetClass);
 	if (KRStatusWidget)
 	{
@@ -319,10 +319,10 @@ float AKeroroPlayerController::GetGameStateRemainingTime()
 
 void AKeroroPlayerController::TagCharacter(EKeroroType TargetType)
 {
-	if (!KRPlayerState || IsRobbyMap) return;
+	if (!KRPlayerState || !IsMainMap) return;
 
 	// 아직 해금되지 않은 캐릭터면 return
-	if (!KRPlayerState->IsCharacterUnlocked(TargetType) && IsRobbyMap)
+	if (!KRPlayerState->IsCharacterUnlocked(TargetType))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s is locked!"), *UEnum::GetValueAsString(TargetType));
 		return;
