@@ -74,7 +74,7 @@ AKeroroPlayerController::AKeroroPlayerController()
 void AKeroroPlayerController::OnPossess(APawn* PawnToPossess)
 {
 	Super::OnPossess(PawnToPossess);
-
+	SetGameMode();
 }
 
 void AKeroroPlayerController::PostInitializeComponents()
@@ -112,7 +112,6 @@ void AKeroroPlayerController::BeginPlay()
 	else {
 		IsMainMap = true;
 	}
-
 
 	if (IsMainMap)
 	{
@@ -500,8 +499,6 @@ void AKeroroPlayerController::SetUIMode()
 	bShowMouseCursor = true;
 }
 
-
-
 void AKeroroPlayerController::SetGameMode()
 {
 	//SetPause(false);
@@ -512,9 +509,6 @@ void AKeroroPlayerController::SetGameMode()
 
 	bShowMouseCursor = false;
 }
-
-
-
 
 // 플레이어 스테이트에서 레벨업할시 델리게이트에의해 호출하여
 // 관리중인 모든 캐릭터 레벨 초기화

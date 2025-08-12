@@ -209,7 +209,7 @@ void UKeroroHUDWidget::UpdateSkillCoolTimeWidget()
 
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
 	if (!kero) {
-		UE_LOG(LogTemp, Error, TEXT("kero is nullptr in hud widget"));
+		//UE_LOG(LogTemp, Error, TEXT("kero is nullptr in hud widget"));
 		return;
 	}
 
