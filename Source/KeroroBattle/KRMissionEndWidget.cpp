@@ -45,6 +45,14 @@ void UKRMissionEndWidget::PlayMissionEndAnim()
 	}
 }
 
+void UKRMissionEndWidget::PlayUnlockAnim()
+{
+	if (UnlockAnim)
+	{
+		PlayAnimation(UnlockAnim);
+	}
+}
+
 void UKRMissionEndWidget::ChangeDefeatImage()
 {
 	UTexture2D* Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/6.6"));

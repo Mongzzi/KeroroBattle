@@ -21,6 +21,7 @@ protected:
 
 public:
 	void PlayMissionEndAnim();
+	void PlayUnlockAnim();
 	void ChangeDefeatImage();
 	void ChangeDefeatText();
 
@@ -33,6 +34,9 @@ public:
 protected:	
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	class UWidgetAnimation* MissionAnim;
+	
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	class UWidgetAnimation* UnlockAnim;
 
 	UPROPERTY(meta= (BindWidget))
 	class UImage* ResultImage;
