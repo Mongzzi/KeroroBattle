@@ -7,6 +7,7 @@
 #include "KeroroPlayerState.h"
 #include "KeroroGameState.h"
 #include "Kismet/GameplayStatics.h"
+#include "KeroroGameInstance.h"
 
 AKeroroGameMode::AKeroroGameMode()
 {
@@ -50,11 +51,16 @@ void AKeroroGameMode::EndGame(bool bIsVictory)
     if (bIsVictory)
     {
         UE_LOG(LogTemp, Error, TEXT("Mission Complete"));
-        // 미션 완수 위젯
-        // 캐릭터 해금 위젯 추가
+        if (UKeroroGameInstance* GI = Cast<UKeroroGameInstance>(GetGameInstance()))
+        {
+            GI->LoadLevelWithLoadingScreen(FName(TEXT("Robby1Level")));
+        }
     }
     else {
         UE_LOG(LogTemp, Error, TEXT("Mission Failed"));
-        // 미션 실패 위젯
+        //if (UKeroroGameInstance* GI = Cast<UKeroroGameInstance>(GetGameInstance()))
+        //{
+        //    GI->LoadLevelWithLoadingScreen(FName(TEXT("Robby1Level")));
+        //}
     }
 }

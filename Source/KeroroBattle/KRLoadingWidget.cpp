@@ -26,7 +26,7 @@ UKRLoadingWidget::UKRLoadingWidget(const FObjectInitializer& ObjectInitializer) 
 		MediaPlayer = MP.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UFileMediaSource> MS1(TEXT("/Game/Etc/LoadingAsset/LoadingAsset1.LoadingAsset1"));
+	static ConstructorHelpers::FObjectFinder<UFileMediaSource> MS1(TEXT("/Game/Etc/LoadingAsset/LoadingAsset.LoadingAsset"));
 	if (MS1.Succeeded())
 	{
 		MediaSource = MS1.Object;
