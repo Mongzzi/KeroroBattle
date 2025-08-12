@@ -7,6 +7,7 @@
 #include "Components/TextBlock.h"
 #include "KeroroGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "KRUnlockWidget.h"
 
 void UKRMissionEndWidget::NativeConstruct()
 {

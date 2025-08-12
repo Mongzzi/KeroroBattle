@@ -135,10 +135,19 @@ public:
 	FSoftObjectPath GetVoiceSoundAssetPath(EKeroroType KeroroType, int32 index);
 	FStreamableManager& GetStreamableManager();
 	void LoadLevelWithLoadingScreen(FName MapName);
+	bool IsCharacterUnlocked(EKeroroType Type);
+	void UnlockCharacter(EKeroroType Type);
 
 public:
 	FStreamableManager StreamableManager;
 	FName NextMapName;
+	EKeroroType NextMissionRound = EKeroroType::Keroro;
+
+
+private:
+	// 해금된 캐릭터
+	UPROPERTY()
+	TMap<EKeroroType, bool> UnlockedCharacters;
 
 private:
 	UPROPERTY()

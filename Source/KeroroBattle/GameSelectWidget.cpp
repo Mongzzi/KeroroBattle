@@ -67,6 +67,7 @@ void UGameSelectWidget::OnSelectButton1Clicked()
 	//UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("MainLevel1")));
 	if (UKeroroGameInstance* GI = Cast<UKeroroGameInstance>(GetGameInstance()))
 	{
+		GI->NextMissionRound = EKeroroType::Tamama;
 		GI->LoadLevelWithLoadingScreen(FName(TEXT("MainLevel1")));
 	}
 }
@@ -82,6 +83,7 @@ void UGameSelectWidget::OnSelectButton2Clicked()
 	//UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("MainLevel1")));
 	if (UKeroroGameInstance* GI = Cast<UKeroroGameInstance>(GetGameInstance()))
 	{
+		GI->NextMissionRound = EKeroroType::Giroro;
 		GI->LoadLevelWithLoadingScreen(FName(TEXT("MainLevel1")));
 	}
 }
@@ -97,6 +99,7 @@ void UGameSelectWidget::OnSelectButton3Clicked()
 	//UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("MainLevel3")));
 	if (UKeroroGameInstance* GI = Cast<UKeroroGameInstance>(GetGameInstance()))
 	{
+		GI->NextMissionRound = EKeroroType::Dororo;
 		GI->LoadLevelWithLoadingScreen(FName(TEXT("MainLevel3")));
 	}
 }
@@ -111,6 +114,7 @@ void UGameSelectWidget::OnSelectButton4Clicked()
 	}
 	if (UKeroroGameInstance* GI = Cast<UKeroroGameInstance>(GetGameInstance()))
 	{
+		GI->NextMissionRound = EKeroroType::Kururu;
 		GI->LoadLevelWithLoadingScreen(FName(TEXT("MainLevel2")));
 	}
 }
@@ -125,6 +129,7 @@ void UGameSelectWidget::OnSelectButton5Clicked()
 	}
 	if (UKeroroGameInstance* GI = Cast<UKeroroGameInstance>(GetGameInstance()))
 	{
+		GI->NextMissionRound = EKeroroType::Keroro;
 		GI->LoadLevelWithLoadingScreen(FName(TEXT("MainLevel3")));
 	}
 }

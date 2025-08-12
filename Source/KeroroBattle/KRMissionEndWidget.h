@@ -31,6 +31,10 @@ public:
 	UFUNCTION()
 	void OnClickedExitButton();
 
+public:
+	UPROPERTY(meta = (BindWidget))
+	class UKRUnlockWidget* UnlockWidget;
+
 protected:	
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	class UWidgetAnimation* MissionAnim;

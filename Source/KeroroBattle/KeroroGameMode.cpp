@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "KeroroGameInstance.h"
 #include "KRMissionEndWidget.h"
+#include "KRUnlockWidget.h"
 
 AKeroroGameMode::AKeroroGameMode()
 {
@@ -58,6 +59,12 @@ void AKeroroGameMode::EndGame(bool bIsVictory)
 	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetWorld()->GetFirstPlayerController());
 	if (!PC) return;
 
+	AKeroroPlayerState* PS = Cast<AKeroroPlayerState>(PC->PlayerState);
+	if (!PS) return;
+
+	UKeroroGameInstance* GI = Cast<UKeroroGameInstance>(GetGameInstance());
+	if (!GI) return;
+
 	if (bIsVictory)
 	{
 		MissionEndWidget = CreateWidget<UKRMissionEndWidget>(GetWorld(), MissionWidgetClass);
@@ -65,6 +72,27 @@ void AKeroroGameMode::EndGame(bool bIsVictory)
 		{
 			MissionEndWidget->AddToViewport();
 			MissionEndWidget->PlayMissionEndAnim();
+			EKeroroType MissionRound = GI->NextMissionRound;
+
+			// 언락 위젯
+			if (!GI->IsCharacterUnlocked(MissionRound))
+			{
+				GI->UnlockCharacter(MissionRound);
+				MissionEndWidget->PlayUnlockAnim();
+				MissionEndWidget->UnlockWidget->ChangeImage(MissionRound);
+				MissionEndWidget->UnlockWidget->ChangeText(MissionRound);
+
+				FTimerHandle RemoveHandle;
+				TWeakObjectPtr<UKRMissionEndWidget> WeakMissionEndWidget = MissionEndWidget;
+				GetWorldTimerManager().SetTimer(RemoveHandle, [WeakMissionEndWidget]()
+					{
+						if (WeakMissionEndWidget.IsValid() && WeakMissionEndWidget->UnlockWidget)
+						{
+							WeakMissionEndWidget->UnlockWidget->RemoveFromParent();
+							WeakMissionEndWidget->UnlockWidget = nullptr;
+						}
+					}, 3.0f, false);
+			}
 			PC->SetUIMode();
 		}
 	}

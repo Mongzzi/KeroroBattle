@@ -25,6 +25,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "KeroroAnimInstance.h"
 #include "KeroroGameMode.h"
+#include "KeroroGameInstance.h"
 
 
 AKeroroPlayerController::AKeroroPlayerController()
@@ -321,8 +322,11 @@ void AKeroroPlayerController::TagCharacter(EKeroroType TargetType)
 {
 	if (!KRPlayerState || !IsMainMap) return;
 
+	UKeroroGameInstance* GI = Cast<UKeroroGameInstance>(GetGameInstance());
+	if (!GI)return;
+
 	// 아직 해금되지 않은 캐릭터면 return
-	if (!KRPlayerState->IsCharacterUnlocked(TargetType))
+	if (!GI->IsCharacterUnlocked(TargetType))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s is locked!"), *UEnum::GetValueAsString(TargetType));
 		return;

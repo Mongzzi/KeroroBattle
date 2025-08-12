@@ -20,6 +20,11 @@ UKeroroGameInstance::UKeroroGameInstance()
 	static ConstructorHelpers::FObjectFinder<UDataTable>FSDT(TEXT("/Game/GameData/SoundAssetData.SoundAssetData"));
 	if (FSDT.Succeeded())KRSoundAssetTable = FSDT.Object;
 
+	UnlockCharacter(EKeroroType::Keroro);
+	//UnlockCharacter(EKeroroType::Tamama);
+	//UnlockCharacter(EKeroroType::Giroro);
+	//UnlockCharacter(EKeroroType::Dororo);
+	//UnlockCharacter(EKeroroType::Kururu);
 }
 
 
@@ -122,6 +127,22 @@ void UKeroroGameInstance::LoadLevelWithLoadingScreen(FName MapName)
 {
 	NextMapName = MapName;
 	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("LoadingLevel")));
+}
+
+bool UKeroroGameInstance::IsCharacterUnlocked(EKeroroType Type)
+{
+	if (UnlockedCharacters.Contains(Type))
+	{
+		return UnlockedCharacters[Type];
+	}
+	return false;
+}
+
+void UKeroroGameInstance::UnlockCharacter(EKeroroType Type)
+{
+	if (IsCharacterUnlocked(Type)) return;
+
+	UnlockedCharacters.Add(Type, true);
 }
 
 FKRStatData::FKRStatData()

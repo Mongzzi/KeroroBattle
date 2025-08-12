@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "KRUnlockWidget.h"
@@ -42,16 +42,16 @@ void UKRUnlockWidget::ChangeText(EKeroroType type)
     switch (type)
     {
     case EKeroroType::Tamama:
-        NewText = FText::FromString(TEXT("≈∏∏∂∏∂ «ÿ±›!"));
+        NewText = FText::FromString(TEXT("ÌÉÄÎßàÎßà Ï∫êÎ¶≠ÌÑ∞ Ìï¥Í∏à!"));
         break;
     case EKeroroType::Giroro:
-        NewText = FText::FromString(TEXT("±‚∑Œ∑Œ «ÿ±›!"));
+        NewText = FText::FromString(TEXT("Í∏∞Î°úÎ°ú Ï∫êÎ¶≠ÌÑ∞ Ìï¥Í∏à!"));
         break;
     case EKeroroType::Kururu:
-        NewText = FText::FromString(TEXT("ƒÌ∑Á∑Á «ÿ±›!"));
+        NewText = FText::FromString(TEXT("Ïø†Î£®Î£® Ï∫êÎ¶≠ÌÑ∞ Ìï¥Í∏à!"));
         break;
     case EKeroroType::Dororo:
-        NewText = FText::FromString(TEXT("µµ∑Œ∑Œ «ÿ±›!"));
+        NewText = FText::FromString(TEXT("ÎèÑÎ°úÎ°ú Ï∫êÎ¶≠ÌÑ∞ Ìï¥Í∏à!"));
         break;
     }
 
