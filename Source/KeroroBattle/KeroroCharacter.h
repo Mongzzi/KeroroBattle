@@ -48,11 +48,15 @@ public:
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
+	UFUNCTION()
+	void LatenComboAttackCheck();
+
 private:
 	FTimerHandle ParryTimerHandle;
 	FTimerHandle GuardTimerHandle;
 	FTimerHandle GuardCooldownTimer;
 	FTimerHandle UltimateSkillCooldownTimer;	// 궁극기 쿨타임 타이머 추후 사용예정
+	FTimerHandle LatenComboAttack;
 
 public:
 	void StartRoll(FVector Dir,float RollDistance=600.0f);

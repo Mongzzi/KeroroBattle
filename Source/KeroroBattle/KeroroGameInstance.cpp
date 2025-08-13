@@ -21,10 +21,10 @@ UKeroroGameInstance::UKeroroGameInstance()
 	if (FSDT.Succeeded())KRSoundAssetTable = FSDT.Object;
 
 	UnlockCharacter(EKeroroType::Keroro);
-	//UnlockCharacter(EKeroroType::Tamama);
-	//UnlockCharacter(EKeroroType::Giroro);
-	//UnlockCharacter(EKeroroType::Dororo);
-	//UnlockCharacter(EKeroroType::Kururu);
+	UnlockCharacter(EKeroroType::Tamama);
+	UnlockCharacter(EKeroroType::Giroro);
+	UnlockCharacter(EKeroroType::Dororo);
+	UnlockCharacter(EKeroroType::Kururu);
 }
 
 
