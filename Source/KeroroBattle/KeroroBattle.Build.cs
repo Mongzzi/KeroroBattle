@@ -10,7 +10,7 @@ public class KeroroBattle : ModuleRules
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "Niagara", "UMG"
-        , "NavigationSystem","AIModule","GameplayTasks","MediaAssets","MediaUtils"});
+        , "NavigationSystem","AIModule","GameplayTasks","MediaAssets","MediaUtils","MovieScene","LevelSequence"});
 
         PrivateDependencyModuleNames.AddRange(new string[] { });
 

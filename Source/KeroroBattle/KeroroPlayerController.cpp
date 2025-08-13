@@ -26,6 +26,9 @@
 #include "KeroroAnimInstance.h"
 #include "KeroroGameMode.h"
 #include "KeroroGameInstance.h"
+#include "LevelSequence.h"
+#include "LevelSequenceActor.h"
+#include "LevelSequencePlayer.h"
 
 
 AKeroroPlayerController::AKeroroPlayerController()
@@ -69,6 +72,12 @@ AKeroroPlayerController::AKeroroPlayerController()
 	{
 		KRStatusWidgetClass = STATUSCLASS.Class;
 	}
+	static ConstructorHelpers::FObjectFinder<ULevelSequence> LEVELSEQUENCE(TEXT("/Game/EnglishCollege/Maps/LevelSequence1.LevelSequence1"));
+	if (LEVELSEQUENCE.Succeeded())
+	{
+		EntraceLevelSequence = LEVELSEQUENCE.Object;
+	}
+
 	IsMagicCircleActivated = false;
 }
 
@@ -721,12 +730,12 @@ void AKeroroPlayerController::Jump()
 	{
 		kero->Jump();
 	}
-
 	//// test
 	//if (KRHUDWidget)
 	//{
 	//	KRHUDWidget->PlayDrawAnimation_AllCard();
 	//}
+	PlayEntraceScene1();
 }
 
 void AKeroroPlayerController::StartRun()
@@ -777,6 +786,22 @@ void AKeroroPlayerController::TagDororo()
 void AKeroroPlayerController::TagKururu()
 {
 	TagCharacter(EKeroroType::Kururu);
+}
+
+void AKeroroPlayerController::PlayEntraceScene1()
+{
+	if (!EntraceLevelSequence)return;
+
+	FMovieSceneSequencePlaybackSettings PlaySetting;
+	PlaySetting.bAutoPlay = true;
+
+	ALevelSequenceActor* SequenceActor;
+	ULevelSequencePlayer* SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), EntraceLevelSequence, PlaySetting, SequenceActor);
+	if (SequencePlayer)
+	{
+		SequencePlayer->Play();
+	}
+
 }
 
 

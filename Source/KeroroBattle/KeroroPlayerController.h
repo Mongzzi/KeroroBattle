@@ -96,6 +96,9 @@ public:
 	UPROPERTY()
 	class UStatusWidget* KRStatusWidget;
 
+	UPROPERTY()
+	class ULevelSequence* EntraceLevelSequence;
+
 	void UpdateStatCardEnhanced();
 	void UpdateStatWidget();
 	void UpdateHPWidget();
@@ -127,6 +130,8 @@ public:
 	void TagGiroro();
 	void TagDororo();
 	void TagKururu();
+
+	void PlayEntraceScene1();
 
 protected:
 
