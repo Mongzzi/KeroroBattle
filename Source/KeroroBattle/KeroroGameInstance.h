@@ -141,7 +141,9 @@ public:
 public:
 	FStreamableManager StreamableManager;
 	FName NextMapName;
-	EKeroroType NextMissionRound = EKeroroType::Keroro;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite, Category = NextMissionRound)
+	EKeroroType NextMissionRound = EKeroroType::Tamama;
 
 
 private:

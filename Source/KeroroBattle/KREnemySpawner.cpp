@@ -5,7 +5,7 @@
 #include "KeroroEnemyCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/BoxComponent.h"
-
+#include "KeroroGameInstance.h"
 // Sets default values
 AKREnemySpawner::AKREnemySpawner()
 {
@@ -28,7 +28,8 @@ void AKREnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (EnemyClass)
+	UKeroroGameInstance* GI = GetGameInstance<UKeroroGameInstance>();
+	if (EnemyClass&&GI&&GI->NextMissionRound!=EKeroroType::Keroro)
 	{
 		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle,this,&AKREnemySpawner::SpawnEnemy,SpawnInterval,true);
 	}
