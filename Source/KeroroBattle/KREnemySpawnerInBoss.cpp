@@ -25,3 +25,10 @@ void AKREnemySpawnerInBoss::BeginPlay()
 
 	}
 }
+
+void AKREnemySpawnerInBoss::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+
+	GetWorld()->GetTimerManager().ClearTimer(SpawnTimerHandle);
+	Super::EndPlay(EndPlayReason);
+}

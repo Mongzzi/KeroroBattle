@@ -139,11 +139,13 @@ void ARotateWeapon::PlayEffect(AKeroroCharacter* Character)
 {
 	OwnerKero = Character;
 	CreateNSEffect();
-	FTimerHandle DurationHandle;
 
-	GetWorld()->GetTimerManager().SetTimer(DurationHandle, [this]() {
-		OwnerKero->ChangeCameraDefault();
-		Destroy();
+	TWeakObjectPtr<ARotateWeapon> WeakThis(this);
+	FTimerHandle DurationHandle;
+	GetWorld()->GetTimerManager().SetTimer(DurationHandle, [WeakThis]() {
+		if (!WeakThis.IsValid()) return;
+		WeakThis->OwnerKero->ChangeCameraDefault();
+		WeakThis->Destroy();
 		}, SkillDuration, false);
 }
 

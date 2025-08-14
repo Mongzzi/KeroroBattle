@@ -39,6 +39,15 @@ void USkill_Widget::NativeConstruct()
 	ItemType = EItemType::None;
 }
 
+void USkill_Widget::NativeDestruct()
+{
+	GetWorld()->GetTimerManager().ClearTimer(PullEffectTimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(AttackUpEndHandle);
+	GetWorld()->GetTimerManager().ClearTimer(SpeedUpEndHandle);
+	GetWorld()->GetTimerManager().ClearTimer(DefenceUpEndHandle);
+	Super::NativeDestruct();
+}
+
 void USkill_Widget::UseItem()
 {
 	switch (ItemType)
@@ -402,7 +411,7 @@ void USkill_Widget::ItemAttackUp()
 
 	PS->AttackPower_Enhanced += EnhanceValue_AttackUp;
 
-	FTimerHandle  AttackUpEndHandle;
+
 	GetWorld()->GetTimerManager().SetTimer(AttackUpEndHandle, this, &USkill_Widget::EndAttackUp, 5.0f, false);
 	krstat->UpdateStatCardEnhanced(PS);
 	
@@ -426,7 +435,6 @@ void USkill_Widget::ItemMoveSpeedUp()
 
 	PS->MaxMoveSpeed_Enhanced += EnhanceValue_SpeedUp;
 
-	FTimerHandle  SpeedUpEndHandle;
 	GetWorld()->GetTimerManager().SetTimer(SpeedUpEndHandle, this, &USkill_Widget::EndSpeedUp, 7.0f, false);
 	krstat->UpdateStatCardEnhanced(PS);
 
@@ -450,7 +458,6 @@ void USkill_Widget::ItemDefenseUp()
 
 	PS->DefenseRate_Enhanced += EnhanceValue_DefenceUp;
 
-	FTimerHandle  DefenceUpEndHandle;
 	GetWorld()->GetTimerManager().SetTimer(DefenceUpEndHandle, this, &USkill_Widget::EndDefenceUp, 5.0f, false);
 	krstat->UpdateStatCardEnhanced(PS);
 
@@ -524,13 +531,7 @@ void USkill_Widget::SetTextFromString(FString Str, FVector Color, FVector2D Scal
 void USkill_Widget::StartPull()
 {
 	PullElapsed = 0.0f;
-	GetWorld()->GetTimerManager().SetTimer(
-		PullTimerHandle,
-		this,
-		&USkill_Widget::UpdatePull,
-		0.01f,
-		true
-	);
+	GetWorld()->GetTimerManager().SetTimer(PullTimerHandle,this,&USkill_Widget::UpdatePull,0.01f,true);
 
 }
 

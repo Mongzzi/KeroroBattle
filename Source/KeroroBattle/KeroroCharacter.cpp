@@ -216,8 +216,8 @@ void AKeroroCharacter::Tick(float DeltaTime)
 
 void AKeroroCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::EndPlay(EndPlayReason);
 	UnbindCharacterEvents();
+	Super::EndPlay(EndPlayReason);
 }
 
 // Called to bind functionality to input
@@ -760,6 +760,11 @@ void AKeroroCharacter::UnbindCharacterEvents()
 	{
 		KRStat->OnHpIsZero.RemoveAll(this);
 	}
+
+	GetWorld()->GetTimerManager().ClearTimer(ParryTimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(GuardTimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(GuardCooldownTimer);
+	GetWorld()->GetTimerManager().ClearTimer(UltimateSkillCooldownTimer);
 }
 
 void AKeroroCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)

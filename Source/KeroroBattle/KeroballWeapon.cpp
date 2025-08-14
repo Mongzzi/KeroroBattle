@@ -17,6 +17,7 @@ void AKeroballWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	{
 		StaticMeshComponent->OnComponentHit.RemoveDynamic(this, &AKeroballWeapon::OnHit);
 	}
+	GetWorldTimerManager().ClearTimer(ExplodeTimerHandle);
 	Super::EndPlay(EndPlayReason);
 }
 

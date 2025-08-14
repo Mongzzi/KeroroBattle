@@ -14,6 +14,9 @@ class KEROROBATTLE_API AImpactWeapon : public AKeroroWeapon
 {
 	GENERATED_BODY()
 
+protected:
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 public:
 	AImpactWeapon();
 	virtual void PlayEffect(class AKeroroCharacter* Character) override;

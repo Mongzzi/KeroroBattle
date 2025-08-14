@@ -80,6 +80,7 @@ void UKeroroStatComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		GetWorld()->GetTimerManager().ClearTimer(HealTimerHandle);
 		GetWorld()->GetTimerManager().ClearTimer(MpHealTimerHandle);
 		GetWorld()->GetTimerManager().ClearTimer(InvincibilityTimerHandle);
+
 	}
 
 	OnHpIsChanged.Clear();
@@ -378,10 +379,12 @@ float UKeroroStatComponent::GetUlitiCostMp(EKeroroType kero)
 
 void UKeroroStatComponent::StartAutoHeal()
 {
-	GetWorld()->GetTimerManager().SetTimer(HealTimerHandle, [this]() {
-		CurrentHp = FMath::Clamp(CurrentHp + MaxHp * HealPowerRate, 0.0f, MaxHp);
+	TWeakObjectPtr<UKeroroStatComponent> WeakThis(this);
+	GetWorld()->GetTimerManager().SetTimer(HealTimerHandle, [WeakThis]() {
+		if (!WeakThis.IsValid()) return;
+		WeakThis->CurrentHp = FMath::Clamp(WeakThis->CurrentHp + WeakThis->MaxHp * WeakThis->HealPowerRate, 0.0f, WeakThis->MaxHp);
 		//UE_LOG(LogTemp, Log, TEXT("Auto heal amount : %f, current hp = %f"), MaxHp * HealPowerRate, CurrentHp);
-		OnHpIsChanged.Broadcast();
+		WeakThis->OnHpIsChanged.Broadcast();
 		},
 		HealIntervalTime,
 		true);
@@ -389,9 +392,11 @@ void UKeroroStatComponent::StartAutoHeal()
 
 void UKeroroStatComponent::StartAutoMpHeal()
 {
-	GetWorld()->GetTimerManager().SetTimer(MpHealTimerHandle, [this]() {
-		CurrentMp = FMath::Clamp(CurrentMp + MaxMp * MpHealPowerRate, 0.0f, MaxMp);
-		OnMpIsChanged.Broadcast();
+	TWeakObjectPtr<UKeroroStatComponent> WeakThis(this);
+	GetWorld()->GetTimerManager().SetTimer(MpHealTimerHandle, [WeakThis]() {
+		if (!WeakThis.IsValid()) return;
+		WeakThis->CurrentMp = FMath::Clamp(WeakThis->CurrentMp + WeakThis->MaxMp * WeakThis->MpHealPowerRate, 0.0f, WeakThis->MaxMp);
+		WeakThis->OnMpIsChanged.Broadcast();
 		},
 		MpHealIntervalTime,
 		true);
@@ -443,13 +448,7 @@ void UKeroroStatComponent::StartInvincibility()
 {
 	bIsInvincible = true;
 
-	GetWorld()->GetTimerManager().SetTimer(
-		InvincibilityTimerHandle,
-		this,
-		&UKeroroStatComponent::EndInvincibility,
-		InvincibilityTime,
-		false
-	);
+	GetWorld()->GetTimerManager().SetTimer(InvincibilityTimerHandle,this,&UKeroroStatComponent::EndInvincibility,InvincibilityTime,false);
 
 	//UE_LOG(LogTemp, Log, TEXT("invicible time start %f seconds"), InvincibilityTime);
 }

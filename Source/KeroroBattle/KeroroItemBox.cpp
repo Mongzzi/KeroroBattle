@@ -110,12 +110,15 @@ void AKeroroItemBox::OnCharacterBeginOverlap(UPrimitiveComponent* OverlappedComp
 	{
 		NCOpenEffect->Activate();
 
+		TWeakObjectPtr<AKeroroItemBox> WeakThis(this);
+
 		FTimerHandle EffectTimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(EffectTimerHandle, [this]()
+		GetWorld()->GetTimerManager().SetTimer(EffectTimerHandle, [WeakThis]()
 			{
-				if (NCOpenEffect)
+				if (!WeakThis.IsValid()) return;
+				if (WeakThis->NCOpenEffect)
 				{
-					NCOpenEffect->Deactivate();
+					WeakThis->NCOpenEffect->Deactivate();
 				}
 			}, 1.0f, false);
 	}

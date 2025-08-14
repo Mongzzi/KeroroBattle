@@ -32,7 +32,7 @@ public:
 
 	USkill_Widget(const FObjectInitializer& ObjectInitializer);
 	virtual void NativeConstruct() override;
-	
+	virtual void NativeDestruct() override;
 	void UseItem();
 	void SetItem(EItemType type);
 	void SetItemType(EItemType type) { ItemType = type; };
@@ -66,6 +66,13 @@ public:
 	EItemType GetItemType() { return ItemType; };
 
 private:
+	FTimerHandle  AttackUpEndHandle;
+	FTimerHandle  SpeedUpEndHandle;
+	FTimerHandle PullTimerHandle;
+	FTimerHandle PullEffectTimerHandle;
+	FTimerHandle  DefenceUpEndHandle;
+
+private:
 	float EnhanceValue_AttackUp = 50.0f;
 	float EnhanceValue_SpeedUp = 500.0f;
 	float EnhanceValue_DefenceUp = 0.3f;
@@ -83,9 +90,6 @@ private:
 	TArray<FPullingEnemy> PulledEnemies;
 
 	FVector PullCenter;
-
-	FTimerHandle PullTimerHandle;
-	FTimerHandle PullEffectTimerHandle;
 
 	float PullDuration = 1.0f;
 	float PullElapsed = 0.0f;

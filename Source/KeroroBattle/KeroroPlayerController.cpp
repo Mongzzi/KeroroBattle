@@ -259,13 +259,16 @@ void AKeroroPlayerController::PlayParryWidgetEffect()
 		KRParryWidget->PlayParryWidgetEffect();
 
 
+		TWeakObjectPtr<AKeroroPlayerController>WeakThis(this);
 		FTimerHandle RemoveHandle;
-		GetWorld()->GetTimerManager().SetTimer(RemoveHandle, [this]()
+		GetWorld()->GetTimerManager().SetTimer(RemoveHandle, [WeakThis]()
 			{
-				if (KRParryWidget)
+				if (!WeakThis.IsValid()) return;
+
+				if (WeakThis->KRParryWidget)
 				{
-					KRParryWidget->RemoveFromParent();
-					KRParryWidget = nullptr;
+					WeakThis->KRParryWidget->RemoveFromParent();
+					WeakThis->KRParryWidget = nullptr;
 				}
 			}, 0.4f, false);
 	}

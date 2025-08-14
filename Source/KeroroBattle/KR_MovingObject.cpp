@@ -33,18 +33,18 @@ void AKR_MovingObject::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetWorldTimerManager().SetTimer(
-		DropTimerHandle,
-		this,
-		&AKR_MovingObject::DropItemBox,
-		0.5f, // 2초마다
-		true  // 루프 반복
-	);
+	GetWorldTimerManager().SetTimer(DropTimerHandle,this,&AKR_MovingObject::DropItemBox,0.5f,true);
 
 	if (UltiSound)
 	{
 		PlayingSound = UGameplayStatics::SpawnSoundAtLocation(this, UltiSound, GetActorLocation());
 	}
+}
+
+void AKR_MovingObject::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorldTimerManager().ClearTimer(DropTimerHandle);
+	Super::EndPlay(EndPlayReason);
 }
 
 // Called every frame

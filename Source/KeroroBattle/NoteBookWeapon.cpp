@@ -64,6 +64,11 @@ void ANoteBookWeapon::BeginPlay()
 	Super::BeginPlay();
 }
 
+void ANoteBookWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+}
+
 void ANoteBookWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -76,23 +81,19 @@ void ANoteBookWeapon::PlayHitSound(int32 CurrentCombo)
 
 void ANoteBookWeapon::PlaySound(int32 ComboIndex)
 {
-	if (FinalEffectSound)
-	{
-		// 사운드를 스폰하고 AudioComponent를 저장
-		UAudioComponent* AudioComp = UGameplayStatics::SpawnSoundAtLocation(this, FinalEffectSound, GetActorLocation(), FRotator::ZeroRotator, 1.0f);
+	if (!FinalEffectSound) return;
+	UAudioComponent* AudioComp = UGameplayStatics::SpawnSoundAtLocation(this, FinalEffectSound, GetActorLocation(), FRotator::ZeroRotator, 1.0f);
 
-		if (AudioComp)
-		{
-			FTimerHandle TimeHandle;
-			GetWorld()->GetTimerManager().SetTimer(TimeHandle, [AudioComp]() {
-				if (AudioComp->IsPlaying())
-				{
-					AudioComp->Stop();
-				}
-				},
-				EffectRemainTime, false);
-		}
-	}
+	if (!AudioComp) return;
+	TWeakObjectPtr<UAudioComponent> WeakAudioComp(AudioComp);
+
+	FTimerHandle TimeHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimeHandle, [WeakAudioComp](){
+			if (WeakAudioComp.IsValid() && WeakAudioComp->IsPlaying())
+			{
+				WeakAudioComp->Stop();
+			}
+		}, EffectRemainTime, false);
 }
 
 void ANoteBookWeapon::ActivateMagicCircle()
@@ -151,45 +152,31 @@ void ANoteBookWeapon::ActivateFinalEffect()
 
 	FVector loc = FinalEffectLoc;
 
-	UParticleSystemComponent* temp = UGameplayStatics::SpawnEmitterAtLocation(
-		GetWorld(),
-		MagicCircleEffect3,
-		loc,
-		FRotator::ZeroRotator,
-		FVector(1.0f)
-	);
+	TWeakObjectPtr<UParticleSystemComponent> TempEffect = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(),MagicCircleEffect3,loc,FRotator::ZeroRotator,FVector(1.0f));
 
 	FTimerHandle EffectTimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(EffectTimerHandle, [temp]() {
-		if (temp)
-		{
-			temp->DestroyComponent();
-		}
-		},
-		EffectRemainTime,
-		false
-	);
+	TWeakObjectPtr<UParticleSystemComponent> WeakTempEffect = TempEffect;
+
+	GetWorld()->GetTimerManager().SetTimer(EffectTimerHandle, [WeakTempEffect]() {
+		if (WeakTempEffect.IsValid()){
+			WeakTempEffect->DestroyComponent();
+		}}, EffectRemainTime, false);
+
+	TWeakObjectPtr<ANoteBookWeapon> WeakThis(this);
 
 	FTimerHandle DamageTickHandle;
-	GetWorld()->GetTimerManager().SetTimer(
-		DamageTickHandle,
-		[this, loc](){
-			AttackCheck_NoteBook(loc);
-		},
-		DamageTickInterval,
-		true
-	);
-
+	GetWorld()->GetTimerManager().SetTimer(DamageTickHandle,[WeakThis, loc]() {
+			if (WeakThis.IsValid())
+			{
+				WeakThis->AttackCheck_NoteBook(loc);
+			}},DamageTickInterval,true);
 
 	FTimerHandle StopHandle;
-	GetWorld()->GetTimerManager().SetTimer(StopHandle,
-		[this,DamageTickHandle]() mutable
-		{
-			GetWorld()->GetTimerManager().ClearTimer(DamageTickHandle);
-		},
-		EffectRemainTime,
-		false
-	);
+	GetWorld()->GetTimerManager().SetTimer(StopHandle,[WeakThis, DamageTickHandle]() mutable{
+			if (WeakThis.IsValid())
+			{
+				WeakThis->GetWorld()->GetTimerManager().ClearTimer(DamageTickHandle);
+			}},EffectRemainTime,false);
 }
 
 

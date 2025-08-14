@@ -69,6 +69,7 @@ void UKeroroHPBarWidget::NativeDestruct()
 	{
 		CurrentKRStat->OnHpIsChanged.RemoveAll(this);
 	}
+	GetWorld()->GetTimerManager().ClearTimer(TextVisibleHandle);
 
 	Super::NativeDestruct();
 }

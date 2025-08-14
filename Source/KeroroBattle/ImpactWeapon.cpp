@@ -13,6 +13,13 @@
 #include "CriticalDamageType.h"
 
 
+void AImpactWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorld()->GetTimerManager().ClearTimer(AttackTimer);
+	Super::EndPlay(EndPlayReason);
+
+}
+
 AImpactWeapon::AImpactWeapon()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -43,18 +50,20 @@ void AImpactWeapon::PlayEffect(AKeroroCharacter* Character)
 		ImpactPC->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.5f));
 	}
 
+	TWeakObjectPtr<AImpactWeapon> WeakThis(this);
+
 	GetWorld()->GetTimerManager().SetTimer(AttackTimer, this, &AImpactWeapon::AttackCheck_Impact, 0.1f, true);
 
-	GetWorld()->GetTimerManager().SetTimer(EffectTimer, [this]() {
-		if (OwnerKero.IsValid())
+	GetWorld()->GetTimerManager().SetTimer(EffectTimer, [WeakThis]() {
+		if (WeakThis->OwnerKero.IsValid())
 		{
-			OwnerKero->ChangeCameraDefault();
+			WeakThis->OwnerKero->ChangeCameraDefault();
 		}
-		if (ImpactPC)
+		if (WeakThis->ImpactPC)
 		{
-			ImpactPC->DestroyComponent();
+			WeakThis->ImpactPC->DestroyComponent();
 		}
-		GetWorld()->GetTimerManager().ClearTimer(AttackTimer);
+		WeakThis->GetWorld()->GetTimerManager().ClearTimer(WeakThis->AttackTimer);
 		}, UltiDuration, false);
 }
 

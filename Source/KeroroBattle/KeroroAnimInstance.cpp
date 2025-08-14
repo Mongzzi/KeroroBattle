@@ -184,9 +184,12 @@ void UKeroroAnimInstance::SetbIsHit(EKeroroType type)
 	if (type == EKeroroType::Giroro) AnimDuration = 0.6f;
 	else AnimDuration = 1.33f;
 
+	TWeakObjectPtr<UKeroroAnimInstance> WeakThis(this);
+
 	FTimerHandle HitResetTimer;
-	GetWorld()->GetTimerManager().SetTimer(HitResetTimer, [this]() {
-		bIsHit = false;
+	GetWorld()->GetTimerManager().SetTimer(HitResetTimer, [WeakThis]() {
+		if (!WeakThis.IsValid()) return;
+		WeakThis->bIsHit = false;
 		},
 		AnimDuration,
 		false
