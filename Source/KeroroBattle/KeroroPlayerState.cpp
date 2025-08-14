@@ -29,7 +29,6 @@ AKeroroPlayerState::AKeroroPlayerState()
 	MaxMoveSpeed_Enhanced = 0.0f;
 	CritChanceRate_Enhanced = 0.0f;
 	CritDamageRate_Enhanced = 0.0f;
-	AttackSpeedRate = 1.0f;
 	SkillCooldownRate_Enhanced = 0.0f;
 	EvasionRate_Enhanced = 0.0f;
 	DefenseRate_Enhanced = 0.0f;

@@ -104,9 +104,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	EWeaponType WeaponType;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category=Animation)
-	float AnimationRunSpeed;
-
 	class UAnimMontage* GetAnimMontage();
 	class UAnimMontage* GetUltiAnimMontage();
 

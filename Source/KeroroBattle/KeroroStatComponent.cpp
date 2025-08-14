@@ -136,7 +136,6 @@ void UKeroroStatComponent::UpdateStatCardEnhanced(AKeroroPlayerState* PlayerStat
 		//UE_LOG(LogTemp, Warning, TEXT("===== PlayerState Stat Enhancement ====="));
 		//UE_LOG(LogTemp, Warning, TEXT("MaxHP_Enhanced: %f"), PlayerState->MaxHP_Enhanced);
 		//UE_LOG(LogTemp, Warning, TEXT("MaxMP_Enhanced: %f"), PlayerState->MaxMP_Enhanced);
-		//UE_LOG(LogTemp, Warning, TEXT("AttackSpeedRate_Enhanced: %f"), PlayerState->AttackSpeedRate_Enhanced);
 		//UE_LOG(LogTemp, Warning, TEXT("MaxMoveSpeed_Enhanced: %f"), PlayerState->MaxMoveSpeed_Enhanced);
 		//UE_LOG(LogTemp, Warning, TEXT("CritChanceRate_Enhanced: %f"), PlayerState->CritChanceRate_Enhanced);
 		//UE_LOG(LogTemp, Warning, TEXT("SkillCooldownRate_Enhanced: %f"), PlayerState->SkillCooldownRate_Enhanced);

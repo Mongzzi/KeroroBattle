@@ -20,7 +20,6 @@ UKeroroAnimInstance::UKeroroAnimInstance()
 	bIsRunning = false;
 	bIsRolling = false;
 	bIsUltiSkillPlaying = false;
-	AnimationRunSpeed = 1.0f;
 	WeaponType = EWeaponType::SWORD;
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> SWORD_ATTACK_MONTAGE(TEXT("/Game/Animation/KR_Montage_Sword.KR_Montage_Sword"));
@@ -128,17 +127,12 @@ void UKeroroAnimInstance::PlayAttackMontage()
 	if (IsDead || bIsHit || bIsRolling) return;
 
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(TryGetPawnOwner());
-	if (kero && KRPlayerState)
-	{
-		AnimationRunSpeed = KRPlayerState->AttackSpeedRate;
-	}
 
 	if (UAnimMontage* Montage = GetAnimMontage())
 	{
 		if (!Montage_IsPlaying(Montage))
 		{
-			//UE_LOG(LogTemp, Error, TEXT("AnimationRunSpeed %f"), AnimationRunSpeed);
-			Montage_Play(Montage, AnimationRunSpeed);
+			Montage_Play(Montage);
 		}
 	}
 }

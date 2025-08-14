@@ -82,7 +82,6 @@ enum class ECardType : uint8
 {
 	MaxHP					UMETA(DisplayName = "MaxHP"),						// 최대 체력
 	MaxMP					UMETA(DisplayName = "MaxMP"),						// 최대 마나
-	AttackSpeed				UMETA(DisplayName = "AttackSpeed"),					// 공격속도
 	MoveSpeed				UMETA(DisplayName = "MoveSpeed"),					// 이동속도
 	CriticalChance			UMETA(DisplayName = "CriticalChance"),				// 치명타확률
 	CriticalDamage			UMETA(DisplayName = "CriticalDamage"),				// 치명타 데미지

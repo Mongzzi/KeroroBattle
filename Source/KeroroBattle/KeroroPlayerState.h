@@ -97,9 +97,6 @@ public:
 	float GoldGainRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
-	float AttackSpeedRate;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)
 	int32 ProjectileCount_Enhanced;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KRStat)

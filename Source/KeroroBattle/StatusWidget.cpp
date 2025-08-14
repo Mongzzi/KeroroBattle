@@ -60,7 +60,7 @@ void UStatusWidget::SetCardInfoText()
 				if (TextBox3) TextBox3->SetText(FText::FromString(FString::Printf(TEXT("이동속도 증가 +%.0f"), PS->MaxMoveSpeed_Enhanced)));
 				if (TextBox4) TextBox4->SetText(FText::FromString(FString::Printf(TEXT("치명타 확률 증가 +%.0f%%"), PS->CritChanceRate_Enhanced * 100)));
 				if (TextBox5) TextBox5->SetText(FText::FromString(FString::Printf(TEXT("치명타 피해율 증가 +%.0f%%"), PS->CritDamageRate_Enhanced * 100)));
-				if (TextBox6) TextBox6->SetText(FText::FromString(FString::Printf(TEXT("현재 공격 속도 +%.0f%%"), PS->AttackSpeedRate * 100)));
+				if (TextBox6) TextBox6->SetText(FText::FromString(FString::Printf(TEXT("무적 시간 증가 +%.3f초"), PS->InvincibilityTime_Enhanced)));
 				if (TextBox7) TextBox7->SetText(FText::FromString(FString::Printf(TEXT("스킬 쿨타임 감소 -%.0f%%"), PS->SkillCooldownRate_Enhanced * 100)));
 				if (TextBox8) TextBox8->SetText(FText::FromString(FString::Printf(TEXT("회피율 증가 +%.0f%%"), PS->EvasionRate_Enhanced * 100)));
 				if (TextBox9) TextBox9->SetText(FText::FromString(FString::Printf(TEXT("방어율 증가 +%.0f%%"), PS->DefenseRate_Enhanced * 100)));
@@ -79,7 +79,7 @@ void UStatusWidget::SetCardInfoText()
 				if (TextBox6) TextBox6->SetText(FText::FromString(FString::Printf(TEXT("적 처치 시 마나회복 증가 +%.3f%%"), PS->MpHealPowerOnKill_Enhanced * 100)));
 				if (TextBox7) TextBox7->SetText(FText::FromString(FString::Printf(TEXT("발사체 크기 증가 +%.0f%%"), PS->ProjectileScale_Enhanced * 100)));
 				if (TextBox8) TextBox8->SetText(FText::FromString(FString::Printf(TEXT("발사체 수 증가 +%d개"), PS->ProjectileCount_Enhanced)));
-				if (TextBox9) TextBox9->SetText(FText::FromString(FString::Printf(TEXT("무적 시간 증가 +%.3f초"), PS->InvincibilityTime_Enhanced)));
+				if (TextBox9) TextBox9->SetText(FText::FromString(""));
 				if (TextBox10) TextBox10->SetText(FText::FromString(""));
 				if (TextBox11) TextBox11->SetText(FText::FromString(""));
 				if (TextBox12) TextBox12->SetText(FText::FromString(""));

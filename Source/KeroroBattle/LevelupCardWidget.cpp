@@ -108,9 +108,6 @@ void ULevelupCardWidget::OnSelectButtonClicked()
 		case ECardType::MaxMP:
 			PS->MaxMP_Enhanced += CardValue;
 			break;
-		case ECardType::AttackSpeed:
-			PS->AttackSpeedRate += CardValue;
-			break;
 		case ECardType::MoveSpeed:
 			PS->MaxMoveSpeed_Enhanced += CardValue;
 			break;
