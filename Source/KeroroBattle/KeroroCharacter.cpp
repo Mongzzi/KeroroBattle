@@ -326,7 +326,7 @@ void AKeroroCharacter::Attack()
 void AKeroroCharacter::HandleComboInput()
 {
 	if (!FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo)) return;
-	IsComboInputOn = true;
+	if (CanNextCombo)IsComboInputOn = true;
 }
 
 void AKeroroCharacter::StartNewAttack()
@@ -709,22 +709,13 @@ void AKeroroCharacter::BindCharacterEvents()
 			{
 				if (!IsValid(this) || !IsValid(KRAnim)) return; // 람다 내부 재검사
 
-				if (CurrentCombo >= MaxCombo)
+				CanNextCombo = false;
+				if (IsComboInputOn)
 				{
-					IsAttacking = false;
-					GetCharacterMovement()->bOrientRotationToMovement = true;
-					AttackEndComboState();
-					CurrentCombo = 0; // 초기화
-					IsComboInputOn = false;
-					return;
+					AttackStartComboState();
+					KRAnim->JumptoAttackMontageSection(CurrentCombo);
+					IsAttacking = true;
 				}
-
-				// 콤보 진행
-				AttackStartComboState();
-				KRAnim->PlayAttackMontage();
-				KRAnim->JumptoAttackMontageSection(CurrentCombo);
-				IsAttacking = true;
-				IsComboInputOn = false;
 			});
 
 		// 공격 이펙트 바인딩
@@ -774,39 +765,15 @@ void AKeroroCharacter::UnbindCharacterEvents()
 void AKeroroCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	if (!IsAttacking || CurrentCombo == 0) return;
-
-	GetWorld()->GetTimerManager().SetTimer(LatenComboAttack,this,&AKeroroCharacter::LatenComboAttackCheck,0.03f,false);
-
-}
-
-void AKeroroCharacter::LatenComboAttackCheck()
-{
-	if (IsComboInputOn && FMath::IsWithinInclusive<int32>(CurrentCombo, 0, MaxCombo - 1))
-	{
-		if (WeaponType == EWeaponType::KEROBALL) SpawnToHand();
-
-		CurrentCombo = FMath::Clamp<int32>(CurrentCombo + 1, 1, MaxCombo);
-		KRAnim->PlayAttackMontage();
-		KRAnim->JumptoAttackMontageSection(CurrentCombo);
-
-		IsAttacking = true;
-		IsComboInputOn = false;
-
-		UE_LOG(LogTemp, Error, TEXT("LatenComboAttackCheck111"));
-	}
-	else
-	{
-		IsAttacking = false;
-		GetCharacterMovement()->bOrientRotationToMovement = true;
-		AttackEndComboState();
-
-		CurrentCombo = 0;
-		UE_LOG(LogTemp, Error, TEXT("LatenComboAttackCheck222"));
-	}
+	IsAttacking = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true; // 입력 방향 따라 몸 회전
+	AttackEndComboState();
+	//OnAttaackEnd.Broadcast();
 }
 
 void AKeroroCharacter::AttackStartComboState()
 {
+	CanNextCombo = true;
 	IsComboInputOn = false;
 	if (FMath::IsWithinInclusive<int32>(CurrentCombo, 0, MaxCombo - 1)) {
 		CurrentCombo = FMath::Clamp<int32>(CurrentCombo + 1, 1, MaxCombo);
@@ -816,6 +783,7 @@ void AKeroroCharacter::AttackStartComboState()
 void AKeroroCharacter::AttackEndComboState()
 {
 	IsComboInputOn = false;
+	CanNextCombo = false;
 	CurrentCombo = 0;
 }
 
@@ -1421,7 +1389,6 @@ void AKeroroCharacter::LoadAssetandSetting(EKeroroType type)
 	{
 	case EKeroroType::Keroro:
 		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/keroro/keroro.keroro"));
-		MaxCombo = 3;
 		WeaponType = EWeaponType::KEROBALL;
 		break;
 	case EKeroroType::Tamama:
@@ -1430,8 +1397,6 @@ void AKeroroCharacter::LoadAssetandSetting(EKeroroType type)
 		break;
 	case EKeroroType::Giroro:
 		NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/Keroro_Model/giroro/giroro.giroro"));
-		MaxCombo = 1;
-
 		WeaponType = EWeaponType::RIFLE;
 		break;
 	case EKeroroType::Kururu:
