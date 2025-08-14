@@ -18,6 +18,7 @@ class KEROROBATTLE_API AKeroroGameMode : public AGameModeBase
 	
 protected:
 	virtual void BeginPlay() override;
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 
 public:
 	void OnTimeOver();

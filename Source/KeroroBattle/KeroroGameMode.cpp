@@ -10,6 +10,7 @@
 #include "KeroroGameInstance.h"
 #include "KRMissionEndWidget.h"
 #include "KRUnlockWidget.h"
+#include "GameFramework/PlayerStart.h"
 
 AKeroroGameMode::AKeroroGameMode()
 {
@@ -47,6 +48,35 @@ void AKeroroGameMode::BeginPlay()
 
 		KeroroGameState->RemainingTime = SurvivalTime;
 	}
+}
+
+AActor* AKeroroGameMode::ChoosePlayerStart_Implementation(AController* Player)
+{
+	UKeroroGameInstance* GI = GetGameInstance<UKeroroGameInstance>();
+	FString TargetStartName;
+
+	if (GI)
+	{
+		//보스전일때 playerstart2지점에서 시작
+		if (GI->NextMissionRound == EKeroroType::Keroro)
+		{
+			TargetStartName = TEXT("PlayerStart2");
+		}
+	}
+
+	TArray<AActor*> FoundStarts;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), FoundStarts);
+
+	for (AActor* Start : FoundStarts)
+	{
+		if (Start->GetName().Contains(TargetStartName))
+		{
+			return Start;
+		}
+	}
+
+	// 못찾으면 기존대로
+	return Super::ChoosePlayerStart_Implementation(Player);
 }
 
 void AKeroroGameMode::OnTimeOver()
