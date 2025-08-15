@@ -119,8 +119,10 @@ void AKeroroItemBox::OnCharacterBeginOverlap(UPrimitiveComponent* OverlappedComp
 				if (WeakThis->NCOpenEffect)
 				{
 					WeakThis->NCOpenEffect->Deactivate();
+					WeakThis->Destroy();
 				}
 			}, 1.0f, false);
 	}
-	Destroy();
+	SetActorEnableCollision(false);
+	SetActorHiddenInGame(true);
 }

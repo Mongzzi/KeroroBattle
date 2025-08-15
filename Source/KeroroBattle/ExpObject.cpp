@@ -12,8 +12,9 @@ AExpObject::AExpObject()
 	PrimaryActorTick.bCanEverTick = true;
 
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComp"));
+	MeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 	RootComponent = MeshComp;
-
+	
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>EXPOBJECT(TEXT("/Game/Fab/Star_effect_low_poly_137KB/star_effect_low_poly_transparency.star_effect_low_poly_transparency"));
 	if (EXPOBJECT.Succeeded())
 	{

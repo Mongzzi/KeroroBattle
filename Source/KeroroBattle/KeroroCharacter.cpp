@@ -56,7 +56,9 @@ AKeroroCharacter::AKeroroCharacter()
 	SpringArm->bInheritPitch = true;
 	SpringArm->bInheritYaw = true;
 	SpringArm->bInheritRoll = false;
-	SpringArm->bDoCollisionTest = false;
+	//SpringArm->bDoCollisionTest = false;
+	SpringArm->bDoCollisionTest = true;
+	SpringArm->ProbeChannel = ECC_GameTraceChannel8;
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
 	Camera->bUsePawnControlRotation = false;
@@ -521,7 +523,7 @@ void AKeroroCharacter::ChangeCameraDefault()
 	SpringArm->bInheritPitch = true;
 	SpringArm->bInheritYaw = true;
 	SpringArm->bInheritRoll = false;
-	SpringArm->bDoCollisionTest = false;
+	//SpringArm->bDoCollisionTest = false;
 	SpringArm->TargetArmLength = 250.0f;
 	SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 50.0f, 60.0f), FRotator(-15.0f, 0.0f, 0.0f));
 
@@ -565,6 +567,7 @@ void AKeroroCharacter::ChangeCameraUltimate()
 		SpringArm->bInheritPitch = false;
 		SpringArm->TargetArmLength = 1000.0f;
 		SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 0.0f), FRotator(-45.0f, 0.0f, 0.0f));
+		//SpringArm->bDoCollisionTest = true;
 		break;
 	}
 }
@@ -582,8 +585,9 @@ void AKeroroCharacter::LookAttackDir()
 void AKeroroCharacter::ChangeCameraNoteBookAttack()
 {
 	SpringArm->bInheritPitch = false;
-	SpringArm->TargetArmLength = 1500.0f;
+	SpringArm->TargetArmLength = 1000.0f;
 	SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 0.0f), FRotator(-25.0f, 0.0f, 0.0f));
+	SpringArm->bDoCollisionTest = true;
 	//SpringArm->bInheritYaw = false;
 }
 
