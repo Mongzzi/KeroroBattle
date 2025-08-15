@@ -38,5 +38,5 @@ protected:
 	class UBoxComponent* SpawnBox;	// 에디터에서 위치 보기위함
 
 	UPROPERTY(EditAnywhere, Category = Spawner)
-	int32 MaxEnemyCount = 100;
+	int32 MaxEnemyCount = 50;
 };

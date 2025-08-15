@@ -64,4 +64,14 @@ protected:
 
 	UFUNCTION()
 	void OnSelectButtonClicked();
+
+	UFUNCTION()
+	void OnCardSelectAnimFinished();
+
+	UFUNCTION()
+	void OnCardDrawAnimFinished();
+
+	FWidgetAnimationDynamicEvent CardSelectAnimFinish;
+	FWidgetAnimationDynamicEvent CardDrawAnimFinish;
+
 };

@@ -41,6 +41,10 @@ public:
 	void UpdateLevelWidget();
 	void PlayCardAnimation(int32 SelectedIndex);
 	void PlayDrawAnimation_AllCard();
+
+public:
+	bool bIsCardDrawing;
+	TArray<int32>CardDrawQueue;
 	
 private:
 	TWeakObjectPtr<class UKeroroStatComponent> CurrentKRStat;

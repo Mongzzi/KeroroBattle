@@ -11,7 +11,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/Image.h"
 #include "Components/EditableTextBox.h"
-
+#include "KeroroPlayerController.h"
 
 
 void UKeroroHUDWidget::NativeConstruct()
@@ -68,6 +68,7 @@ void UKeroroHUDWidget::NativeConstruct()
 	if (ReRollWidget) ReRollWidget->OnRerollButtonSelected.AddUObject(this, &UKeroroHUDWidget::PlayDrawAnimation_AllCard);
 
 
+	bIsCardDrawing = false;
 	// 처음 Draw 애니메이션 실행
 	PlayDrawAnimation_AllCard();
 }
@@ -157,10 +158,22 @@ void UKeroroHUDWidget::PlayCardAnimation(int32 SelectedIndex)
 
 void UKeroroHUDWidget::PlayDrawAnimation_AllCard()
 {
-	if (CardWidget1) CardWidget1->PlayDrawCardAnimation();
-	if (CardWidget2) CardWidget2->PlayDrawCardAnimation();
-	if (CardWidget3) CardWidget3->PlayDrawCardAnimation();
-	if (ReRollWidget) ReRollWidget->PlayFadeInAnim();
+	if (bIsCardDrawing)
+	{
+		CardDrawQueue.Add(1);
+		return;
+	}
+	else
+	{
+		AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
+		PC->SetUIMode();
+
+		bIsCardDrawing = true;
+		if (CardWidget1) CardWidget1->PlayDrawCardAnimation();
+		if (CardWidget2) CardWidget2->PlayDrawCardAnimation();
+		if (CardWidget3) CardWidget3->PlayDrawCardAnimation();
+		if (ReRollWidget) ReRollWidget->PlayFadeInAnim();
+	}
 }
 
 void UKeroroHUDWidget::UpdateGoldWidget()
@@ -303,7 +316,7 @@ void UKeroroHUDWidget::UseItem(int32 slot_num)
 	}
 }
 
-void UKeroroHUDWidget::ChangeItemImage(int32 slot_num,EItemType type)
+void UKeroroHUDWidget::ChangeItemImage(int32 slot_num, EItemType type)
 {
 	if (slot_num == 1)
 	{
@@ -348,4 +361,5 @@ void UKeroroHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 	UpdateSkillCoolTimeWidget();
+	//UE_LOG(LogTemp, Error, TEXT("bIsCardDrawing = %s"), bIsCardDrawing ? TEXT("true") : TEXT("false"));
 }

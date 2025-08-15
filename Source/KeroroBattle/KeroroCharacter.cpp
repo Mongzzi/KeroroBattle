@@ -584,6 +584,7 @@ void AKeroroCharacter::ChangeCameraNoteBookAttack()
 	SpringArm->bInheritPitch = false;
 	SpringArm->TargetArmLength = 1500.0f;
 	SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 0.0f), FRotator(-25.0f, 0.0f, 0.0f));
+	//SpringArm->bInheritYaw = false;
 }
 
 float AKeroroCharacter::GetRemainingGuardCooldown()
@@ -624,6 +625,7 @@ void AKeroroCharacter::SetWeapon()
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	SpawnParams.Instigator = this;
+	SpawnParams.Owner = this;
 
 	switch (WeaponType)
 	{

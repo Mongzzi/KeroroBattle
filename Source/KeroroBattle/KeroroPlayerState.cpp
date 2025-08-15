@@ -157,9 +157,5 @@ void AKeroroPlayerState::SetLevel(int32 lv)
 	if (StatData != nullptr)
 	{
 		CurrentLevel = lv;
-		if (OnLevelChanged.IsBound())
-		{
-			OnLevelChanged.Broadcast();
-		}
 	}
 }

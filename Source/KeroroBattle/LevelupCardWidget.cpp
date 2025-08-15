@@ -8,6 +8,7 @@
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
 #include "Components/Button.h"
+#include "KeroroHUDWidget.h"
 
 
 void ULevelupCardWidget::NativeConstruct()
@@ -18,6 +19,13 @@ void ULevelupCardWidget::NativeConstruct()
 	{
 		CardButton->OnClicked.AddDynamic(this, &ULevelupCardWidget::OnSelectButtonClicked);
 	}
+
+	CardSelectAnimFinish.BindDynamic(this, &ULevelupCardWidget::OnCardSelectAnimFinished);
+	BindToAnimationFinished(SelectCardAnim, CardSelectAnimFinish);
+
+	CardDrawAnimFinish.BindDynamic(this, &ULevelupCardWidget::OnCardDrawAnimFinished);
+	BindToAnimationFinished(DrawCardAnim, CardDrawAnimFinish);
+
 }
 
 void ULevelupCardWidget::NativeDestruct()
@@ -27,17 +35,19 @@ void ULevelupCardWidget::NativeDestruct()
 	{
 		CardButton->OnClicked.RemoveDynamic(this, &ULevelupCardWidget::OnSelectButtonClicked);
 	}
+	CardSelectAnimFinish.Unbind();
 }
 
 void ULevelupCardWidget::PlayDrawCardAnimation()
 {
 	if (DrawCardAnim)
 	{
-		AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
-		PC->SetUIMode();
-
 		SetCardInfo();
 		PlayAnimation(DrawCardAnim);
+	}
+	if (CardButton)
+	{
+		CardButton->SetIsEnabled(false);
 	}
 }
 
@@ -47,6 +57,10 @@ void ULevelupCardWidget::PlaySelectCardAnimation()
 	{
 		PlayAnimation(SelectCardAnim);
 	}
+	if (CardButton)
+	{
+		CardButton->SetIsEnabled(false);
+	}
 }
 
 void ULevelupCardWidget::PlayAnotherSelectCardAnimation()
@@ -54,6 +68,10 @@ void ULevelupCardWidget::PlayAnotherSelectCardAnimation()
 	if (AnotherSelectCardAnim)
 	{
 		PlayAnimation(AnotherSelectCardAnim);
+	}
+	if (CardButton)
+	{
+		CardButton->SetIsEnabled(false);
 	}
 }
 
@@ -87,8 +105,6 @@ void ULevelupCardWidget::SetCardInfo()
 
 void ULevelupCardWidget::OnSelectButtonClicked()
 {
-	UE_LOG(LogTemp, Log, TEXT("Level Up Card Selected!"));
-
 	// 선택된 카드 인덱스 전달
 	if (OnCardSelected.IsBound())
 	{
@@ -96,7 +112,6 @@ void ULevelupCardWidget::OnSelectButtonClicked()
 	}
 	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
 
-	// 여기서 카드 타입, 카드 값에 따라 플레이어 스탯 정보 업데이트해줘야함
 	AKeroroPlayerState* PS = PC->GetPlayerState<AKeroroPlayerState>();
 	if (PS)
 	{
@@ -163,5 +178,35 @@ void ULevelupCardWidget::OnSelectButtonClicked()
 		}
 	}
 	PC->UpdateStatCardEnhanced();
-	PC->SetGameMode();
+}
+
+void ULevelupCardWidget::OnCardSelectAnimFinished()
+{
+	AKeroroPlayerController* PC =Cast<AKeroroPlayerController>(GetOwningPlayer());
+	if (!PC) return;
+	
+	UKeroroHUDWidget* HUD = PC->KRHUDWidget;
+	if (!HUD) return;
+
+	HUD->bIsCardDrawing = false;
+	
+	auto& Queue = HUD->CardDrawQueue;
+	if (Queue.IsEmpty())
+	{
+		PC->SetGameMode();
+		return;
+	}
+	else
+	{
+		Queue.Pop();
+		HUD->PlayDrawAnimation_AllCard();
+	}
+}
+
+void ULevelupCardWidget::OnCardDrawAnimFinished()
+{
+	if (CardButton)
+	{
+		CardButton->SetIsEnabled(true);
+	}
 }
