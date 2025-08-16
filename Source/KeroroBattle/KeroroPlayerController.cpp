@@ -29,6 +29,7 @@
 #include "LevelSequence.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
+#include "KRMapNameWidget.h"
 
 
 AKeroroPlayerController::AKeroroPlayerController()
@@ -72,10 +73,16 @@ AKeroroPlayerController::AKeroroPlayerController()
 	{
 		KRStatusWidgetClass = STATUSCLASS.Class;
 	}
-	static ConstructorHelpers::FObjectFinder<ULevelSequence> LEVELSEQUENCE(TEXT("/Game/EnglishCollege/Maps/LevelSequence1.LevelSequence1"));
-	if (LEVELSEQUENCE.Succeeded())
+	static ConstructorHelpers::FClassFinder<UKRMapNameWidget>MAPNAMECLASS(TEXT("/Game/Blueprints/MapNameWidget.MapNameWidget_C"));
+	if (MAPNAMECLASS.Succeeded())
 	{
-		EntraceLevelSequence = LEVELSEQUENCE.Object;
+		KRMapNameWidgetClass = MAPNAMECLASS.Class;
+	}
+
+	static ConstructorHelpers::FObjectFinder<ULevelSequence> LEVELSEQUENCE1(TEXT("/Game/KeroroLevel/RobbyLevelSequence.RobbyLevelSequence"));
+	if (LEVELSEQUENCE1.Succeeded())
+	{
+		RobbyScene1 = LEVELSEQUENCE1.Object;
 	}
 
 	IsMagicCircleActivated = false;
@@ -111,16 +118,30 @@ void AKeroroPlayerController::BeginPlay()
 	SpawnKero.bIsSpawnedOnce = true;
 	CharacterMap.Add(MyType, SpawnKero); // TMap에 미리 등록
 
-
 	// 현재 맵이름 가져옴 (로비면 hud ,캐릭터 머리위 hp바 히든으로 변경)
 	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
 	if (CurrentLevelName == TEXT("Robby1Level") || CurrentLevelName == TEXT("LoadingLevel"))
 	{
+		//로비
+		if (CurrentLevelName == TEXT("Robby1Level"))
+		{
+			PlayKRLevelSequence(RobbyScene1);
+		}
+
+		//로딩
 		IsMainMap = false;
 		KRCharacter->HiddenHPBarOnHead();
 	}
+	//메인맵
 	else {
 		IsMainMap = true;
+	}
+
+	// 맵 입장 로고 위젯 출력
+	KRMapNameWidget = CreateWidget<UKRMapNameWidget>(this, KRMapNameWidgetClass);
+	if (KRMapNameWidget)
+	{
+		KRMapNameWidget->AddToViewport();
 	}
 
 	if (IsMainMap)
@@ -738,7 +759,7 @@ void AKeroroPlayerController::Jump()
 	//{
 	//	KRHUDWidget->PlayDrawAnimation_AllCard();
 	//}
-	PlayEntraceScene1();
+	//PlayKRLevelSequence(RobbyScene1);
 }
 
 void AKeroroPlayerController::StartRun()
@@ -791,20 +812,23 @@ void AKeroroPlayerController::TagKururu()
 	TagCharacter(EKeroroType::Kururu);
 }
 
-void AKeroroPlayerController::PlayEntraceScene1()
+void AKeroroPlayerController::PlayKRLevelSequence(ULevelSequence* Sequence)
 {
-	if (!EntraceLevelSequence)return;
+	if (!Sequence)
+	{
+		return;
+	}
+	FMovieSceneSequencePlaybackSettings PlaySettings;
+	PlaySettings.bAutoPlay = true;
 
-	FMovieSceneSequencePlaybackSettings PlaySetting;
-	PlaySetting.bAutoPlay = true;
+	ALevelSequenceActor* SequenceActor = nullptr;
+	ULevelSequencePlayer* SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(
+		GetWorld(), Sequence, PlaySettings, SequenceActor);
 
-	ALevelSequenceActor* SequenceActor;
-	ULevelSequencePlayer* SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), EntraceLevelSequence, PlaySetting, SequenceActor);
 	if (SequencePlayer)
 	{
 		SequencePlayer->Play();
 	}
-
 }
 
 

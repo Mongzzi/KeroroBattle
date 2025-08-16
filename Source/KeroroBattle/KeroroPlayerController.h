@@ -56,6 +56,7 @@ private:
 	void OnPlayerLevelUpdated();
 	void OnMagicCircleActivated();
 
+public:
 	bool IsMagicCircleActivated;
 	bool IsMainMap = true;
 
@@ -84,6 +85,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<class UStatusWidget> KRStatusWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<class UKRMapNameWidget> KRMapNameWidgetClass;
+
 	UPROPERTY()
 	class UKeroroHUDWidget* KRHUDWidget;
 
@@ -97,7 +101,7 @@ public:
 	class UStatusWidget* KRStatusWidget;
 
 	UPROPERTY()
-	class ULevelSequence* EntraceLevelSequence;
+	class UKRMapNameWidget* KRMapNameWidget;
 
 	void UpdateStatCardEnhanced();
 	void UpdateStatWidget();
@@ -131,7 +135,7 @@ public:
 	void TagDororo();
 	void TagKururu();
 
-	void PlayEntraceScene1();
+	void PlayKRLevelSequence(class ULevelSequence* Sequence);
 
 protected:
 
@@ -159,16 +163,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* Attacking;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category= Input)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* MouseRight;
 
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category = Input)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* Guarding;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* SkillAction;
 
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category= Input)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* ShowStatus;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -194,4 +198,11 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* ItemC;
+
+private:
+
+	UPROPERTY()
+	class ULevelSequence* RobbyScene1;
+
+
 };
