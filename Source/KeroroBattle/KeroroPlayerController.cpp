@@ -85,6 +85,30 @@ AKeroroPlayerController::AKeroroPlayerController()
 		RobbyScene1 = LEVELSEQUENCE1.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<ULevelSequence> LEVELSEQUENCE2(TEXT("/Game/KeroroLevel/MainLevel1Sequence.MainLevel1Sequence"));
+	if (LEVELSEQUENCE2.Succeeded())
+	{
+		MainEntraceScene1 = LEVELSEQUENCE2.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<ULevelSequence> LEVELSEQUENCE3(TEXT("/Game/KeroroLevel/MainLevel2Sequence.MainLevel2Sequence"));
+	if (LEVELSEQUENCE3.Succeeded())
+	{
+		MainEntraceScene2 = LEVELSEQUENCE3.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<ULevelSequence> LEVELSEQUENCE4(TEXT("/Game/KeroroLevel/MainLevel3Sequence.MainLevel3Sequence"));
+	if (LEVELSEQUENCE4.Succeeded())
+	{
+		MainEntraceScene3 = LEVELSEQUENCE4.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<ULevelSequence> LEVELSEQUENCE5(TEXT("/Game/KeroroLevel/MainLevel3BossSequence.MainLevel3BossSequence"));
+	if (LEVELSEQUENCE5.Succeeded())
+	{
+		MainEntraceScene4 = LEVELSEQUENCE5.Object;
+	}
+
 	IsMagicCircleActivated = false;
 }
 
@@ -126,7 +150,7 @@ void AKeroroPlayerController::BeginPlay()
 	if (CurrentLevelName == TEXT("Robby1Level") || CurrentLevelName == TEXT("LoadingLevel"))
 	{
 		//로비
-		if (CurrentLevelName == TEXT("Robby1Level")&&!GI->bIsEntraceAnimPlayed)
+		if (CurrentLevelName == TEXT("Robby1Level") && !GI->bIsEntraceAnimPlayed)
 		{
 			GI->bIsEntraceAnimPlayed = true;
 			PlayKRLevelSequence(RobbyScene1);
@@ -137,7 +161,22 @@ void AKeroroPlayerController::BeginPlay()
 		KRCharacter->HiddenHPBarOnHead();
 	}
 	//메인맵
-	else {
+	else
+	{
+		if (CurrentLevelName == TEXT("MainLevel1")) PlayKRLevelSequence(MainEntraceScene1);
+		else if (CurrentLevelName == TEXT("MainLevel2")) PlayKRLevelSequence(MainEntraceScene2);
+		else if (CurrentLevelName == TEXT("MainLevel3"))
+		{
+			if (GI->NextMissionRound == EKeroroType::Dororo)
+			{
+			PlayKRLevelSequence(MainEntraceScene3);
+			}
+			else {
+				// 보스전 도로로 맵 같이 사용 중 아래는 보스전 컷씬
+				PlayKRLevelSequence(MainEntraceScene4);
+			}
+		}
+
 		IsMainMap = true;
 	}
 
@@ -146,17 +185,6 @@ void AKeroroPlayerController::BeginPlay()
 	if (KRMapNameWidget)
 	{
 		KRMapNameWidget->AddToViewport();
-	}
-
-	if (IsMainMap)
-	{
-		KRHUDWidget = CreateWidget<UKeroroHUDWidget>(this, KRHUDWidgetClass);
-		if (KRHUDWidget == nullptr) return;
-
-		KRHUDWidget->AddToViewport();
-		KRHUDWidget->BindKRStat(KRCharacter->KRStat);
-		KRHUDWidget->BindPlayerState(KRPlayerState);
-		UpdateStatWidget();
 	}
 
 	KRCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
@@ -179,6 +207,13 @@ void AKeroroPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 			KRCharacter->KRStat->OnMpIsChanged.RemoveAll(this);
 		}
 	}
+
+	if (SequencePlayer)
+	{
+		SequencePlayer->OnPlay.RemoveDynamic(this, &AKeroroPlayerController::OnSequencePlay);
+		SequencePlayer->OnFinished.RemoveDynamic(this, &AKeroroPlayerController::OnSequenceEnd);
+	}
+
 
 	Super::EndPlay(EndPlayReason);
 }
@@ -829,6 +864,12 @@ void AKeroroPlayerController::PlayKRLevelSequence(ULevelSequence* Sequence)
 	{
 		SequencePlayer->OnPlay.AddDynamic(this, &AKeroroPlayerController::OnSequencePlay);
 		SequencePlayer->OnFinished.AddDynamic(this, &AKeroroPlayerController::OnSequenceEnd);
+
+		if (Sequence != RobbyScene1)
+		{
+			SequencePlayer->OnFinished.AddDynamic(this, &AKeroroPlayerController::OnMainLevelSequenceEnd);
+		}
+
 		SequencePlayer->Play();
 	}
 }
@@ -859,6 +900,29 @@ void AKeroroPlayerController::OnSequenceEnd()
 
 		SetIgnoreLookInput(false);
 		SetIgnoreMoveInput(false);
+	}
+}
+
+void AKeroroPlayerController::OnMainLevelSequenceEnd()
+{
+	UKeroroGameInstance* GI = GetGameInstance<UKeroroGameInstance>();
+	if (!GI) return;
+
+	KRPlayerState = Cast<AKeroroPlayerState>(PlayerState);
+	if (!KRPlayerState) return;
+
+	AKeroroCharacter* KRCharacter = Cast<AKeroroCharacter>(GetCharacter());
+	if (KRCharacter == nullptr)return;
+
+	if (IsMainMap)
+	{
+		KRHUDWidget = CreateWidget<UKeroroHUDWidget>(this, KRHUDWidgetClass);
+		if (KRHUDWidget == nullptr) return;
+
+		KRHUDWidget->AddToViewport();
+		KRHUDWidget->BindKRStat(KRCharacter->KRStat);
+		KRHUDWidget->BindPlayerState(KRPlayerState);
+		UpdateStatWidget();
 	}
 }
 

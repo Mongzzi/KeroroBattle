@@ -43,7 +43,7 @@ public:
 	void PlayDrawAnimation_AllCard();
 
 public:
-	bool bIsCardDrawing;
+	bool bIsCardDrawing = false;
 	TArray<int32>CardDrawQueue;
 	
 private:

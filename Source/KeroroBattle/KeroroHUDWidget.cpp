@@ -67,9 +67,6 @@ void UKeroroHUDWidget::NativeConstruct()
 	// 리롤 델리게이트 바인딩
 	if (ReRollWidget) ReRollWidget->OnRerollButtonSelected.AddUObject(this, &UKeroroHUDWidget::PlayDrawAnimation_AllCard);
 
-
-	bIsCardDrawing = false;
-	// 처음 Draw 애니메이션 실행
 	PlayDrawAnimation_AllCard();
 }
 

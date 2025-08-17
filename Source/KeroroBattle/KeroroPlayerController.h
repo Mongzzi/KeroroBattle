@@ -143,6 +143,9 @@ public:
 	UFUNCTION()
 	void OnSequenceEnd();
 
+	UFUNCTION()
+	void OnMainLevelSequenceEnd();
+
 
 protected:
 
@@ -215,4 +218,16 @@ private:
 
 	UPROPERTY()
 	class ULevelSequence* RobbyScene1;
+
+	UPROPERTY()
+	class ULevelSequence* MainEntraceScene1;
+
+	UPROPERTY()
+	class ULevelSequence* MainEntraceScene2;
+
+	UPROPERTY()
+	class ULevelSequence* MainEntraceScene3;
+
+	UPROPERTY()
+	class ULevelSequence* MainEntraceScene4;
 };
