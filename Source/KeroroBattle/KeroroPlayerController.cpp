@@ -103,6 +103,9 @@ void AKeroroPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UKeroroGameInstance* GI = GetGameInstance<UKeroroGameInstance>();
+	if (!GI)return;
+
 	// 플레이어스테이트 초기화
 	KRPlayerState = Cast<AKeroroPlayerState>(PlayerState);
 
@@ -123,8 +126,9 @@ void AKeroroPlayerController::BeginPlay()
 	if (CurrentLevelName == TEXT("Robby1Level") || CurrentLevelName == TEXT("LoadingLevel"))
 	{
 		//로비
-		if (CurrentLevelName == TEXT("Robby1Level"))
+		if (CurrentLevelName == TEXT("Robby1Level")&&!GI->bIsEntraceAnimPlayed)
 		{
+			GI->bIsEntraceAnimPlayed = true;
 			PlayKRLevelSequence(RobbyScene1);
 		}
 
@@ -819,15 +823,42 @@ void AKeroroPlayerController::PlayKRLevelSequence(ULevelSequence* Sequence)
 		return;
 	}
 	FMovieSceneSequencePlaybackSettings PlaySettings;
-	PlaySettings.bAutoPlay = true;
 
-	ALevelSequenceActor* SequenceActor = nullptr;
-	ULevelSequencePlayer* SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(
-		GetWorld(), Sequence, PlaySettings, SequenceActor);
-
+	SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), Sequence, PlaySettings, SequenceActor);
 	if (SequencePlayer)
 	{
+		SequencePlayer->OnPlay.AddDynamic(this, &AKeroroPlayerController::OnSequencePlay);
+		SequencePlayer->OnFinished.AddDynamic(this, &AKeroroPlayerController::OnSequenceEnd);
 		SequencePlayer->Play();
+	}
+}
+
+void AKeroroPlayerController::OnSequencePlay()
+{
+	UE_LOG(LogTemp, Error, TEXT("OnSequencePlay"));
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter());
+	if (kero)
+	{
+		kero->DisableInput(this);
+		kero->GetCharacterMovement()->DisableMovement();
+
+		SetIgnoreLookInput(true);
+		SetIgnoreMoveInput(true);
+	}
+}
+
+void AKeroroPlayerController::OnSequenceEnd()
+{
+	UE_LOG(LogTemp, Error, TEXT("OnSequenceEnd"));
+
+	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter());
+	if (kero)
+	{
+		kero->EnableInput(this);
+		kero->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+
+		SetIgnoreLookInput(false);
+		SetIgnoreMoveInput(false);
 	}
 }
 

@@ -55,6 +55,7 @@ void AImpactWeapon::PlayEffect(AKeroroCharacter* Character)
 	GetWorld()->GetTimerManager().SetTimer(AttackTimer, this, &AImpactWeapon::AttackCheck_Impact, 0.1f, true);
 
 	GetWorld()->GetTimerManager().SetTimer(EffectTimer, [WeakThis]() {
+		if (!WeakThis.IsValid())return;
 		if (WeakThis->OwnerKero.IsValid())
 		{
 			WeakThis->OwnerKero->ChangeCameraDefault();

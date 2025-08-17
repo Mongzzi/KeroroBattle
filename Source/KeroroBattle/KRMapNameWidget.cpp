@@ -40,7 +40,7 @@ void UKRMapNameWidget::SetMapNameText()
 
 		break;
 	case EKeroroType::Kururu:
-		MapName->SetText(FText::FromString(TEXT("케론별 유적지")));
+		MapName->SetText(FText::FromString(TEXT("케론별 피라미드")));
 
 		break;
 	case EKeroroType::Dororo:

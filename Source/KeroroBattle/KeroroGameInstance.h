@@ -145,6 +145,7 @@ public:
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite, Category = NextMissionRound)
 	EKeroroType NextMissionRound = EKeroroType::Tamama;
 
+	bool bIsEntraceAnimPlayed = false;
 
 private:
 	// 해금된 캐릭터

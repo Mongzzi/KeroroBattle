@@ -136,6 +136,13 @@ public:
 	void TagKururu();
 
 	void PlayKRLevelSequence(class ULevelSequence* Sequence);
+	
+	UFUNCTION()
+	void OnSequencePlay();
+
+	UFUNCTION()
+	void OnSequenceEnd();
+
 
 protected:
 
@@ -200,9 +207,12 @@ protected:
 	class UInputAction* ItemC;
 
 private:
+	UPROPERTY()
+	class ULevelSequencePlayer* SequencePlayer;
+
+	UPROPERTY()
+	class ALevelSequenceActor* SequenceActor;
 
 	UPROPERTY()
 	class ULevelSequence* RobbyScene1;
-
-
 };
