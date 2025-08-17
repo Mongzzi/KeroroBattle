@@ -41,6 +41,8 @@ public:
 	void UpdateLevelWidget();
 	void PlayCardAnimation(int32 SelectedIndex);
 	void PlayDrawAnimation_AllCard();
+	UFUNCTION()
+	void PlayDrawForReroll();
 
 public:
 	bool bIsCardDrawing = false;

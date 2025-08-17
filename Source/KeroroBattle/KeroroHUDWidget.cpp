@@ -65,7 +65,7 @@ void UKeroroHUDWidget::NativeConstruct()
 	if (CardWidget3) CardWidget3->OnCardSelected.AddUObject(this, &UKeroroHUDWidget::PlayCardAnimation);
 
 	// 리롤 델리게이트 바인딩
-	if (ReRollWidget) ReRollWidget->OnRerollButtonSelected.AddUObject(this, &UKeroroHUDWidget::PlayDrawAnimation_AllCard);
+	if (ReRollWidget) ReRollWidget->OnRerollButtonSelected.AddUObject(this, &UKeroroHUDWidget::PlayDrawForReroll);
 
 	PlayDrawAnimation_AllCard();
 }
@@ -171,6 +171,12 @@ void UKeroroHUDWidget::PlayDrawAnimation_AllCard()
 		if (CardWidget3) CardWidget3->PlayDrawCardAnimation();
 		if (ReRollWidget) ReRollWidget->PlayFadeInAnim();
 	}
+}
+
+void UKeroroHUDWidget::PlayDrawForReroll()
+{
+	bIsCardDrawing = false;
+	PlayDrawAnimation_AllCard();
 }
 
 void UKeroroHUDWidget::UpdateGoldWidget()
