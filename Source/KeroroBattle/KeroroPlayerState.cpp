@@ -66,24 +66,17 @@ bool AKeroroPlayerState::AddExp(int32 exp)
 	if (StatData->NextExp == -1)
 		return false;
 
-	bool DidLevelUp = false;
 	CurrentExp += exp;
 	if (CurrentExp >= StatData->NextExp)
 	{
 		CurrentExp -= StatData->NextExp;
 		SetLevel(CurrentLevel + 1);
-		DidLevelUp = true;
 	}
 	if (OnExpChanged.IsBound())
 	{
 		OnExpChanged.Broadcast();
 	}
-	if (DidLevelUp && OnLevelChanged.IsBound()) {
-		OnLevelChanged.Broadcast();
-	}
-	//UE_LOG(LogTemp, Error, TEXT("EXP = %d"),CurrentExp);
-
-	return DidLevelUp;
+	return true;
 }
 
 void AKeroroPlayerState::AddGold(int32 gold)
@@ -157,5 +150,9 @@ void AKeroroPlayerState::SetLevel(int32 lv)
 	if (StatData != nullptr)
 	{
 		CurrentLevel = lv;
+
+		if (OnLevelChanged.IsBound()) {
+			OnLevelChanged.Broadcast();
+		}
 	}
 }
