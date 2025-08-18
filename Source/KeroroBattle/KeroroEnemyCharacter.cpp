@@ -67,6 +67,7 @@ AKeroroEnemyCharacter::AKeroroEnemyCharacter()
 		DamageTextWidgetClass = DAMAGETEXT.Class;
 	}
 
+	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 
 
 	bIsDead = false;

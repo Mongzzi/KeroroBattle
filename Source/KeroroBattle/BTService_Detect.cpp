@@ -54,13 +54,13 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(AEnemyAIController::TargetKey, NearestKeroro);
 		EnemyCharacter->EnemyAnim->bIsRunning = true;
-		EnemyCharacter->GetCharacterMovement()->MaxWalkSpeed = 700.0f;
+		EnemyCharacter->GetCharacterMovement()->MaxWalkSpeed = 350.0f;
 	}
 	else
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(AEnemyAIController::TargetKey, nullptr);
 		EnemyCharacter->EnemyAnim->bIsRunning = false;
-		EnemyCharacter->GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+		EnemyCharacter->GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 	}
 
 }
