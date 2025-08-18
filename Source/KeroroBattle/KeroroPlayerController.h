@@ -88,6 +88,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<class UKRMapNameWidget> KRMapNameWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<class UKRChatWidget> KRChatWidgetClass;
+
 	UPROPERTY()
 	class UKeroroHUDWidget* KRHUDWidget;
 
@@ -102,6 +105,9 @@ public:
 
 	UPROPERTY()
 	class UKRMapNameWidget* KRMapNameWidget;
+
+	UPROPERTY()
+	class UKRChatWidget* KRChatWidget;
 
 	void UpdateStatCardEnhanced();
 	void UpdateStatWidget();

@@ -8,7 +8,25 @@
 #include "Engine/StreamableManager.h"
 #include "KeroroGameInstance.generated.h"
 
+USTRUCT(BlueprintType)
+struct FKRChatData : public FTableRowBase
+{
+	GENERATED_BODY()
+public:
+	FKRChatData();
 
+	UPROPERTY()
+	int32 ChatID;
+
+	UPROPERTY()
+	FString ChatText;
+
+	UPROPERTY()
+	FString SelectChatTexts;
+
+	UPROPERTY()
+	FString NextChatIDs; // 파싱해서 사용할 예정  1|2 이런식으로 스트링형태로 가져와 | 부분 파싱해서 데이터 저장할 예정
+};
 
 USTRUCT(BlueprintType)
 struct FKRFaceAssetData : public FTableRowBase
@@ -131,6 +149,7 @@ public:
 	virtual void Init() override;
 	FKRStatData* GetKRStatData(int Level);
 	FCardData* GetCardData(int CardID);
+	UDataTable* GetChatDataTable();
 	FSoftObjectPath GetFaceAssetPath(EKeroroType KeroroType, EFaceType FaceType);
 	FSoftObjectPath GetVoiceSoundAssetPath(EKeroroType KeroroType, int32 index);
 	FStreamableManager& GetStreamableManager();
@@ -142,7 +161,7 @@ public:
 	FStreamableManager StreamableManager;
 	FName NextMapName;
 
-	UPROPERTY(VisibleAnywhere,BlueprintReadWrite, Category = NextMissionRound)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NextMissionRound)
 	EKeroroType NextMissionRound = EKeroroType::Tamama;
 
 	bool bIsEntraceAnimPlayed = false;
@@ -164,4 +183,7 @@ private:
 
 	UPROPERTY()
 	UDataTable* KRSoundAssetTable;
+
+	UPROPERTY()
+	UDataTable* KRChatTable;
 };

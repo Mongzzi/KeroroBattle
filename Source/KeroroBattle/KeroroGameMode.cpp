@@ -35,15 +35,15 @@ void AKeroroGameMode::BeginPlay()
 		FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
 		if (CurrentLevelName == TEXT("MainLevel1"))
 		{
-			SurvivalTime = 180.0f;
+			SurvivalTime = 60.0f;
 		}
 		else if (CurrentLevelName == TEXT("MainLevel2"))
 		{
-			SurvivalTime = 240.0f;
+			SurvivalTime = 60.0f;
 		}
 		else if (CurrentLevelName == TEXT("MainLevel3"))
 		{
-			SurvivalTime = 300.0f;
+			SurvivalTime = 60.0f;
 		}
 
 		KeroroGameState->RemainingTime = SurvivalTime;

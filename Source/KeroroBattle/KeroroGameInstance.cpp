@@ -20,6 +20,9 @@ UKeroroGameInstance::UKeroroGameInstance()
 	static ConstructorHelpers::FObjectFinder<UDataTable>FSDT(TEXT("/Game/GameData/SoundAssetData.SoundAssetData"));
 	if (FSDT.Succeeded())KRSoundAssetTable = FSDT.Object;
 
+	static ConstructorHelpers::FObjectFinder<UDataTable>CDT(TEXT("/Game/GameData/ChatData.ChatData"));
+	if (CDT.Succeeded())KRChatTable = CDT.Object;
+
 	UnlockCharacter(EKeroroType::Keroro);
 	UnlockCharacter(EKeroroType::Tamama);
 	UnlockCharacter(EKeroroType::Giroro);
@@ -43,6 +46,12 @@ FKRStatData* UKeroroGameInstance::GetKRStatData(int Level)
 FCardData* UKeroroGameInstance::GetCardData(int CardID)
 {
 	return CardTable->FindRow<FCardData>(*FString::FromInt(CardID), TEXT(""));
+}
+
+UDataTable* UKeroroGameInstance::GetChatDataTable()
+{
+	if (KRChatTable) return KRChatTable;
+	else return nullptr;
 }
 
 FSoftObjectPath UKeroroGameInstance::GetFaceAssetPath(EKeroroType KeroroType, EFaceType FaceType)
@@ -161,5 +170,9 @@ FKRFaceAssetData::FKRFaceAssetData()
 }
 
 FKRSoundAssetData::FKRSoundAssetData()
+{
+}
+
+FKRChatData::FKRChatData()
 {
 }

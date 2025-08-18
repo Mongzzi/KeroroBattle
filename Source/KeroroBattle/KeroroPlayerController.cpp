@@ -30,6 +30,7 @@
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
 #include "KRMapNameWidget.h"
+#include "KRChatWidget.h"
 
 
 AKeroroPlayerController::AKeroroPlayerController()
@@ -77,6 +78,12 @@ AKeroroPlayerController::AKeroroPlayerController()
 	if (MAPNAMECLASS.Succeeded())
 	{
 		KRMapNameWidgetClass = MAPNAMECLASS.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<UKRChatWidget>CHATWIDGET(TEXT("/Game/Blueprints/ChatWidget.ChatWidget_C"));
+	if (CHATWIDGET.Succeeded())
+	{
+		KRChatWidgetClass = CHATWIDGET.Class;
 	}
 
 	static ConstructorHelpers::FObjectFinder<ULevelSequence> LEVELSEQUENCE1(TEXT("/Game/KeroroLevel/RobbyLevelSequence.RobbyLevelSequence"));
@@ -169,7 +176,7 @@ void AKeroroPlayerController::BeginPlay()
 		{
 			if (GI->NextMissionRound == EKeroroType::Dororo)
 			{
-			PlayKRLevelSequence(MainEntraceScene3);
+				PlayKRLevelSequence(MainEntraceScene3);
 			}
 			else {
 				// 보스전 도로로 맵 같이 사용 중 아래는 보스전 컷씬
@@ -373,6 +380,18 @@ void AKeroroPlayerController::UseItemSlotX()
 
 void AKeroroPlayerController::UseItemSlotC()
 {
+	if (!KRChatWidget)
+	{
+		KRChatWidget = CreateWidget<UKRChatWidget>(this, KRChatWidgetClass);
+		if (KRChatWidget == nullptr) return;
+		KRChatWidget->AddToViewport();
+	}
+	else {
+		KRChatWidget->RemoveFromParent();
+		KRChatWidget = nullptr;
+	}
+
+
 	if (!KRHUDWidget) return;
 	KRHUDWidget->UseItem(3);
 }
