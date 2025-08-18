@@ -540,6 +540,7 @@ void AKeroroPlayerController::Die()
 				Possess(NextCharacter);
 				KRPlayerState->SetCurrentCharacterType(NextType);
 				KRHUDWidget->BindKRStat(NextCharacter->KRStat);
+				KRHUDWidget->ChangeSkillImage();
 				return;
 			}
 		}
