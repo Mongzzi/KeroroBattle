@@ -25,5 +25,11 @@ public:
 	float RemainingTime;
 	bool bIsTimeUp;
 
+	UPROPERTY()
+	TArray<class AKeroroEnemyCharacter*> Enemies;
+
+
+public:
 	void OnTimeOver();
+
 };

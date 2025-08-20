@@ -4,6 +4,7 @@
 #include "KeroroGameState.h"
 #include "KeroroPlayerController.h"
 #include "KeroroGameMode.h"
+#include "KeroroEnemyCharacter.h"
 
 AKeroroGameState::AKeroroGameState()
 {
