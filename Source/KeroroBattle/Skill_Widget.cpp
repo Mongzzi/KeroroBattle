@@ -8,6 +8,7 @@
 #include "KeroroCharacter.h"
 #include "KeroroEnemyCharacter.h"
 #include "KeroroStatComponent.h"
+#include "KeroroGameState.h"
 #include "Components/ProgressBar.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -343,6 +344,8 @@ void USkill_Widget::ItemKillAllEnemies()
 void USkill_Widget::ItemGroupEnemies()
 {
 	UE_LOG(LogTemp, Log, TEXT("적 한 곳으로 모으기"));
+	AKeroroGameState* GS = GetWorld()->GetGameState<AKeroroGameState>();
+
 	AKeroroCharacter* Kero = Cast<AKeroroCharacter>(GetOwningPlayerPawn());
 	if (!Kero) return;
 
@@ -354,12 +357,9 @@ void USkill_Widget::ItemGroupEnemies()
 	float Radius = 3000.0f;
 	PullCenter = KeroLoc + ForwardVector * 800.0f + FVector(0, 0, 100);
 
-	TArray<AActor*> FoundActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AKeroroEnemyCharacter::StaticClass(), FoundActors);
 
-	for (AActor* Actor : FoundActors)
+	for (AKeroroEnemyCharacter* Enemy : GS->Enemies)
 	{
-		auto* Enemy = Cast<AKeroroEnemyCharacter>(Actor);
 		if (!Enemy) continue;
 
 		float Dist = FVector::Dist(Enemy->GetActorLocation(), PullCenter);
@@ -373,11 +373,8 @@ void USkill_Widget::ItemGroupEnemies()
 		PulledEnemies.Add(Pulling_Info);
 	}
 
-
 	PullEffectComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), PullEffect, PullCenter- FVector(0.0f,0.0f,500.0f), Kero->GetActorRotation(), FVector(10.0f), true);
-
 	GetWorld()->GetTimerManager().SetTimer(PullEffectTimerHandle, this, &USkill_Widget::EndPullEffect, PullDuration*3);
-
 	StartPull();
 }
 

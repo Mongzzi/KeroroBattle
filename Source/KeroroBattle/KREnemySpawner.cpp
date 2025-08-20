@@ -3,13 +3,14 @@
 
 #include "KREnemySpawner.h"
 #include "KeroroEnemyCharacter.h"
-#include "Kismet/GameplayStatics.h"
 #include "Components/BoxComponent.h"
 #include "KeroroGameInstance.h"
+#include "KeroroGameState.h"
+
 // Sets default values
 AKREnemySpawner::AKREnemySpawner()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 	SpawnBox = CreateDefaultSubobject<UBoxComponent>(TEXT("SpawnBox"));
@@ -28,10 +29,13 @@ void AKREnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UKeroroGameInstance* GI = GetGameInstance<UKeroroGameInstance>();
-	if (EnemyClass&&GI&&GI->NextMissionRound!=EKeroroType::Keroro)
+	GS = GetWorld()->GetGameState<AKeroroGameState>();
+	GI = GetGameInstance<UKeroroGameInstance>();
+	if (!GI.IsValid() || !GS.IsValid())return;
+
+	if (EnemyClass && GI->NextMissionRound != EKeroroType::Keroro)
 	{
-		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle,this,&AKREnemySpawner::SpawnEnemy,SpawnInterval,true);
+		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AKREnemySpawner::SpawnEnemy, SpawnInterval, true);
 	}
 }
 
@@ -44,21 +48,18 @@ void AKREnemySpawner::Tick(float DeltaTime)
 
 void AKREnemySpawner::SpawnEnemy()
 {
-	TArray<AActor*> FoundEnemies;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AKeroroEnemyCharacter::StaticClass(), FoundEnemies);
+	if (!GS.IsValid()) return;
+	EnemyNum = GS->Enemies.Num();
 
-	if (FoundEnemies.Num() >= MaxEnemyCount)
-	{
-		// 너무 많으면 스폰하지 않음
-		return;
-	}
+	if (EnemyNum >= MaxEnemyCount) return;
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	
+
 	FVector SpawnLocation = GetActorLocation();
 	FRotator SpawnRotation = GetActorRotation();
 
-	GetWorld()->SpawnActor<AKeroroEnemyCharacter>(EnemyClass, SpawnLocation, SpawnRotation, SpawnParams);
+	AKeroroEnemyCharacter* Enemy=GetWorld()->SpawnActor<AKeroroEnemyCharacter>(EnemyClass, SpawnLocation, SpawnRotation, SpawnParams);
+	GS->Enemies.Add(Enemy);
 }
 

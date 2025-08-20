@@ -28,6 +28,12 @@ public:
 
 protected:
 	UPROPERTY()
+	TWeakObjectPtr<class AKeroroGameState> GS;
+
+	UPROPERTY()
+	TWeakObjectPtr<class UKeroroGameInstance> GI;
+
+	UPROPERTY()
 	TSubclassOf<class AKeroroEnemyCharacter> EnemyClass;
 
 	float SpawnInterval = 1.5f;
@@ -39,4 +45,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = Spawner)
 	int32 MaxEnemyCount = 50;
+
+	UPROPERTY()
+	int32 EnemyNum = 0;
 };

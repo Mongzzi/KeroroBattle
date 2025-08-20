@@ -3,10 +3,11 @@
 
 #include "KREnemySpawnerInBoss.h"
 #include "KeroroEnemyCharacter.h"
-#include "Kismet/GameplayStatics.h"
 #include "Components/BoxComponent.h"
 #include "KeroroGameInstance.h"
-AKREnemySpawnerInBoss::AKREnemySpawnerInBoss():AKREnemySpawner()
+#include "KeroroGameState.h"
+
+AKREnemySpawnerInBoss::AKREnemySpawnerInBoss() :AKREnemySpawner()
 {
 
 }
@@ -14,8 +15,11 @@ AKREnemySpawnerInBoss::AKREnemySpawnerInBoss():AKREnemySpawner()
 void AKREnemySpawnerInBoss::BeginPlay()
 {
 	AActor::BeginPlay();
-	UKeroroGameInstance* GI = GetGameInstance<UKeroroGameInstance>();
-	if (EnemyClass && GI && GI->NextMissionRound == EKeroroType::Keroro)
+	GS = GetWorld()->GetGameState<AKeroroGameState>();
+	GI = GetGameInstance<UKeroroGameInstance>();
+	if (!GI.IsValid() || !GS.IsValid())return;
+	
+	if (EnemyClass && GI->NextMissionRound == EKeroroType::Keroro)
 	{
 		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AKREnemySpawner::SpawnEnemy, SpawnInterval, true);
 	}
