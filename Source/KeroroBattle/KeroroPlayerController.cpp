@@ -896,7 +896,7 @@ void AKeroroPlayerController::PlayKRLevelSequence(ULevelSequence* Sequence)
 
 void AKeroroPlayerController::OnSequencePlay()
 {
-	UE_LOG(LogTemp, Error, TEXT("OnSequencePlay"));
+	//UE_LOG(LogTemp, Error, TEXT("OnSequencePlay"));
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter());
 	if (kero)
 	{
@@ -910,7 +910,7 @@ void AKeroroPlayerController::OnSequencePlay()
 
 void AKeroroPlayerController::OnSequenceEnd()
 {
-	UE_LOG(LogTemp, Error, TEXT("OnSequenceEnd"));
+	//UE_LOG(LogTemp, Error, TEXT("OnSequenceEnd"));
 
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter());
 	if (kero)

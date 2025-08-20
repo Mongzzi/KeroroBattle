@@ -19,17 +19,21 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	float GetRemainingTime() { return RemainingTime; }
 
 public:
 	float RemainingTime;
 	bool bIsTimeUp;
+	int32 EnemyLevel = 1;
+
+	FTimerHandle EnemyLevelUpHandle;
 
 	UPROPERTY()
 	TArray<class AKeroroEnemyCharacter*> Enemies;
 
-
 public:
 	void OnTimeOver();
+	void SetEnemyLevelFromTime();
 
 };

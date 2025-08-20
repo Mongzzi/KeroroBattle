@@ -6,6 +6,7 @@
 #include "Components/BoxComponent.h"
 #include "KeroroGameInstance.h"
 #include "KeroroGameState.h"
+#include "KeroroStatComponent.h"
 
 // Sets default values
 AKREnemySpawner::AKREnemySpawner()
@@ -59,7 +60,12 @@ void AKREnemySpawner::SpawnEnemy()
 	FVector SpawnLocation = GetActorLocation();
 	FRotator SpawnRotation = GetActorRotation();
 
-	AKeroroEnemyCharacter* Enemy=GetWorld()->SpawnActor<AKeroroEnemyCharacter>(EnemyClass, SpawnLocation, SpawnRotation, SpawnParams);
+	AKeroroEnemyCharacter* Enemy = GetWorld()->SpawnActor<AKeroroEnemyCharacter>(EnemyClass, SpawnLocation, SpawnRotation, SpawnParams);
+	if (Enemy->EnemyStat)
+	{
+		Enemy->EnemyStat->SetLevel(GS->EnemyLevel);
+	}
+
 	GS->Enemies.Add(Enemy);
 }
 

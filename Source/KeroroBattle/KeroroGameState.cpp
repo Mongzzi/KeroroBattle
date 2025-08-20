@@ -5,6 +5,7 @@
 #include "KeroroPlayerController.h"
 #include "KeroroGameMode.h"
 #include "KeroroEnemyCharacter.h"
+#include "KeroroStatComponent.h"
 
 AKeroroGameState::AKeroroGameState()
 {
@@ -19,7 +20,7 @@ void AKeroroGameState::Tick(float DeltaSeconds)
 	if (RemainingTime > 0.0f)
 	{
 		RemainingTime -= DeltaSeconds;
-		if (RemainingTime < 0.0f&&!bIsTimeUp)
+		if (RemainingTime < 0.0f && !bIsTimeUp)
 		{
 			RemainingTime = 0.0f;
 			bIsTimeUp = true;
@@ -42,7 +43,17 @@ void AKeroroGameState::BeginPlay()
 {
 	Super::BeginPlay();
 	bIsTimeUp = false;
+
+	GetWorld()->GetTimerManager().SetTimer(EnemyLevelUpHandle, this, &AKeroroGameState::SetEnemyLevelFromTime, 15.0f, true);
 }
+
+void AKeroroGameState::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorld()->GetTimerManager().ClearTimer(EnemyLevelUpHandle);
+	Super::EndPlay(EndPlayReason);
+}
+
+
 
 void AKeroroGameState::OnTimeOver()
 {
@@ -53,6 +64,18 @@ void AKeroroGameState::OnTimeOver()
 		if (KeroGM)
 		{
 			KeroGM->OnTimeOver();
+		}
+	}
+}
+
+void AKeroroGameState::SetEnemyLevelFromTime()
+{
+	EnemyLevel = FMath::Clamp(EnemyLevel + 1, 1, 20);
+	for (auto Enemy : Enemies)
+	{
+		if (IsValid(Enemy) && Enemy->EnemyStat)
+		{
+			Enemy->EnemyStat->SetLevel(EnemyLevel);
 		}
 	}
 }
