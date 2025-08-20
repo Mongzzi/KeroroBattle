@@ -73,6 +73,12 @@ private:
 	UFUNCTION()
 	void AnimNotify_EndRolling();
 
+	UFUNCTION()
+	void AnimNotify_Robobo_AttackCheck();
+
+	UFUNCTION()
+	void AnimNotify_Nunwawa_AttackCheck();
+
 	FName GetAttackMontageSectionName(int32 Section);
 
 
@@ -140,6 +146,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	class UAnimMontage* NoteBookUltiMontage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	class UAnimMontage* NunwawaAttackMontage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	class UAnimMontage* RoboboAttackMontage;
 
 private:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=Pawn,meta=(AllowPrivateAccess=true))

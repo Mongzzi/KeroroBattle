@@ -84,6 +84,17 @@ UKeroroAnimInstance::UKeroroAnimInstance()
 		RollActionMontage = ROLLANIM.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ENEMYANIM1(TEXT("/Game/Animation/Robobo_AttackMontage.Robobo_AttackMontage"));
+	if (ENEMYANIM1.Succeeded())
+	{
+		RoboboAttackMontage = ENEMYANIM1.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ENEMYANIM2(TEXT("/Game/Animation/Nunwawa_AttackMontage.Nunwawa_AttackMontage"));
+	if (ENEMYANIM2.Succeeded())
+	{
+		NunwawaAttackMontage = ENEMYANIM2.Object;
+	}
 }
 
 void UKeroroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -278,6 +289,15 @@ void UKeroroAnimInstance::AnimNotify_EndRolling()
 	{
 		kero->EndRoll();
 	}
+}
+
+void UKeroroAnimInstance::AnimNotify_Robobo_AttackCheck()
+{
+	// 어택체크만들긴했는데 생각좀 해봐야할듯 기존 적 캐릭터 구조 생각해서 리팩토링 필요
+}
+
+void UKeroroAnimInstance::AnimNotify_Nunwawa_AttackCheck()
+{
 }
 
 FName UKeroroAnimInstance::GetAttackMontageSectionName(int32 Section)
