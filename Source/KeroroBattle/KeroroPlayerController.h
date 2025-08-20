@@ -109,6 +109,9 @@ public:
 	UPROPERTY()
 	class UKRChatWidget* KRChatWidget;
 
+	UPROPERTY()
+	class UChatManager* KRChatManager;
+
 	void UpdateStatCardEnhanced();
 	void UpdateStatWidget();
 	void UpdateHPWidget();
@@ -142,7 +145,8 @@ public:
 	void TagKururu();
 
 	void PlayKRLevelSequence(class ULevelSequence* Sequence);
-	
+	void StartChat(int32 ChatID);
+
 	UFUNCTION()
 	void OnSequencePlay();
 

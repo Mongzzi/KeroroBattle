@@ -31,6 +31,7 @@
 #include "LevelSequencePlayer.h"
 #include "KRMapNameWidget.h"
 #include "KRChatWidget.h"
+#include "ChatManager.h"
 
 
 AKeroroPlayerController::AKeroroPlayerController()
@@ -193,6 +194,15 @@ void AKeroroPlayerController::BeginPlay()
 	{
 		KRMapNameWidget->AddToViewport();
 	}
+
+	// 채팅 위젯 생성
+	KRChatWidget = CreateWidget<UKRChatWidget>(this, KRChatWidgetClass);
+	if (KRChatWidget == nullptr) return;
+	KRChatWidget->AddToViewport();
+
+	// 채팅 매니저 생성
+	KRChatManager = NewObject<UChatManager>(this);
+
 
 	KRCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
 	KRCharacter->KRStat->OnMpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateMPWidget);
@@ -380,18 +390,6 @@ void AKeroroPlayerController::UseItemSlotX()
 
 void AKeroroPlayerController::UseItemSlotC()
 {
-	if (!KRChatWidget)
-	{
-		KRChatWidget = CreateWidget<UKRChatWidget>(this, KRChatWidgetClass);
-		if (KRChatWidget == nullptr) return;
-		KRChatWidget->AddToViewport();
-	}
-	else {
-		KRChatWidget->RemoveFromParent();
-		KRChatWidget = nullptr;
-	}
-
-
 	if (!KRHUDWidget) return;
 	KRHUDWidget->UseItem(3);
 }
@@ -891,6 +889,19 @@ void AKeroroPlayerController::PlayKRLevelSequence(ULevelSequence* Sequence)
 		}
 
 		SequencePlayer->Play();
+	}
+}
+
+void AKeroroPlayerController::StartChat(int32 ChatID)
+{
+	if (KRChatWidget)
+	{
+		KRChatWidget->SetVisibility(ESlateVisibility::Visible);
+
+		if (KRChatManager)
+		{
+			KRChatManager->StartChat(ChatID);
+		}
 	}
 }
 
