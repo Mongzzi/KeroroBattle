@@ -25,6 +25,7 @@ public:
 public:
 	float RemainingTime;
 	bool bIsTimeUp;
+	bool bIsMainMap = false;
 	int32 EnemyLevel = 1;
 
 	FTimerHandle EnemyLevelUpHandle;

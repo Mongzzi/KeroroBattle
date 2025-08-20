@@ -20,7 +20,7 @@ void AKeroroGameState::Tick(float DeltaSeconds)
 	if (RemainingTime > 0.0f)
 	{
 		RemainingTime -= DeltaSeconds;
-		if (RemainingTime < 0.0f && !bIsTimeUp)
+		if (RemainingTime < 0.0f && !bIsTimeUp && bIsMainMap)
 		{
 			RemainingTime = 0.0f;
 			bIsTimeUp = true;

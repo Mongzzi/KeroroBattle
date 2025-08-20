@@ -45,8 +45,13 @@ void AKeroroGameMode::BeginPlay()
 		{
 			SurvivalTime = 60.0f;
 		}
-
+		else
+		{
+			KeroroGameState->bIsMainMap = false;
+			return;
+		}
 		KeroroGameState->RemainingTime = SurvivalTime;
+		KeroroGameState->bIsMainMap = true;
 	}
 }
 
