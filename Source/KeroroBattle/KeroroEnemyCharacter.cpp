@@ -10,6 +10,7 @@
 #include "EnemyAIController.h"
 #include "DamageTextWidget.h"
 #include "KeroroAnimInstance.h"
+#include "KeroroGameState.h"
 #include "KeroroHPBarWidget.h"
 #include "CriticalDamageType.h"
 #include "ExpObject.h"
@@ -189,6 +190,9 @@ float AKeroroEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& 
 void AKeroroEnemyCharacter::Die()
 {
 	if (bIsDead) return;
+	AKeroroGameState* GS = GetWorld()->GetGameState<AKeroroGameState>();
+	if(!GS)return;
+	GS->Enemies.Remove(this);
 
 	bIsDead = true;
 
