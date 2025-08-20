@@ -20,9 +20,6 @@ void UBTService_DetectEnemy::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 {
     Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-    APawn* kero = OwnerComp.GetAIOwner()->GetPawn();
-    if (kero == nullptr) return;
-
     AKeroroCharacter* Keroro = Cast<AKeroroCharacter>(OwnerComp.GetAIOwner()->GetCharacter());
     if (Keroro == nullptr) return;
 
@@ -38,8 +35,8 @@ void UBTService_DetectEnemy::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 
     bool bHit = GetWorld()->SweepMultiByChannel(
         HitResults,
-        kero->GetActorLocation(),
-        kero->GetActorLocation(),
+        Keroro->GetActorLocation(),
+        Keroro->GetActorLocation(),
         FQuat::Identity,
         ECC_GameTraceChannel3,
         FCollisionShape::MakeSphere(FMath::Sqrt(DetectRadiusSq)),
@@ -53,7 +50,7 @@ void UBTService_DetectEnemy::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
             AKeroroEnemyCharacter* Enemy = Cast<AKeroroEnemyCharacter>(Hit.GetActor());
             if (Enemy)
             {
-                float DistSq = (kero->GetActorLocation() - Enemy->GetActorLocation()).SizeSquared();
+                float DistSq = (Keroro->GetActorLocation() - Enemy->GetActorLocation()).SizeSquared();
                 if (DistSq < NearestDistSq)
                 {
                     NearestDistSq = DistSq;
