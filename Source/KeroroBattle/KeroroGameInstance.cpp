@@ -28,6 +28,11 @@ UKeroroGameInstance::UKeroroGameInstance()
 	UnlockCharacter(EKeroroType::Giroro);
 	UnlockCharacter(EKeroroType::Dororo);
 	UnlockCharacter(EKeroroType::Kururu);
+
+	UnlockedChattings.Add(EKeroroType::Tamama, false);
+	UnlockedChattings.Add(EKeroroType::Giroro, false);
+	UnlockedChattings.Add(EKeroroType::Dororo, false);
+	UnlockedChattings.Add(EKeroroType::Kururu, false);
 }
 
 

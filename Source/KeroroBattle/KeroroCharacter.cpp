@@ -142,6 +142,7 @@ AKeroroCharacter::AKeroroCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
+	GetCharacterMovement()->SetWalkableFloorAngle(60.0f);
 
 	// 캐릭터 속도
 	WalkSpeed = 600.0f;

@@ -19,10 +19,10 @@ void UKRUnlockWidget::ChangeImage(EKeroroType type)
         ImagePath = TEXT("/Game/Texture/25.25");
         break;
     case EKeroroType::Kururu:
-        ImagePath = TEXT("/Game/Texture/38.38");
+        ImagePath = TEXT("/Game/Texture/34.34");
         break;
     case EKeroroType::Dororo:
-        ImagePath = TEXT("/Game/Texture/34.34");
+        ImagePath = TEXT("/Game/Texture/38.38");
         break;
     }
 

@@ -836,7 +836,7 @@ void AKeroroPlayerController::StopRun()
 
 void AKeroroPlayerController::Attack()
 {
-	StartChat(1);
+	//StartChat(1);
 
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter());
 	if (IsValid(kero))

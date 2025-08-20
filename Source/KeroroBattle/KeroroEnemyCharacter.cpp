@@ -39,6 +39,7 @@ AKeroroEnemyCharacter::AKeroroEnemyCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 600.0f, 0.0f);
 	GetCharacterMovement()->bOrientRotationToMovement = true;	// 이동 방향으로 자동 회전
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+	GetCharacterMovement()->SetWalkableFloorAngle(60.0f);
 
 	AIControllerClass = AEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
