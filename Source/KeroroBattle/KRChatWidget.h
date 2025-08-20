@@ -25,7 +25,7 @@ public:
 
 public:
 	UFUNCTION()
-	void UpdateChatInfo(int32 chatid, FString chattext, TArray<FString> SelectChatTexts, TArray<FString> nextchatids);
+	void UpdateChatInfo(int32 _ChatID, FString _ChatText, TArray<FString> _SelectChatTexts, TArray<FString> _NextChatIDs);
 
 	UFUNCTION()
 	void OnSelectButton1();
@@ -37,8 +37,7 @@ public:
 	void OnSelectNextButton();
 
 private:
-	TWeakObjectPtr<class UChatManager> ChatManager;
-	TWeakObjectPtr<class AKeroroPlayerController> PC;
+	class AKeroroPlayerController* PC;
 
 private:
 	UPROPERTY(meta = (BindWidget))

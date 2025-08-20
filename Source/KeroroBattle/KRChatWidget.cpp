@@ -12,15 +12,9 @@ void UKRChatWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-    SetVisibility(ESlateVisibility::Collapsed);
+	SetVisibility(ESlateVisibility::Collapsed);
 
 	PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
-
-	if (PC.IsValid() && PC->KRChatManager)
-	{
-		ChatManager = PC->KRChatManager;
-		ChatManager->OnChatUpdate.AddDynamic(this, &UKRChatWidget::UpdateChatInfo);
-	}
 
 	if (NextChatButton)
 	{
@@ -38,10 +32,6 @@ void UKRChatWidget::NativeConstruct()
 
 void UKRChatWidget::NativeDestruct()
 {
-	if (ChatManager.IsValid())
-	{
-		ChatManager->OnChatUpdate.RemoveDynamic(this, &UKRChatWidget::UpdateChatInfo);
-	}
 	if (NextChatButton)
 	{
 		NextChatButton->OnClicked.RemoveDynamic(this, &UKRChatWidget::OnSelectNextButton);
@@ -57,71 +47,75 @@ void UKRChatWidget::NativeDestruct()
 	Super::NativeDestruct();
 }
 
-void UKRChatWidget::UpdateChatInfo(int32 chatid, FString chattext, TArray<FString> SelectChatTexts, TArray<FString> nextchatids)
+void UKRChatWidget::UpdateChatInfo(int32 _ChatID, FString _ChatText, TArray<FString> _SelectChatTexts, TArray<FString> _NextChatIDs)
 {
-    ChatID = chatid;
-    NextChatID1 = 0;
-    NextChatID2 = 0;
+	ChatID = _ChatID;
+	NextChatID1 = 0;
+	NextChatID2 = 0;
 
-    if (ChatText)
-    {
-        ChatText->SetText(FText::FromString(chattext));
-    }
+	if (ChatText)
+	{
+		ChatText->SetText(FText::FromString(_ChatText));
+	}
 
-    // 선택지/NextIDs 모두 없는 경우 위젯 숨김
-    if (SelectChatTexts.Num() == 0 && nextchatids.Num() == 0)
-    {
-        if (NextChatButton) NextChatButton->SetVisibility(ESlateVisibility::Collapsed);
-        if (SelectButton1) SelectButton1->SetVisibility(ESlateVisibility::Collapsed);
-        if (SelectButton2) SelectButton2->SetVisibility(ESlateVisibility::Collapsed);
-        if (ChatText) ChatText->SetText(FText::GetEmpty());
+	// 선택지/NextIDs 모두 없는 경우 위젯 숨김
+	if (_SelectChatTexts.Num() == 0 && _NextChatIDs.Num() == 0)
+	{
+		if (NextChatButton) NextChatButton->SetVisibility(ESlateVisibility::Collapsed);
+		if (SelectButton1) SelectButton1->SetVisibility(ESlateVisibility::Collapsed);
+		if (SelectButton2) SelectButton2->SetVisibility(ESlateVisibility::Collapsed);
+		if (ChatText) ChatText->SetText(FText::GetEmpty());
 
-        this->SetVisibility(ESlateVisibility::Collapsed);
-        return;
-    }
+		this->SetVisibility(ESlateVisibility::Collapsed);
+		if (PC)PC->SetGameMode();
+		return;
+	}
 
-    // 선택지가 있을 때
-    if (SelectChatTexts.Num() > 0 && nextchatids.Num() == SelectChatTexts.Num())
-    {
-        // 선택지1
-        if (SelectButton1 && SelectText1)
-        {
-            SelectButton1->SetVisibility(ESlateVisibility::Visible);
-            SelectText1->SetText(FText::FromString(SelectChatTexts[0]));
-            NextChatID1 = FCString::Atoi(*nextchatids[0]);
-        }
+	// 선택지가 있을 때
+	if (_SelectChatTexts.Num() > 0 && _NextChatIDs.Num() == _SelectChatTexts.Num())
+	{
+		// 선택지1
+		if (SelectButton1 && SelectText1)
+		{
+			SelectButton1->SetVisibility(ESlateVisibility::Visible);
+			SelectText1->SetText(FText::FromString(_SelectChatTexts[0]));
+			NextChatID1 = FCString::Atoi(*_NextChatIDs[0]);
+		}
 
-        // 선택지2
-        if (SelectButton2 && SelectText2 && SelectChatTexts.Num() > 1)
-        {
-            SelectButton2->SetVisibility(ESlateVisibility::Visible);
-            SelectText2->SetText(FText::FromString(SelectChatTexts[1]));
-            NextChatID2 = FCString::Atoi(*nextchatids[1]);
-        }
-        else if (SelectButton2)
-        {
-            SelectButton2->SetVisibility(ESlateVisibility::Collapsed);
-        }
+		// 선택지2
+		if (SelectButton2 && SelectText2 && _SelectChatTexts.Num() > 1)
+		{
+			SelectButton2->SetVisibility(ESlateVisibility::Visible);
+			SelectText2->SetText(FText::FromString(_SelectChatTexts[1]));
+			NextChatID2 = FCString::Atoi(*_NextChatIDs[1]);
+		}
+		else if (SelectButton2)
+		{
+			SelectButton2->SetVisibility(ESlateVisibility::Collapsed);
+		}
 
-        if (NextChatButton) NextChatButton->SetVisibility(ESlateVisibility::Collapsed);
-    }
-    else if (nextchatids.Num() > 0)
-    {
-        // 선택지 없고 NextID만 있을 때
-        if (NextChatButton)
-        {
-            NextChatButton->SetVisibility(ESlateVisibility::Visible);
-            NextChatID1 = FCString::Atoi(*nextchatids[0]);
-        }
+		if (NextChatButton) NextChatButton->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	else if (_NextChatIDs.Num() > 0)
+	{
+		// 선택지 없고 NextID만 있을 때
+		if (NextChatButton)
+		{
+			NextChatButton->SetVisibility(ESlateVisibility::Visible);
+			NextChatID1 = FCString::Atoi(*_NextChatIDs[0]);
+		}
 
-        if (SelectButton1) SelectButton1->SetVisibility(ESlateVisibility::Collapsed);
-        if (SelectButton2) SelectButton2->SetVisibility(ESlateVisibility::Collapsed);
-    }
+		if (SelectButton1) SelectButton1->SetVisibility(ESlateVisibility::Collapsed);
+		if (SelectButton2) SelectButton2->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
 void UKRChatWidget::OnSelectButton1()
 {
-	if (ChatManager.IsValid())
+	if (!PC || !PC->KRChatManager)return;
+	UChatManager* ChatManager = PC->KRChatManager;
+
+	if (ChatManager)
 	{
 		ChatManager->StartChat(NextChatID1);
 	}
@@ -129,7 +123,10 @@ void UKRChatWidget::OnSelectButton1()
 
 void UKRChatWidget::OnSelectButton2()
 {
-	if (ChatManager.IsValid())
+	if (!PC || !PC->KRChatManager)return;
+	UChatManager* ChatManager = PC->KRChatManager;
+
+	if (ChatManager)
 	{
 		ChatManager->StartChat(NextChatID2);
 	}
@@ -137,7 +134,10 @@ void UKRChatWidget::OnSelectButton2()
 
 void UKRChatWidget::OnSelectNextButton()
 {
-	if (ChatManager.IsValid())
+	if (!PC || !PC->KRChatManager)return;
+	UChatManager* ChatManager = PC->KRChatManager;
+
+	if (ChatManager)
 	{
 		ChatManager->StartChat(NextChatID1);
 	}

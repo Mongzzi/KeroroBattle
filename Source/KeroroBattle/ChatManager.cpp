@@ -2,13 +2,13 @@
 
 
 #include "ChatManager.h"
+#include "KRChatWidget.h"
 #include "KeroroGameInstance.h"
 
 
 void UChatManager::StartChat(int32 ChatID)
 {
-
-	if (!ChatDataTable) return;
+	if (!ChatDataTable || !ChatWidget.IsValid()) return;
 	CurrentID = ChatID;
 
 	FKRChatData* Row = ChatDataTable->FindRow<FKRChatData>(*FString::FromInt(CurrentID), TEXT(""));
@@ -33,7 +33,10 @@ void UChatManager::StartChat(int32 ChatID)
 			Row->NextChatIDs.ParseIntoArray(NextIDs, TEXT("|"), true);
 		}
 
-		OnChatUpdate.Broadcast(CurrentID, Row->ChatText, SelectChatTexts, NextIDs);
+		if (ChatWidget.IsValid())
+		{
+			ChatWidget->UpdateChatInfo(CurrentID, Row->ChatText, SelectChatTexts, NextIDs);
+		}
 	}
 }
 

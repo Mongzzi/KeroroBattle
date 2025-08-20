@@ -7,8 +7,6 @@
 #include "ChatManager.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnChatUpdate,int32,ChatID ,FString, ChatText, TArray<FString>, SelectChatTexts, TArray<FString>, NextChatIDs);
-
 /**
  * 
  */
@@ -22,8 +20,8 @@ public:
 
     UPROPERTY()
     UDataTable* ChatDataTable;
+    TWeakObjectPtr<class UKRChatWidget> ChatWidget;
 
-    FOnChatUpdate OnChatUpdate;
 public:
 
     UFUNCTION()

@@ -32,7 +32,7 @@
 #include "KRMapNameWidget.h"
 #include "KRChatWidget.h"
 #include "ChatManager.h"
-
+#include "NPCCharacter.h"
 
 AKeroroPlayerController::AKeroroPlayerController()
 {
@@ -197,11 +197,12 @@ void AKeroroPlayerController::BeginPlay()
 
 	// 채팅 위젯 생성
 	KRChatWidget = CreateWidget<UKRChatWidget>(this, KRChatWidgetClass);
-	if (KRChatWidget == nullptr) return;
-	KRChatWidget->AddToViewport();
+	if (KRChatWidget) KRChatWidget->AddToViewport();
 
-	// 채팅 매니저 생성
+	// 채팅 매니저 생성 // 채팅위젯 바인딩, 채팅 데이터테이블 바인딩
 	KRChatManager = NewObject<UChatManager>(this);
+	if (KRChatWidget) KRChatManager->ChatWidget = KRChatWidget;
+	if (GI->GetChatDataTable()) KRChatManager->ChatDataTable = GI->GetChatDataTable();
 
 
 	KRCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
@@ -579,14 +580,12 @@ void AKeroroPlayerController::DieAIKero(EKeroroType type)
 
 void AKeroroPlayerController::SetUIMode()
 {
-	if (!KRHUDWidget) return;
-	GetWorld()->GetWorldSettings()->SetTimeDilation(0.1f);
+	GetWorld()->GetWorldSettings()->SetTimeDilation(0.03f);
 
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
 
 	FInputModeUIOnly InputMode;
-	InputMode.SetWidgetToFocus(KRHUDWidget->TakeWidget());
 	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	SetInputMode(InputMode);
 
@@ -837,6 +836,8 @@ void AKeroroPlayerController::StopRun()
 
 void AKeroroPlayerController::Attack()
 {
+	StartChat(1);
+
 	AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter());
 	if (IsValid(kero))
 	{
@@ -896,6 +897,7 @@ void AKeroroPlayerController::StartChat(int32 ChatID)
 {
 	if (KRChatWidget)
 	{
+		SetUIMode();
 		KRChatWidget->SetVisibility(ESlateVisibility::Visible);
 
 		if (KRChatManager)
