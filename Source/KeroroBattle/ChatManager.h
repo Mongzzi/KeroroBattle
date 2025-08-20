@@ -7,7 +7,7 @@
 #include "ChatManager.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnChatUpdate, const FString&, ChatText, const TArray<FString>&, Selections);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnChatUpdate,int32,ChatID ,FString, ChatText, TArray<FString>, SelectChatTexts, TArray<FString>, NextChatIDs);
 
 /**
  * 
@@ -28,13 +28,4 @@ public:
 
     UFUNCTION()
     void StartChat(int32 ChatID);
-
-    UFUNCTION()
-    void ShowNextChat();
-
-    UFUNCTION()
-    void SelectChatOption(int32 Index);
-
-    UFUNCTION()
-    void EndChat();
 };
