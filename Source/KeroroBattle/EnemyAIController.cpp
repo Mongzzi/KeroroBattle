@@ -9,6 +9,7 @@
 const FName AEnemyAIController::HomePosKey(TEXT("HomePos"));
 const FName AEnemyAIController::PatrolPosKey(TEXT("PatrolPos"));
 const FName AEnemyAIController::TargetKey(TEXT("TargetKeroro"));
+const FName AEnemyAIController::MovePosKey(TEXT("MovePos"));
 
 AEnemyAIController::AEnemyAIController()
 {

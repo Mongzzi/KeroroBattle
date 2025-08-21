@@ -157,16 +157,16 @@ void UKeroroAnimInstance::PlayEnemyAttackMontage(EEnemyType Type)
 	switch (Type)
 	{
 	case EEnemyType::Joriri:
-		Montage_Play(SwordAttackMontage);
+		if (!Montage_IsPlaying(SwordAttackMontage)) Montage_Play(SwordAttackMontage);
 		break;
 	case EEnemyType::Robobo:
-		Montage_Play(RoboboAttackMontage);
+		if (!Montage_IsPlaying(RoboboAttackMontage)) 	Montage_Play(RoboboAttackMontage);
 		break;
 	case EEnemyType::Nunwawa:
-		Montage_Play(NunwawaAttackMontage);
+		if (!Montage_IsPlaying(NunwawaAttackMontage)) Montage_Play(NunwawaAttackMontage);
 		break;
 	case EEnemyType::Garuru:
-		Montage_Play(SwordAttackMontage);
+		if (!Montage_IsPlaying(SwordAttackMontage)) Montage_Play(SwordAttackMontage);
 		break;
 	}
 }

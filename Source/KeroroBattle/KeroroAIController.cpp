@@ -12,6 +12,7 @@
 const FName AKeroroAIController::HomePosKey(TEXT("HomePos"));
 const FName AKeroroAIController::PatrolPosKey(TEXT("PatrolPos"));
 const FName AKeroroAIController::TargetKey(TEXT("TargetEnemy"));
+const FName AKeroroAIController::MovePosKey(TEXT("MovePos"));
 
 AKeroroAIController::AKeroroAIController()
 {
