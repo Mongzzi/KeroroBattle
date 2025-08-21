@@ -23,6 +23,6 @@ bool UBTDecorator_IsInAttackRange::CalculateRawConditionValue(UBehaviorTreeCompo
 	auto Target = Cast<AKeroroCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(AEnemyAIController::TargetKey));
 	if (Target == nullptr) return false;
 
-	bResult = (OwnerEnemyKero->GetDistanceTo(Target) <= OwnerEnemyKero->AttackRange/2);
+	bResult = (OwnerEnemyKero->GetDistanceTo(Target) <= OwnerEnemyKero->AttackRange);
 	return bResult;
 }

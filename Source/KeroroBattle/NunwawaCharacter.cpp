@@ -13,7 +13,7 @@ ANunwawaCharacter::ANunwawaCharacter(const FObjectInitializer& ObjectInitializer
 	{
 		GetMesh()->SetSkeletalMesh(SKMESH.Object);
 	}
-	AttackRange = 3000.0f;
+	AttackRange = 1500.0f;
 }
 
 void ANunwawaCharacter::Attack()

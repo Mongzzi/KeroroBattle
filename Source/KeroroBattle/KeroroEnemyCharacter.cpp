@@ -76,7 +76,7 @@ AKeroroEnemyCharacter::AKeroroEnemyCharacter(const FObjectInitializer& ObjectIni
 
 
 	bIsDead = false;
-	AttackRange = 400.0f;
+	AttackRange = 200.0f;
 	AttackRadius = 25.0f;
 }
 
