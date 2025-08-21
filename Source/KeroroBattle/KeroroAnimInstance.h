@@ -25,6 +25,8 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	void PlayAttackMontage();
+	void PlayEnemyAttackMontage(EEnemyType Type);
+
 	void PlayUltiSkillMontage();
 	void PlayRollAnimation();
 	void JumptoAttackMontageSection(int32 NewSection);
@@ -72,12 +74,6 @@ private:
 
 	UFUNCTION()
 	void AnimNotify_EndRolling();
-
-	UFUNCTION()
-	void AnimNotify_Robobo_AttackCheck();
-
-	UFUNCTION()
-	void AnimNotify_Nunwawa_AttackCheck();
 
 	FName GetAttackMontageSectionName(int32 Section);
 

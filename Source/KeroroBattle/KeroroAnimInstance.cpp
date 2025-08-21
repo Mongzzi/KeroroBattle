@@ -137,7 +137,7 @@ void UKeroroAnimInstance::PlayAttackMontage()
 {
 	if (IsDead || bIsHit || bIsRolling) return;
 
-	AKeroroCharacter* kero = Cast<AKeroroCharacter>(TryGetPawnOwner());
+	//AKeroroCharacter* kero = Cast<AKeroroCharacter>(TryGetPawnOwner());
 
 	if (UAnimMontage* Montage = GetAnimMontage())
 	{
@@ -145,6 +145,27 @@ void UKeroroAnimInstance::PlayAttackMontage()
 		{
 			Montage_Play(Montage);
 		}
+	}
+}
+
+void UKeroroAnimInstance::PlayEnemyAttackMontage(EEnemyType Type)
+{
+	if (IsDead || bIsHit || bIsRolling) return;
+
+	switch (Type)
+	{
+	case EEnemyType::Joriri:
+		Montage_Play(SwordAttackMontage);
+		break;
+	case EEnemyType::Robobo:
+		Montage_Play(RoboboAttackMontage);
+		break;
+	case EEnemyType::Nunwawa:
+		Montage_Play(NunwawaAttackMontage);
+		break;
+	case EEnemyType::Garuru:
+		Montage_Play(SwordAttackMontage);
+		break;
 	}
 }
 
@@ -289,15 +310,6 @@ void UKeroroAnimInstance::AnimNotify_EndRolling()
 	{
 		kero->EndRoll();
 	}
-}
-
-void UKeroroAnimInstance::AnimNotify_Robobo_AttackCheck()
-{
-	// 어택체크만들긴했는데 생각좀 해봐야할듯 기존 적 캐릭터 구조 생각해서 리팩토링 필요
-}
-
-void UKeroroAnimInstance::AnimNotify_Nunwawa_AttackCheck()
-{
 }
 
 FName UKeroroAnimInstance::GetAttackMontageSectionName(int32 Section)

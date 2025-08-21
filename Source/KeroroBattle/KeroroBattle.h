@@ -17,6 +17,16 @@ enum class EKeroroType : uint8
 };
 
 UENUM(BlueprintType)
+enum class EEnemyType : uint8
+{
+	Joriri	   UMETA(DisplayName = "Joriri"),
+	Robobo	   UMETA(DisplayName = "Robobo"),
+	Nunwawa    UMETA(DisplayName = "Nunwawa"),
+	Garuru	   UMETA(DisplayName = "Garuru"),
+	MAX		   UMETA(Hidden)
+};
+
+UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
 	KEROBALL     UMETA(DisplayName = "KEROBALL"),
