@@ -15,41 +15,43 @@ class KEROROBATTLE_API AKeroroEnemyCharacter : public ACharacter
 
 public:
 	// Sets default values for this character's properties
-	AKeroroEnemyCharacter();
+	AKeroroEnemyCharacter(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-    virtual void PostInitializeComponents() override;
+	virtual void PostInitializeComponents() override;
 
-    virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
-    void Attack();
-    void AttackCheck();
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	virtual void Attack();
+	virtual void AttackCheck();
 
-    UFUNCTION()
-    void Die();
-    
-public:
-    // 적 몬스터 콤보 공격용
-    float AttackRange; // 적 캐릭터와 거리
-    float AttackRadius;
-    bool bIsDead;
-    FOnEnemyDie OnEnemyDie;
+	UFUNCTION()
+	void Die();
 
 public:
-    class UKeroroAnimInstance* EnemyAnim;
+	float AttackRange;
+	float AttackRadius;
+	bool bIsDead;
 
-    UPROPERTY(VisibleAnywhere, Category = Stat)
-    class UKeroroStatComponent* EnemyStat;
+	EEnemyType EnemyType = EEnemyType::Joriri;
 
-    UPROPERTY(VisibleAnywhere, Category = UI)
-    class UWidgetComponent* HPBar;
+	FOnEnemyDie OnEnemyDie;
 
-    UPROPERTY()
-    TSubclassOf<class UDamageTextWidget> DamageTextWidgetClass;
+public:
+	class UKeroroAnimInstance* EnemyAnim;
+
+	UPROPERTY(VisibleAnywhere, Category = Stat)
+	class UKeroroStatComponent* EnemyStat;
+
+	UPROPERTY(VisibleAnywhere, Category = UI)
+	class UWidgetComponent* HPBar;
+
+	UPROPERTY()
+	TSubclassOf<class UDamageTextWidget> DamageTextWidgetClass;
 };

@@ -23,16 +23,19 @@
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
-AKeroroEnemyCharacter::AKeroroEnemyCharacter()
+AKeroroEnemyCharacter::AKeroroEnemyCharacter(const FObjectInitializer& ObjectInitializer)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	EnemyStat = CreateDefaultSubobject<UKeroroStatComponent>(TEXT("KRSTAT"));
+
+	EnemyType = EEnemyType::Joriri;
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>SKMESH(TEXT("/Game/Keroro_Model/joriri/joriri.joriri"));
 	if (SKMESH.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(SKMESH.Object);
 	}
+
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FRotator(0.0f, -90.0f, 0.0f));
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("EnemyCharacter"));
 
