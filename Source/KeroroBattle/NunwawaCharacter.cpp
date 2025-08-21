@@ -3,6 +3,7 @@
 
 #include "NunwawaCharacter.h"
 #include "KeroroAnimInstance.h"
+#include "SnowBall.h"
 
 ANunwawaCharacter::ANunwawaCharacter(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
 {
@@ -12,6 +13,7 @@ ANunwawaCharacter::ANunwawaCharacter(const FObjectInitializer& ObjectInitializer
 	{
 		GetMesh()->SetSkeletalMesh(SKMESH.Object);
 	}
+	AttackRange = 3000.0f;
 }
 
 void ANunwawaCharacter::Attack()
@@ -22,4 +24,17 @@ void ANunwawaCharacter::Attack()
 
 void ANunwawaCharacter::AttackCheck()
 {
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	SpawnParams.Instigator = this;
+
+	FName SocketName = TEXT("SnowWeapon");
+	USkeletalMeshComponent* MeshComp = GetMesh();
+
+	if (MeshComp && MeshComp->DoesSocketExist(SocketName))
+	{
+		FVector SpawnLocation = MeshComp->GetSocketLocation(SocketName);
+
+		GetWorld()->SpawnActor<ASnowBall>(ASnowBall::StaticClass(), SpawnLocation, GetActorRotation(), SpawnParams);
+	}
 }
