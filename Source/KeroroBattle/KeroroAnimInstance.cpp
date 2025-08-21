@@ -138,6 +138,7 @@ void UKeroroAnimInstance::PlayAttackMontage()
 	if (IsDead || bIsHit || bIsRolling) return;
 
 	//AKeroroCharacter* kero = Cast<AKeroroCharacter>(TryGetPawnOwner());
+	bIsRunning = false;
 
 	if (UAnimMontage* Montage = GetAnimMontage())
 	{
@@ -151,6 +152,7 @@ void UKeroroAnimInstance::PlayAttackMontage()
 void UKeroroAnimInstance::PlayEnemyAttackMontage(EEnemyType Type)
 {
 	if (IsDead || bIsHit || bIsRolling) return;
+	bIsRunning = false;
 
 	switch (Type)
 	{
