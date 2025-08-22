@@ -49,8 +49,9 @@ void UDamageTextWidget::SetTextFromDamage(float Damage)
 {
 	if (DamageText)
 	{
+		
 		DamageText->SetColorAndOpacity(FSlateColor(FLinearColor(1.0f, 1.0f, 1.0f)));
-		DamageText->SetText(FText::AsNumber(Damage));
+		DamageText->SetText(FText::AsNumber(static_cast<int32>(Damage)));
 	}
 }
 
@@ -60,7 +61,7 @@ void UDamageTextWidget::SetTextFromCritDamage(float Damage)
 	{
 		DamageText->SetColorAndOpacity(FSlateColor(FLinearColor(1.0f, 0.05f, 0.0f)));
 		DamageText->SetRenderScale(FVector2D(1.3f));
-		DamageText->SetText(FText::AsNumber(Damage));
+		DamageText->SetText(FText::AsNumber(static_cast<int32>(Damage)));
 	}
 }
 

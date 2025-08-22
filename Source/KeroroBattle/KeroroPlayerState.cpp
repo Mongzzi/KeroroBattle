@@ -63,6 +63,7 @@ void AKeroroPlayerState::SetCharacterType(EKeroroType type)
 
 bool AKeroroPlayerState::AddExp(int32 exp)
 {
+	if (StatData == nullptr) return false;
 	if (StatData->NextExp == -1)
 		return false;
 

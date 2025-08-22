@@ -45,9 +45,10 @@ void UKeroroHPBarWidget::SetHPBarText()
 
 	if (IsVisible)
 	{
-		float CurHp = CurrentKRStat->CurrentHp;
-		float MaxHp = CurrentKRStat->MaxHp;
-		FString HPText = FString::Printf(TEXT("%.0f / %.0f"), CurHp, MaxHp);
+		//소수점버리고 올림해서 현재채력 0.xx일떄 0으로나와서 이상하게 안보이게함
+		int32 CurHp = FMath::CeilToInt(CurrentKRStat->CurrentHp);
+		int32 MaxHp = FMath::CeilToInt(CurrentKRStat->MaxHp);
+		FString HPText = FString::Printf(TEXT("%d / %d"), CurHp, MaxHp);
 		HP_TEXT->SetText(FText::FromString(HPText));
 		HP_TEXT->SetVisibility(ESlateVisibility::Visible);
 	}
