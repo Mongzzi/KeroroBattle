@@ -34,7 +34,7 @@ protected:
 	TWeakObjectPtr<class UKeroroGameInstance> GI;
 
 	UPROPERTY()
-	TSubclassOf<class AKeroroEnemyCharacter> EnemyClass;
+	TArray<TSubclassOf<class AKeroroEnemyCharacter>> EnemyClasses;
 
 	float SpawnInterval = 1.5f;
 

@@ -3,10 +3,13 @@
 
 #include "KREnemySpawner.h"
 #include "KeroroEnemyCharacter.h"
+#include "RoboboCharacter.h"
+#include "NunwawaCharacter.h"
 #include "Components/BoxComponent.h"
 #include "KeroroGameInstance.h"
 #include "KeroroGameState.h"
 #include "KeroroStatComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AKREnemySpawner::AKREnemySpawner()
@@ -22,7 +25,6 @@ AKREnemySpawner::AKREnemySpawner()
 
 	SpawnBox->SetHiddenInGame(true);
 
-	EnemyClass = AKeroroEnemyCharacter::StaticClass();
 }
 
 // Called when the game starts or when spawned
@@ -34,9 +36,26 @@ void AKREnemySpawner::BeginPlay()
 	GI = GetGameInstance<UKeroroGameInstance>();
 	if (!GI.IsValid() || !GS.IsValid())return;
 
-	if (EnemyClass && GI->NextMissionRound != EKeroroType::Keroro)
+	if (GI->NextMissionRound != EKeroroType::Keroro)
 	{
 		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AKREnemySpawner::SpawnEnemy, SpawnInterval, true);
+	}
+	
+	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
+	if (CurrentLevelName == TEXT("MainLevel1"))
+	{
+		EnemyClasses.Add(AKeroroEnemyCharacter::StaticClass());
+	}
+	else if (CurrentLevelName == TEXT("MainLevel2"))
+	{
+		EnemyClasses.Add(AKeroroEnemyCharacter::StaticClass());
+		EnemyClasses.Add(ANunwawaCharacter::StaticClass());
+	}
+	else if (CurrentLevelName == TEXT("MainLevel3"))
+	{
+		EnemyClasses.Add(AKeroroEnemyCharacter::StaticClass());
+		EnemyClasses.Add(ANunwawaCharacter::StaticClass());
+		EnemyClasses.Add(ARoboboCharacter::StaticClass());
 	}
 }
 
@@ -60,7 +79,11 @@ void AKREnemySpawner::SpawnEnemy()
 	FVector SpawnLocation = GetActorLocation();
 	FRotator SpawnRotation = GetActorRotation();
 
-	AKeroroEnemyCharacter* Enemy = GetWorld()->SpawnActor<AKeroroEnemyCharacter>(EnemyClass, SpawnLocation, SpawnRotation, SpawnParams);
+
+
+	int32 RandInt = FMath::RandRange(0, EnemyClasses.Num() - 1);
+
+	AKeroroEnemyCharacter* Enemy = GetWorld()->SpawnActor<AKeroroEnemyCharacter>(EnemyClasses[RandInt], SpawnLocation, SpawnRotation, SpawnParams);
 	if (Enemy->EnemyStat)
 	{
 		Enemy->EnemyStat->SetLevel(GS->EnemyLevel);

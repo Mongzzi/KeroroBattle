@@ -3,9 +3,12 @@
 
 #include "KREnemySpawnerInBoss.h"
 #include "KeroroEnemyCharacter.h"
+#include "RoboboCharacter.h"
+#include "NunwawaCharacter.h"
 #include "Components/BoxComponent.h"
 #include "KeroroGameInstance.h"
 #include "KeroroGameState.h"
+#include "Kismet/GameplayStatics.h"
 
 AKREnemySpawnerInBoss::AKREnemySpawnerInBoss() :AKREnemySpawner()
 {
@@ -19,9 +22,26 @@ void AKREnemySpawnerInBoss::BeginPlay()
 	GI = GetGameInstance<UKeroroGameInstance>();
 	if (!GI.IsValid() || !GS.IsValid())return;
 	
-	if (EnemyClass && GI->NextMissionRound == EKeroroType::Keroro)
+	if (GI->NextMissionRound == EKeroroType::Keroro)
 	{
 		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AKREnemySpawner::SpawnEnemy, SpawnInterval, true);
+	}
+
+	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
+	if (CurrentLevelName == TEXT("MainLevel1"))
+	{
+		EnemyClasses.Add(AKeroroEnemyCharacter::StaticClass());
+	}
+	else if (CurrentLevelName == TEXT("MainLevel2"))
+	{
+		EnemyClasses.Add(AKeroroEnemyCharacter::StaticClass());
+		EnemyClasses.Add(ANunwawaCharacter::StaticClass());
+	}
+	else if (CurrentLevelName == TEXT("MainLevel3"))
+	{
+		EnemyClasses.Add(AKeroroEnemyCharacter::StaticClass());
+		EnemyClasses.Add(ANunwawaCharacter::StaticClass());
+		EnemyClasses.Add(ARoboboCharacter::StaticClass());
 	}
 }
 
