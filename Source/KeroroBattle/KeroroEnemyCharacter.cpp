@@ -21,6 +21,7 @@
 #include "Components/WidgetComponent.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
+#include "KeroroItemBox.h"
 
 // Sets default values
 AKeroroEnemyCharacter::AKeroroEnemyCharacter(const FObjectInitializer& ObjectInitializer)
@@ -195,7 +196,7 @@ void AKeroroEnemyCharacter::Die()
 {
 	if (bIsDead) return;
 	AKeroroGameState* GS = GetWorld()->GetGameState<AKeroroGameState>();
-	if(!GS)return;
+	if (!GS)return;
 	GS->Enemies.Remove(this);
 
 	bIsDead = true;
@@ -237,11 +238,23 @@ void AKeroroEnemyCharacter::Die()
 				ExpObj->SetTargetAndSpeedAndExp(KR, 1.5f, FinalDropExp);
 			}
 
-			// 골드 오브젝트 생성
+			
 			FTransform SpawnTransform = FTransform(FRotator::ZeroRotator, GetActorLocation());
-			ADropGold* GoldObj = GetWorld()->SpawnActorDeferred<ADropGold>(ADropGold::StaticClass(), SpawnTransform);
-			GoldObj->SetGoldMount(EnemyStat->GetDropGold());
-			UGameplayStatics::FinishSpawningActor(GoldObj, SpawnTransform);
+
+			// 골드 오브젝트 생성 // 확률 50퍼
+			if (FMath::FRand() < 0.5f)
+			{
+				ADropGold* GoldObj = GetWorld()->SpawnActorDeferred<ADropGold>(ADropGold::StaticClass(), SpawnTransform);
+				GoldObj->SetGoldMount(EnemyStat->GetDropGold());
+				UGameplayStatics::FinishSpawningActor(GoldObj, SpawnTransform);
+			}
+
+			// 아이템 박스 생성 // 확률 10퍼
+			if (FMath::FRand() < 0.1f)
+			{
+				AKeroroItemBox* ItemBox = GetWorld()->SpawnActor<AKeroroItemBox>(AKeroroItemBox::StaticClass(), SpawnTransform);
+				ItemBox->SetPhysics();
+			}
 		}
 	}
 }
