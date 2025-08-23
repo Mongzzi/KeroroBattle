@@ -5,6 +5,7 @@
 #include "Components/TextBlock.h"
 #include "KeroroGameInstance.h"
 #include "KeroroPlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 void UKRMapNameWidget::NativeConstruct()
 {
@@ -25,27 +26,34 @@ void UKRMapNameWidget::SetMapNameText()
 	if (!GI || !PC || !MapName)return;
 	if (!PC->IsMainMap) return;
 
-	EKeroroType RoundType = GI->NextMissionRound;
+	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
 
-	switch (RoundType)
+
+	if (CurrentLevelName == TEXT("Robby1Level"))
 	{
-	case EKeroroType::Keroro:
-		MapName->SetText(FText::FromString(TEXT("케론별 버려진 땅")));
-		break;
-	case EKeroroType::Tamama:
-		MapName->SetText(FText::FromString(TEXT("케론별 뒷산")));
-		break;
-	case EKeroroType::Giroro:
+		MapName->SetText(FText::FromString(TEXT("케론별 유적지")));
+
+	}
+	else if (CurrentLevelName == TEXT("MainLevel1"))
+	{
 		MapName->SetText(FText::FromString(TEXT("케론별 뒷산")));
 
-		break;
-	case EKeroroType::Kururu:
+	}
+	else if (CurrentLevelName == TEXT("MainLevel2"))
+	{
 		MapName->SetText(FText::FromString(TEXT("케론별 피라미드")));
-
-		break;
-	case EKeroroType::Dororo:
-		MapName->SetText(FText::FromString(TEXT("케론별 궁전")));
-		break;
+	}
+	else if (CurrentLevelName == TEXT("MainLevel3"))
+	{
+		EKeroroType RoundType = GI->NextMissionRound;
+		if (RoundType == EKeroroType::Dororo)
+		{
+			MapName->SetText(FText::FromString(TEXT("케론별 궁전")));
+		}
+		else
+		{
+			MapName->SetText(FText::FromString(TEXT("케론별 버려진 땅")));
+		}
 	}
 }
 
