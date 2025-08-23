@@ -6,6 +6,8 @@
 #include "ChatManager.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
+#include "Components/Image.h"
+#include "Kismet/GameplayStatics.h"
 
 
 void UKRChatWidget::NativeConstruct()
@@ -47,11 +49,21 @@ void UKRChatWidget::NativeDestruct()
 	Super::NativeDestruct();
 }
 
-void UKRChatWidget::UpdateChatInfo(int32 _ChatID, FString _ChatText, TArray<FString> _SelectChatTexts, TArray<FString> _NextChatIDs)
+void UKRChatWidget::UpdateChatInfo(int32 _ChatID, int32 _ImageID, FString _ChatText, TArray<FString> _SelectChatTexts, TArray<FString> _NextChatIDs)
 {
 	ChatID = _ChatID;
 	NextChatID1 = 0;
 	NextChatID2 = 0;
+	
+	if (ImageID != _ImageID)
+	{
+		ImageID = _ImageID;
+		if (CharacterImage)
+		{
+			UTexture2D* Image = LoadObject<UTexture2D>(nullptr, *FString::Printf(TEXT("/Game/Texture/%d.%d"), _ImageID, _ImageID));
+			CharacterImage->SetBrushFromTexture(Image);
+		}
+	}
 
 	if (ChatText)
 	{
@@ -61,13 +73,14 @@ void UKRChatWidget::UpdateChatInfo(int32 _ChatID, FString _ChatText, TArray<FStr
 	// ¼±ÅÃÁö/NextIDs ¸ðµÎ ¾ø´Â °æ¿ì À§Á¬ ¼û±è
 	if (_SelectChatTexts.Num() == 0 && _NextChatIDs.Num() == 0)
 	{
-		if (NextChatButton) NextChatButton->SetVisibility(ESlateVisibility::Collapsed);
+		if (NextChatButton)
+		{
+			NextChatButton->SetVisibility(ESlateVisibility::Visible);
+			NextChatID1 = 0;
+		}
 		if (SelectButton1) SelectButton1->SetVisibility(ESlateVisibility::Collapsed);
 		if (SelectButton2) SelectButton2->SetVisibility(ESlateVisibility::Collapsed);
-		if (ChatText) ChatText->SetText(FText::GetEmpty());
-
-		this->SetVisibility(ESlateVisibility::Collapsed);
-		if (PC)PC->SetGameMode();
+		
 		return;
 	}
 
@@ -136,6 +149,13 @@ void UKRChatWidget::OnSelectNextButton()
 {
 	if (!PC || !PC->KRChatManager)return;
 	UChatManager* ChatManager = PC->KRChatManager;
+
+	if (NextChatID1 <= 0)
+	{
+		this->SetVisibility(ESlateVisibility::Collapsed);
+		if (PC) PC->SetGameMode();
+		return;
+	}
 
 	if (ChatManager)
 	{

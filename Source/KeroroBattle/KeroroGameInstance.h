@@ -19,6 +19,9 @@ public:
 	int32 ChatID;
 
 	UPROPERTY()
+	int32 ImageID;
+
+	UPROPERTY()
 	FString ChatText;
 
 	UPROPERTY()
@@ -164,6 +167,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NextMissionRound)
 	EKeroroType NextMissionRound = EKeroroType::Tamama;
 	bool bIsEntraceAnimPlayed = false;
+	bool bIsManualChatPlayed = false;
 
 	TMap<EKeroroType, bool> UnlockedChattings;
 private:

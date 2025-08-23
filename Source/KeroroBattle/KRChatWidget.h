@@ -20,12 +20,13 @@ protected:
 
 public:
 	int32 ChatID;
+	int32 ImageID;
 	int32 NextChatID1;
 	int32 NextChatID2;
 
 public:
 	UFUNCTION()
-	void UpdateChatInfo(int32 _ChatID, FString _ChatText, TArray<FString> _SelectChatTexts, TArray<FString> _NextChatIDs);
+	void UpdateChatInfo(int32 _ChatID,int32 _ImageID, FString _ChatText, TArray<FString> _SelectChatTexts, TArray<FString> _NextChatIDs);
 
 	UFUNCTION()
 	void OnSelectButton1();
@@ -40,6 +41,9 @@ private:
 	class AKeroroPlayerController* PC;
 
 private:
+	UPROPERTY(meta = (BindWidget))
+	class UImage* CharacterImage;
+
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* ChatText;
 

@@ -15,6 +15,8 @@ void UChatManager::StartChat(int32 ChatID)
 
 	if (Row)
 	{
+		int32 ImageID = Row->ImageID;
+
 		FString ChatText;
 		if (!Row->ChatText.IsEmpty())
 		{
@@ -35,7 +37,7 @@ void UChatManager::StartChat(int32 ChatID)
 
 		if (ChatWidget.IsValid())
 		{
-			ChatWidget->UpdateChatInfo(CurrentID, Row->ChatText, SelectChatTexts, NextIDs);
+			ChatWidget->UpdateChatInfo(CurrentID, ImageID, Row->ChatText, SelectChatTexts, NextIDs);
 		}
 	}
 }
