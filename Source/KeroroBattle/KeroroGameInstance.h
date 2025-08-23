@@ -169,9 +169,9 @@ public:
 	bool bIsEntraceAnimPlayed = false;
 	bool bIsManualChatPlayed = false;
 
+	UPROPERTY()
 	TMap<EKeroroType, bool> UnlockedChattings;
-private:
-	// 해금된 캐릭터
+
 	UPROPERTY()
 	TMap<EKeroroType, bool> UnlockedCharacters;
 

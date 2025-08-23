@@ -153,15 +153,36 @@ void AKeroroPlayerController::BeginPlay()
 	SpawnKero.bIsSpawnedOnce = true;
 	CharacterMap.Add(MyType, SpawnKero); // TMap에 미리 등록
 
+	// 채팅 위젯 생성
+	KRChatWidget = CreateWidget<UKRChatWidget>(this, KRChatWidgetClass);
+	if (KRChatWidget) KRChatWidget->AddToViewport();
+
+	// 채팅 매니저 생성 // 채팅위젯 바인딩, 채팅 데이터테이블 바인딩
+	KRChatManager = NewObject<UChatManager>(this);
+	if (KRChatWidget) KRChatManager->ChatWidget = KRChatWidget;
+	if (GI->GetChatDataTable()) KRChatManager->ChatDataTable = GI->GetChatDataTable();
+
+	// 맵 입장 로고 위젯 출력
+	KRMapNameWidget = CreateWidget<UKRMapNameWidget>(this, KRMapNameWidgetClass);
+	if (KRMapNameWidget)
+	{
+		KRMapNameWidget->AddToViewport();
+	}
+
 	// 현재 맵이름 가져옴 (로비면 hud ,캐릭터 머리위 hp바 히든으로 변경)
 	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
 	if (CurrentLevelName == TEXT("Robby1Level") || CurrentLevelName == TEXT("LoadingLevel"))
 	{
 		//로비
-		if (CurrentLevelName == TEXT("Robby1Level") && !GI->bIsEntraceAnimPlayed)
+		if (CurrentLevelName == TEXT("Robby1Level"))
 		{
-			GI->bIsEntraceAnimPlayed = true;
-			PlayKRLevelSequence(RobbyScene1);
+			if (!GI->bIsEntraceAnimPlayed)
+			{
+				GI->bIsEntraceAnimPlayed = true;
+				PlayKRLevelSequence(RobbyScene1);
+			}
+
+			PlayUnlockChat();
 		}
 
 		//로딩
@@ -187,23 +208,6 @@ void AKeroroPlayerController::BeginPlay()
 
 		IsMainMap = true;
 	}
-
-	// 맵 입장 로고 위젯 출력
-	KRMapNameWidget = CreateWidget<UKRMapNameWidget>(this, KRMapNameWidgetClass);
-	if (KRMapNameWidget)
-	{
-		KRMapNameWidget->AddToViewport();
-	}
-
-	// 채팅 위젯 생성
-	KRChatWidget = CreateWidget<UKRChatWidget>(this, KRChatWidgetClass);
-	if (KRChatWidget) KRChatWidget->AddToViewport();
-
-	// 채팅 매니저 생성 // 채팅위젯 바인딩, 채팅 데이터테이블 바인딩
-	KRChatManager = NewObject<UChatManager>(this);
-	if (KRChatWidget) KRChatManager->ChatWidget = KRChatWidget;
-	if (GI->GetChatDataTable()) KRChatManager->ChatDataTable = GI->GetChatDataTable();
-
 
 	KRCharacter->KRStat->OnHpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateHPWidget);
 	KRCharacter->KRStat->OnMpIsChanged.AddUObject(this, &AKeroroPlayerController::UpdateMPWidget);
@@ -907,6 +911,33 @@ void AKeroroPlayerController::StartChat(int32 ChatID)
 		{
 			KRChatManager->StartChat(ChatID);
 		}
+	}
+}
+
+void AKeroroPlayerController::PlayUnlockChat()
+{
+	UKeroroGameInstance* GI = GetGameInstance<UKeroroGameInstance>();
+	if (!GI)return;
+
+	if (GI->UnlockedCharacters[EKeroroType::Tamama] == true && GI->UnlockedChattings[EKeroroType::Tamama] == false)
+	{
+		StartChat(13);
+		GI->UnlockedChattings[EKeroroType::Tamama] = true;
+	}
+	if (GI->UnlockedCharacters[EKeroroType::Giroro] == true && GI->UnlockedChattings[EKeroroType::Giroro] == false)
+	{
+		StartChat(16);
+		GI->UnlockedChattings[EKeroroType::Giroro] = true;
+	}
+	if (GI->UnlockedCharacters[EKeroroType::Dororo] == true && GI->UnlockedChattings[EKeroroType::Dororo] == false)
+	{
+		StartChat(22);
+		GI->UnlockedChattings[EKeroroType::Dororo] = true;
+	}
+	if (GI->UnlockedCharacters[EKeroroType::Kururu] == true && GI->UnlockedChattings[EKeroroType::Kururu] == false)
+	{
+		StartChat(19);
+		GI->UnlockedChattings[EKeroroType::Kururu] = true;
 	}
 }
 

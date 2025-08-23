@@ -146,6 +146,7 @@ public:
 
 	void PlayKRLevelSequence(class ULevelSequence* Sequence);
 	void StartChat(int32 ChatID);
+	void PlayUnlockChat();
 
 	UFUNCTION()
 	void OnSequencePlay();
