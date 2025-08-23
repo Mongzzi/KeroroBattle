@@ -231,6 +231,11 @@ void UKeroroGameInstance::OnLevelLoaded(UWorld* LoadedWorld)
 			BgmIndex = 4; // º¸½ºÀü
 		}
 	}
+	else if (CurrentLevelName == TEXT("LoadingLevel"))
+	{
+		StopBGM();
+		return;
+	}
 	PlayBGM(MapBGMMap[BgmIndex]);
 }
 
