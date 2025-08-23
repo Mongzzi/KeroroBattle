@@ -150,15 +150,22 @@ public:
 	UKeroroGameInstance();
 
 	virtual void Init() override;
+
 	FKRStatData* GetKRStatData(int Level);
 	FCardData* GetCardData(int CardID);
 	UDataTable* GetChatDataTable();
 	FSoftObjectPath GetFaceAssetPath(EKeroroType KeroroType, EFaceType FaceType);
 	FSoftObjectPath GetVoiceSoundAssetPath(EKeroroType KeroroType, int32 index);
 	FStreamableManager& GetStreamableManager();
+
 	void LoadLevelWithLoadingScreen(FName MapName);
 	bool IsCharacterUnlocked(EKeroroType Type);
 	void UnlockCharacter(EKeroroType Type);
+	void PlayBGM(USoundBase* NewBGM);
+
+private:
+	UFUNCTION()
+	void OnLevelLoaded(UWorld* LoadedWorld);
 
 public:
 	FStreamableManager StreamableManager;
@@ -174,6 +181,13 @@ public:
 
 	UPROPERTY()
 	TMap<EKeroroType, bool> UnlockedCharacters;
+
+public:
+	UPROPERTY()
+	UAudioComponent* CurrentBGMComponent;
+
+	UPROPERTY()
+	TArray<USoundBase*> MapBGMMap;
 
 private:
 	UPROPERTY()
