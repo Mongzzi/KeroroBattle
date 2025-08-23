@@ -884,8 +884,11 @@ void AKeroroPlayerController::PlayKRLevelSequence(ULevelSequence* Sequence)
 		SequencePlayer->OnPlay.AddDynamic(this, &AKeroroPlayerController::OnSequencePlay);
 		SequencePlayer->OnFinished.AddDynamic(this, &AKeroroPlayerController::OnSequenceEnd);
 
-		if (Sequence != RobbyScene1)
+		if (Sequence == RobbyScene1)
 		{
+			SequencePlayer->OnFinished.AddDynamic(this, &AKeroroPlayerController::OnRobbyLevelSequenceEnd);
+		}
+		else {
 			SequencePlayer->OnFinished.AddDynamic(this, &AKeroroPlayerController::OnMainLevelSequenceEnd);
 		}
 
@@ -957,6 +960,19 @@ void AKeroroPlayerController::OnMainLevelSequenceEnd()
 		KRHUDWidget->BindPlayerState(KRPlayerState);
 		UpdateStatWidget();
 	}
+}
+
+void AKeroroPlayerController::OnRobbyLevelSequenceEnd()
+{
+	UKeroroGameInstance* GI = GetGameInstance<UKeroroGameInstance>();
+	if (!GI) return;
+
+	if (!GI->bIsManualChatPlayed)
+	{
+		StartChat(1);
+		GI->bIsManualChatPlayed = true;
+	}
+
 }
 
 

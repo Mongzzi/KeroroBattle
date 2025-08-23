@@ -156,6 +156,9 @@ public:
 	UFUNCTION()
 	void OnMainLevelSequenceEnd();
 
+	UFUNCTION()
+	void OnRobbyLevelSequenceEnd();
+
 
 protected:
 
