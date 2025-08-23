@@ -906,7 +906,7 @@ void AKeroroPlayerController::StartChat(int32 ChatID)
 	{
 		SetUIMode();
 		KRChatWidget->SetVisibility(ESlateVisibility::Visible);
-
+		KRChatWidget->PlayFadeInAnim();
 		if (KRChatManager)
 		{
 			KRChatManager->StartChat(ChatID);

@@ -162,6 +162,7 @@ public:
 	bool IsCharacterUnlocked(EKeroroType Type);
 	void UnlockCharacter(EKeroroType Type);
 	void PlayBGM(USoundBase* NewBGM);
+	void StopBGM();
 
 private:
 	UFUNCTION()

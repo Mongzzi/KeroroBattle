@@ -37,10 +37,15 @@ public:
 	UFUNCTION()
 	void OnSelectNextButton();
 
+	void PlayFadeInAnim();
+
 private:
 	class AKeroroPlayerController* PC;
 
 private:
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* FadeIn;
+
 	UPROPERTY(meta = (BindWidget))
 	class UImage* CharacterImage;
 

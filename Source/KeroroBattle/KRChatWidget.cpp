@@ -162,3 +162,11 @@ void UKRChatWidget::OnSelectNextButton()
 		ChatManager->StartChat(NextChatID1);
 	}
 }
+
+void UKRChatWidget::PlayFadeInAnim()
+{
+	if (FadeIn)
+	{
+		PlayAnimation(FadeIn);
+	}
+}

@@ -189,6 +189,16 @@ void UKeroroGameInstance::PlayBGM(USoundBase* NewBGM)
 	CurrentBGMComponent = UGameplayStatics::SpawnSound2D(this, NewBGM);
 }
 
+void UKeroroGameInstance::StopBGM()
+{
+	if (CurrentBGMComponent)
+	{
+		CurrentBGMComponent->Stop();
+		CurrentBGMComponent->DestroyComponent();
+		CurrentBGMComponent = nullptr;
+	}
+}
+
 void UKeroroGameInstance::OnLevelLoaded(UWorld* LoadedWorld)
 {
 	if (!LoadedWorld) return;
