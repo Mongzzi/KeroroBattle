@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundBase.h"
 #include "Components/AudioComponent.h"
+#include "UISoundManager.h"
 
 
 UKeroroGameInstance::UKeroroGameInstance()
@@ -62,6 +63,7 @@ void UKeroroGameInstance::Init()
 {
 	Super::Init();
 	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UKeroroGameInstance::OnLevelLoaded);
+	UISoundManager = NewObject<UUISoundManager>(this);
 }
 
 // 행 이름을 레벨과 같게하여 FindRow함수에 행이름과 같은 레벨을 넣어서 행을 가져옴
@@ -201,6 +203,14 @@ void UKeroroGameInstance::StopBGM()
 		CurrentBGMComponent->Stop();
 		CurrentBGMComponent->DestroyComponent();
 		CurrentBGMComponent = nullptr;
+	}
+}
+
+void UKeroroGameInstance::PlayUISound(EUISoundType Type)
+{
+	if (UISoundManager)
+	{
+		UISoundManager->PlayUISound(Type);
 	}
 }
 

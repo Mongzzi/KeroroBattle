@@ -27,7 +27,7 @@ AViperCharacter::AViperCharacter(const FObjectInitializer& ObjectInitializer):Su
 		GetMesh()->SetAnimInstanceClass(ANIM.Class);
 	}
 
-	AttackRange = 300.0f;
+	AttackRange = 400.0f;
 	AttackRadius = 400.0f;
 	MaxWalkSpeed = 1200.0f;
 }

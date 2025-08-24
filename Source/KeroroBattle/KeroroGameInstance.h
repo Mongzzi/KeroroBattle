@@ -163,6 +163,7 @@ public:
 	void UnlockCharacter(EKeroroType Type);
 	void PlayBGM(USoundBase* NewBGM);
 	void StopBGM();
+	void PlayUISound(EUISoundType Type);
 
 private:
 	UFUNCTION()
@@ -172,10 +173,14 @@ public:
 	FStreamableManager StreamableManager;
 	FName NextMapName;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NextMissionRound)
-	EKeroroType NextMissionRound = EKeroroType::Tamama;
 	bool bIsEntraceAnimPlayed = false;
 	bool bIsManualChatPlayed = false;
+
+	UPROPERTY()
+	class UUISoundManager* UISoundManager;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = NextMissionRound)
+	EKeroroType NextMissionRound = EKeroroType::Tamama;
 
 	UPROPERTY()
 	TMap<EKeroroType, bool> UnlockedChattings;

@@ -114,6 +114,17 @@ enum class ECardType : uint8
 	MAX						UMETA(Hidden)										// 순환 계산용
 };
 
+UENUM(BlueprintType)
+enum class EUISoundType : uint8
+{
+	Hover       UMETA(DisplayName = "Hover"),
+	Click       UMETA(DisplayName = "Click"),
+	Confirm     UMETA(DisplayName = "Confirm"),
+	Cancel      UMETA(DisplayName = "Cancel"),
+	MAX         UMETA(Hidden)
+};
+
+
 enum EDamageResultType
 {
 	Normal,
