@@ -39,6 +39,8 @@ public:
 	float AttackRadius;
 	bool bIsDead;
 
+	float MaxWalkSpeed = 350.0f;
+
 	EEnemyType EnemyType = EEnemyType::Joriri;
 
 	FOnEnemyDie OnEnemyDie;

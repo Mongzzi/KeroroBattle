@@ -54,7 +54,7 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(AEnemyAIController::TargetKey, NearestKeroro);
 		EnemyCharacter->EnemyAnim->bIsRunning = true;
-		EnemyCharacter->GetCharacterMovement()->MaxWalkSpeed = 350.0f;
+		EnemyCharacter->GetCharacterMovement()->MaxWalkSpeed = EnemyCharacter->MaxWalkSpeed;
 	}
 	else
 	{

@@ -921,22 +921,22 @@ void AKeroroPlayerController::PlayUnlockChat()
 
 	if (GI->UnlockedCharacters[EKeroroType::Tamama] == true && GI->UnlockedChattings[EKeroroType::Tamama] == false)
 	{
-		StartChat(13);
+		StartChat(15);
 		GI->UnlockedChattings[EKeroroType::Tamama] = true;
 	}
 	if (GI->UnlockedCharacters[EKeroroType::Giroro] == true && GI->UnlockedChattings[EKeroroType::Giroro] == false)
 	{
-		StartChat(16);
+		StartChat(18);
 		GI->UnlockedChattings[EKeroroType::Giroro] = true;
 	}
 	if (GI->UnlockedCharacters[EKeroroType::Dororo] == true && GI->UnlockedChattings[EKeroroType::Dororo] == false)
 	{
-		StartChat(22);
+		StartChat(24);
 		GI->UnlockedChattings[EKeroroType::Dororo] = true;
 	}
 	if (GI->UnlockedCharacters[EKeroroType::Kururu] == true && GI->UnlockedChattings[EKeroroType::Kururu] == false)
 	{
-		StartChat(19);
+		StartChat(21);
 		GI->UnlockedChattings[EKeroroType::Kururu] = true;
 	}
 }

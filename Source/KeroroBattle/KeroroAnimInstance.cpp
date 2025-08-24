@@ -95,6 +95,12 @@ UKeroroAnimInstance::UKeroroAnimInstance()
 	{
 		NunwawaAttackMontage = ENEMYANIM2.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ENEMYANIM3(TEXT("/Game/Keroro_Model/Viper/ViperAttackMontage.ViperAttackMontage"));
+	if (ENEMYANIM3.Succeeded())
+	{
+		ViperAttackMontage = ENEMYANIM3.Object;
+	}
+
 }
 
 void UKeroroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -160,10 +166,17 @@ void UKeroroAnimInstance::PlayEnemyAttackMontage(EEnemyType Type)
 		if (!Montage_IsPlaying(SwordAttackMontage)) Montage_Play(SwordAttackMontage);
 		break;
 	case EEnemyType::Robobo:
-		if (!Montage_IsPlaying(RoboboAttackMontage)) 	Montage_Play(RoboboAttackMontage);
+		if (!Montage_IsPlaying(RoboboAttackMontage)) Montage_Play(RoboboAttackMontage);
 		break;
 	case EEnemyType::Nunwawa:
 		if (!Montage_IsPlaying(NunwawaAttackMontage)) Montage_Play(NunwawaAttackMontage);
+		break;
+	case EEnemyType::Viper:
+		if (!Montage_IsPlaying(SwordAttackMontage))
+		{
+			Montage_Play(ViperAttackMontage);
+			Montage_JumpToSection(GetAttackMontageSectionName(FMath::RandRange(1, 3)), ViperAttackMontage);
+		}
 		break;
 	case EEnemyType::Garuru:
 		if (!Montage_IsPlaying(SwordAttackMontage)) Montage_Play(SwordAttackMontage);
@@ -276,7 +289,7 @@ void UKeroroAnimInstance::AnimNotify_WeaponSound()
 {
 	if (OnWeaponSoundCheck.IsBound())
 	{
-	OnWeaponSoundCheck.Broadcast();
+		OnWeaponSoundCheck.Broadcast();
 	}
 }
 
@@ -359,6 +372,7 @@ UAnimMontage* UKeroroAnimInstance::GetUltiAnimMontage()
 void UKeroroAnimInstance::JumptoAttackMontageSection(int32 NewSection)
 {
 	if (IsDead || bIsHit || bIsRolling) return;
+
 
 	if (UAnimMontage* MontageToPlay = GetAnimMontage())
 	{

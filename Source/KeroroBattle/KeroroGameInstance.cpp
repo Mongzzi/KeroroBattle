@@ -41,10 +41,15 @@ UKeroroGameInstance::UKeroroGameInstance()
 	if (BGM5.Succeeded())MapBGMMap.Add(BGM5.Object);
 
 	UnlockCharacter(EKeroroType::Keroro);
-	UnlockedCharacters.Add(EKeroroType::Tamama, false);
-	UnlockedCharacters.Add(EKeroroType::Giroro, false);
-	UnlockedCharacters.Add(EKeroroType::Dororo, false);
-	UnlockedCharacters.Add(EKeroroType::Kururu, false);
+	UnlockCharacter(EKeroroType::Tamama);
+	UnlockCharacter(EKeroroType::Giroro);
+	UnlockCharacter(EKeroroType::Dororo);
+	UnlockCharacter(EKeroroType::Kururu);
+
+	//UnlockedCharacters.Add(EKeroroType::Tamama, false);
+	//UnlockedCharacters.Add(EKeroroType::Giroro, false);
+	//UnlockedCharacters.Add(EKeroroType::Dororo, false);
+	//UnlockedCharacters.Add(EKeroroType::Kururu, false);
 
 	UnlockedChattings.Add(EKeroroType::Tamama, false);
 	UnlockedChattings.Add(EKeroroType::Giroro, false);

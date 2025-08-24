@@ -22,6 +22,7 @@ enum class EEnemyType : uint8
 	Joriri	   UMETA(DisplayName = "Joriri"),
 	Robobo	   UMETA(DisplayName = "Robobo"),
 	Nunwawa    UMETA(DisplayName = "Nunwawa"),
+	Viper	   UMETA(DisplayName = "Viper"),
 	Garuru	   UMETA(DisplayName = "Garuru"),
 	MAX		   UMETA(Hidden)
 };

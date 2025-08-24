@@ -149,6 +149,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	class UAnimMontage* RoboboAttackMontage;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	class UAnimMontage* ViperAttackMontage;
+
 private:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=Pawn,meta=(AllowPrivateAccess=true))
 	bool IsDead;
