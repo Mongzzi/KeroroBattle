@@ -357,7 +357,7 @@ void AKeroroCharacter::PlayVoiceSound()
 		if (WeaponType == EWeaponType::RIFLE)
 		{
 			int RandomIndex = FMath::RandRange(0, 10);	//0~2 유효 5~10 무효 ,3은 그냥뻇음 4는 궁극기, 무효시 아무소리안나게 너무시끄러움..
-			if (VoiceSounds.IsValidIndex(RandomIndex) && RandomIndex != 4)
+			if (VoiceSounds.IsValidIndex(RandomIndex) && RandomIndex >= 0 && RandomIndex <= 4)
 			{
 				UGameplayStatics::PlaySoundAtLocation(this, VoiceSounds[RandomIndex], GetActorLocation());
 				return;
@@ -439,6 +439,14 @@ void AKeroroCharacter::HiddenHPBarOnHead()
 	if (HPBar)
 	{
 		HPBar->SetVisibility(false);
+	}
+}
+
+void AKeroroCharacter::PlayRollSound()
+{
+	if (VoiceSounds.IsValidIndex(6))
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, VoiceSounds[6], GetActorLocation(),0.7f);
 	}
 }
 
@@ -1358,6 +1366,7 @@ void AKeroroCharacter::StartRoll(FVector Dir, float RollDistance)
 	{
 		KRAnim->bIsRolling = true;
 		KRAnim->PlayRollAnimation();
+		PlayRollSound();
 	}
 }
 

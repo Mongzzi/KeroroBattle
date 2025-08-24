@@ -96,6 +96,7 @@ public:
 	void PlayWeaponSound();
 	bool GetIsAttacking() { return IsAttacking; };
 	void HiddenHPBarOnHead();
+	void PlayRollSound();
 
 public:
 	void KeroBallUlti();
@@ -204,7 +205,7 @@ public:
 
 public:
 	UPROPERTY()
-	int32 NumVoices = 6;
+	int32 NumVoices = 7;
 
 	UPROPERTY(EditAnywhere, Category = Sound)
 	TArray<USoundBase*> VoiceSounds;

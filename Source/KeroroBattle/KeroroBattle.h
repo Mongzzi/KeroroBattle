@@ -57,6 +57,7 @@ enum class EKRSoundType : uint8
 	Die						UMETA(DisplayName = "Die"),
 	Ultimate				UMETA(DisplayName = "Ultimate"),
 	Hitted					UMETA(DisplayName = "Hitted"),
+	Dash					UMETA(DisplayName = "Dash"),
 	MAX						UMETA(Hidden) // 순환 계산용
 };
 
