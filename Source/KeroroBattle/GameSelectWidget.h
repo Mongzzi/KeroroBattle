@@ -19,6 +19,13 @@ protected:
 	virtual void NativeDestruct() override;
 
 public:
+	UPROPERTY()
+	class UKeroroGameInstance* KRGI;
+
+	UFUNCTION()
+	void OnButtonHoverd();
+
+public:
 	UFUNCTION()
 	void OnSelectButton1Clicked();
 

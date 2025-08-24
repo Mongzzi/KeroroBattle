@@ -34,6 +34,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Media)
 	class UFileMediaSource* TitleMediaSource;
 
+public:
+	UPROPERTY()
+	class UKeroroGameInstance* KRGI;
+
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UButton* StartButton;

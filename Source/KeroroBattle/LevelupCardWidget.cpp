@@ -14,10 +14,13 @@
 void ULevelupCardWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	KRGI = Cast<UKeroroGameInstance>(GetGameInstance());
+	if (!KRGI) return;
 
 	if (CardButton)
 	{
 		CardButton->OnClicked.AddDynamic(this, &ULevelupCardWidget::OnSelectButtonClicked);
+		CardButton->OnHovered.AddDynamic(this, &ULevelupCardWidget::OnButtonHoverd);
 	}
 
 	CardSelectAnimFinish.BindDynamic(this, &ULevelupCardWidget::OnCardSelectAnimFinished);
@@ -34,8 +37,14 @@ void ULevelupCardWidget::NativeDestruct()
 	if (CardButton)
 	{
 		CardButton->OnClicked.RemoveDynamic(this, &ULevelupCardWidget::OnSelectButtonClicked);
+		CardButton->OnHovered.RemoveDynamic(this, &ULevelupCardWidget::OnButtonHoverd);
 	}
 	CardSelectAnimFinish.Unbind();
+}
+
+void ULevelupCardWidget::OnButtonHoverd()
+{
+	KRGI->PlayUISound(EUISoundType::Hover);
 }
 
 void ULevelupCardWidget::PlayDrawCardAnimation()
@@ -105,6 +114,8 @@ void ULevelupCardWidget::SetCardInfo()
 
 void ULevelupCardWidget::OnSelectButtonClicked()
 {
+	KRGI->PlayUISound(EUISoundType::Click);
+
 	// 선택된 카드 인덱스 전달
 	if (OnCardSelected.IsBound())
 	{

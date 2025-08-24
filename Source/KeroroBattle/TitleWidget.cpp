@@ -15,6 +15,9 @@ void UTitleWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	KRGI = Cast<UKeroroGameInstance>(GetGameInstance());
+	if (!KRGI) return;
+
 	if (!MediaSound && MediaPlayer)
 	{
 		MediaSound = NewObject<UMediaSoundComponent>(this);
@@ -37,7 +40,6 @@ void UTitleWidget::NativeConstruct()
 		ExitButton->OnPressed.AddDynamic(this, &UTitleWidget::OnExitPressed);
 		ExitButton->OnReleased.AddDynamic(this, &UTitleWidget::OnExitReleased);
 	}
-
 }
 
 void UTitleWidget::NativeDestruct()
@@ -89,6 +91,7 @@ void UTitleWidget::OnStartHovered()
 	{
 		StartText->SetColorAndOpacity(FSlateColor(FLinearColor(0.6f, 1.0f, 0.6f)));
 		StartText->SetRenderTranslation(FVector2D(0.0f, -5.0f));
+		KRGI->PlayUISound(EUISoundType::Hover);
 	}
 }
 
@@ -116,7 +119,7 @@ void UTitleWidget::OnStartReleased()
 
 	// 로비씬으로 이동
 	//1. UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("/Game/EnglishCollege/Maps/SampleScene.SampleScene")), true, TEXT("?game=/Script/KeroroBattle.KeroroGameMode"));
-	
+
 	//2. UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("SampleScene")), true, TEXT("?game=/Script/KeroroBattle.KeroroGameMode"));
 	// 1번처럼 경로로 여는경우 게임모드가 잘안열리는 오류있음, 두번째 경우에는 잘됨 마지막인자 option으로 게임모드 설정가능
 	// 현재 사용 중인 코드는 에디터에서 게임모드 미리 설정해둔 상태라 잘 작동됨
@@ -129,12 +132,7 @@ void UTitleWidget::OnStartReleased()
 		PC->SetInputMode(FInputModeGameOnly());
 	}
 
-	//UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("Robby1Level")));
-
-	if (UKeroroGameInstance* GI = Cast<UKeroroGameInstance>(GetGameInstance()))
-	{
-		GI->LoadLevelWithLoadingScreen(TEXT("Robby1Level"));
-	}
+	KRGI->LoadLevelWithLoadingScreen(TEXT("Robby1Level"));
 }
 
 void UTitleWidget::OnExitHovered()
@@ -143,6 +141,7 @@ void UTitleWidget::OnExitHovered()
 	{
 		ExitText->SetColorAndOpacity(FSlateColor(FLinearColor(1.0f, 0.6f, 0.6f)));
 		ExitText->SetRenderTranslation(FVector2D(0.0f, -5.0f));
+		KRGI->PlayUISound(EUISoundType::Hover);
 	}
 }
 

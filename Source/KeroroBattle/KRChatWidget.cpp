@@ -8,11 +8,13 @@
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "KeroroGameInstance.h"
 
 void UKRChatWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	KRGI = Cast<UKeroroGameInstance>(GetGameInstance());
+	if (!KRGI) return;
 
 	SetVisibility(ESlateVisibility::Collapsed);
 
@@ -21,14 +23,17 @@ void UKRChatWidget::NativeConstruct()
 	if (NextChatButton)
 	{
 		NextChatButton->OnClicked.AddDynamic(this, &UKRChatWidget::OnSelectNextButton);
+		NextChatButton->OnHovered.AddDynamic(this, &UKRChatWidget::OnButtonHoverd);
 	}
 	if (SelectButton1)
 	{
 		SelectButton1->OnClicked.AddDynamic(this, &UKRChatWidget::OnSelectButton1);
+		SelectButton1->OnHovered.AddDynamic(this, &UKRChatWidget::OnButtonHoverd);
 	}
 	if (SelectButton2)
 	{
 		SelectButton2->OnClicked.AddDynamic(this, &UKRChatWidget::OnSelectButton2);
+		SelectButton2->OnHovered.AddDynamic(this, &UKRChatWidget::OnButtonHoverd);
 	}
 }
 
@@ -37,16 +42,24 @@ void UKRChatWidget::NativeDestruct()
 	if (NextChatButton)
 	{
 		NextChatButton->OnClicked.RemoveDynamic(this, &UKRChatWidget::OnSelectNextButton);
+		NextChatButton->OnHovered.RemoveDynamic(this, &UKRChatWidget::OnButtonHoverd);
 	}
 	if (SelectButton1)
 	{
 		SelectButton1->OnClicked.RemoveDynamic(this, &UKRChatWidget::OnSelectButton1);
+		SelectButton1->OnHovered.RemoveDynamic(this, &UKRChatWidget::OnButtonHoverd);
 	}
 	if (SelectButton2)
 	{
 		SelectButton2->OnClicked.RemoveDynamic(this, &UKRChatWidget::OnSelectButton2);
+		SelectButton2->OnHovered.RemoveDynamic(this, &UKRChatWidget::OnButtonHoverd);
 	}
 	Super::NativeDestruct();
+}
+
+void UKRChatWidget::OnButtonHoverd()
+{
+	KRGI->PlayUISound(EUISoundType::Hover);
 }
 
 void UKRChatWidget::UpdateChatInfo(int32 _ChatID, int32 _ImageID, FString _ChatText, TArray<FString> _SelectChatTexts, TArray<FString> _NextChatIDs)
@@ -126,6 +139,9 @@ void UKRChatWidget::UpdateChatInfo(int32 _ChatID, int32 _ImageID, FString _ChatT
 void UKRChatWidget::OnSelectButton1()
 {
 	if (!PC || !PC->KRChatManager)return;
+
+	KRGI->PlayUISound(EUISoundType::Click);
+
 	UChatManager* ChatManager = PC->KRChatManager;
 
 	if (ChatManager)
@@ -137,6 +153,9 @@ void UKRChatWidget::OnSelectButton1()
 void UKRChatWidget::OnSelectButton2()
 {
 	if (!PC || !PC->KRChatManager)return;
+
+	KRGI->PlayUISound(EUISoundType::Click);
+
 	UChatManager* ChatManager = PC->KRChatManager;
 
 	if (ChatManager)
@@ -148,6 +167,9 @@ void UKRChatWidget::OnSelectButton2()
 void UKRChatWidget::OnSelectNextButton()
 {
 	if (!PC || !PC->KRChatManager)return;
+
+	KRGI->PlayUISound(EUISoundType::Click);
+	
 	UChatManager* ChatManager = PC->KRChatManager;
 
 	if (NextChatID1 <= 0)

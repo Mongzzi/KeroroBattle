@@ -6,14 +6,18 @@
 #include "Components/Button.h"
 #include "KeroroPlayerController.h"
 #include "KeroroPlayerState.h"
-
+#include "KeroroGameInstance.h"
 
 void UReRollButton::NativeConstruct()
 {
 	Super::NativeConstruct();
+	KRGI = Cast<UKeroroGameInstance>(GetGameInstance());
+	if (!KRGI) return;
+
 	if (RerollButton)
 	{
 		RerollButton->OnClicked.AddDynamic(this, &UReRollButton::OnSelectButtonClicked);
+		RerollButton->OnHovered.AddDynamic(this, &UReRollButton::OnButtonHoverd);
 	}
 }
 
@@ -23,6 +27,7 @@ void UReRollButton::NativeDestruct()
 	if (RerollButton)
 	{
 		RerollButton->OnClicked.RemoveDynamic(this, &UReRollButton::OnSelectButtonClicked);
+		RerollButton->OnHovered.RemoveDynamic(this, &UReRollButton::OnButtonHoverd);
 	}
 }
 
@@ -53,7 +58,7 @@ void UReRollButton::PlayFadeOutAnim()
 
 void UReRollButton::OnSelectButtonClicked()
 {
-
+	KRGI->PlayUISound(EUISoundType::Click);
 	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
 	if (PC)
 	{
@@ -68,4 +73,9 @@ void UReRollButton::OnSelectButtonClicked()
 	{
 		OnRerollButtonSelected.Broadcast();
 	}
+}
+
+void UReRollButton::OnButtonHoverd()
+{
+	KRGI->PlayUISound(EUISoundType::Hover);
 }

@@ -18,7 +18,10 @@ protected:
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 
-
+public:
+	UPROPERTY()
+	class UKeroroGameInstance* KRGI;
+	
 public:
 	
 	void SetCardInfoText();
@@ -31,6 +34,9 @@ public:
 
 	UFUNCTION()
 	void OnSelectPrevButtonClicked();
+
+	UFUNCTION()
+	void OnButtonHoverd();
 
 private:
 	int32 NumPage;

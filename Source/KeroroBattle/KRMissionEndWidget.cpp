@@ -12,15 +12,19 @@
 void UKRMissionEndWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	KRGI = Cast<UKeroroGameInstance>(GetGameInstance());
+	if (!KRGI) return;
 
 	if (RobbyButton)
 	{
 		RobbyButton->OnClicked.AddDynamic(this, &UKRMissionEndWidget::OnClickedRobbyButton);
+		RobbyButton->OnHovered.AddDynamic(this, &UKRMissionEndWidget::OnButtonHoverd);
 	}
 
 	if (ExitButton)
 	{
 		ExitButton->OnClicked.AddDynamic(this, &UKRMissionEndWidget::OnClickedExitButton);
+		ExitButton->OnHovered.AddDynamic(this, &UKRMissionEndWidget::OnButtonHoverd);
 	}
 }
 
@@ -30,12 +34,19 @@ void UKRMissionEndWidget::NativeDestruct()
 	if (RobbyButton)
 	{
 		RobbyButton->OnClicked.RemoveDynamic(this, &UKRMissionEndWidget::OnClickedRobbyButton);
+		RobbyButton->OnHovered.RemoveDynamic(this, &UKRMissionEndWidget::OnButtonHoverd);
 	}
 
 	if (ExitButton)
 	{
 		ExitButton->OnClicked.RemoveDynamic(this, &UKRMissionEndWidget::OnClickedExitButton);
+		ExitButton->OnHovered.RemoveDynamic(this, &UKRMissionEndWidget::OnButtonHoverd);
 	}
+}
+
+void UKRMissionEndWidget::OnButtonHoverd()
+{
+	KRGI->PlayUISound(EUISoundType::Hover);
 }
 
 void UKRMissionEndWidget::PlayMissionEndAnim()

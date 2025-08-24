@@ -9,25 +9,34 @@
 void UGameSelectWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	KRGI = Cast<UKeroroGameInstance>(GetGameInstance());
+	if (!KRGI) return;
+
 	if (SelectButton1)
 	{
 		SelectButton1->OnClicked.AddDynamic(this, &UGameSelectWidget::OnSelectButton1Clicked);
+		SelectButton1->OnHovered.AddDynamic(this, &UGameSelectWidget::OnButtonHoverd);
 	}
 	if (SelectButton2)
 	{
 		SelectButton2->OnClicked.AddDynamic(this, &UGameSelectWidget::OnSelectButton2Clicked);
+		SelectButton2->OnHovered.AddDynamic(this, &UGameSelectWidget::OnButtonHoverd);
 	}
 	if (SelectButton3)
 	{
 		SelectButton3->OnClicked.AddDynamic(this, &UGameSelectWidget::OnSelectButton3Clicked);
+		SelectButton3->OnHovered.AddDynamic(this, &UGameSelectWidget::OnButtonHoverd);
 	}
 	if (SelectButton4)
 	{
 		SelectButton4->OnClicked.AddDynamic(this, &UGameSelectWidget::OnSelectButton4Clicked);
+		SelectButton4->OnHovered.AddDynamic(this, &UGameSelectWidget::OnButtonHoverd);
 	}
 	if (SelectButton5)
 	{
 		SelectButton5->OnClicked.AddDynamic(this, &UGameSelectWidget::OnSelectButton5Clicked);
+		SelectButton5->OnHovered.AddDynamic(this, &UGameSelectWidget::OnButtonHoverd);
 	}
 }
 
@@ -37,23 +46,33 @@ void UGameSelectWidget::NativeDestruct()
 	if (SelectButton1)
 	{
 		SelectButton1->OnClicked.RemoveDynamic(this, &UGameSelectWidget::OnSelectButton1Clicked);
+		SelectButton1->OnHovered.RemoveDynamic(this, &UGameSelectWidget::OnButtonHoverd);
 	}
 	if (SelectButton2)
 	{
 		SelectButton2->OnClicked.RemoveDynamic(this, &UGameSelectWidget::OnSelectButton2Clicked);
+		SelectButton2->OnHovered.RemoveDynamic(this, &UGameSelectWidget::OnButtonHoverd);
 	}
 	if (SelectButton3)
 	{
 		SelectButton3->OnClicked.RemoveDynamic(this, &UGameSelectWidget::OnSelectButton3Clicked);
+		SelectButton3->OnHovered.RemoveDynamic(this, &UGameSelectWidget::OnButtonHoverd);
 	}
 	if (SelectButton4)
 	{
 		SelectButton4->OnClicked.RemoveDynamic(this, &UGameSelectWidget::OnSelectButton4Clicked);
+		SelectButton4->OnHovered.RemoveDynamic(this, &UGameSelectWidget::OnButtonHoverd);
 	}
 	if (SelectButton5)
 	{
 		SelectButton5->OnClicked.RemoveDynamic(this, &UGameSelectWidget::OnSelectButton5Clicked);
+		SelectButton5->OnHovered.RemoveDynamic(this, &UGameSelectWidget::OnButtonHoverd);
 	}
+}
+
+void UGameSelectWidget::OnButtonHoverd()
+{
+	KRGI->PlayUISound(EUISoundType::Hover);
 }
 
 void UGameSelectWidget::OnSelectButton1Clicked()

@@ -20,6 +20,12 @@ class KEROROBATTLE_API ULevelupCardWidget : public UUserWidget
 protected:
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
+public:
+	UPROPERTY()
+	class UKeroroGameInstance* KRGI;
+
+	UFUNCTION()
+	void OnButtonHoverd();
 
 public:
 	UFUNCTION(BlueprintCallable)

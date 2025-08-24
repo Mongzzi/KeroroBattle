@@ -6,23 +6,30 @@
 #include "Components/TextBlock.h"
 #include "KeroroPlayerController.h"
 #include "KeroroPlayerState.h"
+#include "KeroroGameInstance.h"
 
 void UStatusWidget::NativeConstruct()
 {
+	KRGI = Cast<UKeroroGameInstance>(GetGameInstance());
+	if (!KRGI) return;
+
 	Super::NativeConstruct();
 	if (XButton)
 	{
 		XButton->OnClicked.AddDynamic(this, &UStatusWidget::OnSelectXButtonClicked);
+		XButton->OnHovered.AddDynamic(this, &UStatusWidget::OnButtonHoverd);
 	}
 
 	if (NextButton)
 	{
 		NextButton->OnClicked.AddDynamic(this, &UStatusWidget::OnSelectNextButtonClicked);
+		NextButton->OnHovered.AddDynamic(this, &UStatusWidget::OnButtonHoverd);
 	}
 
 	if (PrevButton)
 	{
 		PrevButton->OnClicked.AddDynamic(this, &UStatusWidget::OnSelectPrevButtonClicked);
+		PrevButton->OnHovered.AddDynamic(this, &UStatusWidget::OnButtonHoverd);
 	}
 
 	NumPage = 0;
@@ -36,11 +43,19 @@ void UStatusWidget::NativeDestruct()
 	if (XButton)
 	{
 		XButton->OnClicked.RemoveDynamic(this, &UStatusWidget::OnSelectXButtonClicked);
+		XButton->OnHovered.RemoveDynamic(this, &UStatusWidget::OnButtonHoverd);
 	}
 
 	if (NextButton)
 	{
 		NextButton->OnClicked.RemoveDynamic(this, &UStatusWidget::OnSelectNextButtonClicked);
+		NextButton->OnHovered.RemoveDynamic(this, &UStatusWidget::OnButtonHoverd);
+	}
+
+	if (PrevButton)
+	{
+		PrevButton->OnClicked.RemoveDynamic(this, &UStatusWidget::OnSelectPrevButtonClicked);
+		PrevButton->OnHovered.RemoveDynamic(this, &UStatusWidget::OnButtonHoverd);
 	}
 }
 
@@ -94,6 +109,7 @@ void UStatusWidget::OnSelectXButtonClicked()
 	AKeroroPlayerController* PC = Cast<AKeroroPlayerController>(GetOwningPlayer());
 	if (PC && PC->KRStatusWidget)
 	{
+		KRGI->PlayUISound(EUISoundType::Click);
 		PC->KRStatusWidget->RemoveFromParent();
 		PC->SetGameMode();
 	}
@@ -101,6 +117,7 @@ void UStatusWidget::OnSelectXButtonClicked()
 
 void UStatusWidget::OnSelectNextButtonClicked()
 {
+	KRGI->PlayUISound(EUISoundType::Click);
 	if (NumPage == 0)
 	{
 		NumPage = 1;
@@ -114,6 +131,7 @@ void UStatusWidget::OnSelectNextButtonClicked()
 
 void UStatusWidget::OnSelectPrevButtonClicked()
 {
+	KRGI->PlayUISound(EUISoundType::Click);
 	if (NumPage == 1)
 	{
 		NumPage = 0;
@@ -123,4 +141,9 @@ void UStatusWidget::OnSelectPrevButtonClicked()
 		}
 		SetCardInfoText();
 	}
+}
+
+void UStatusWidget::OnButtonHoverd()
+{
+	KRGI->PlayUISound(EUISoundType::Hover);
 }

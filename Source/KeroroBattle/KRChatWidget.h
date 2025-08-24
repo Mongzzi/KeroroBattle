@@ -19,6 +19,13 @@ protected:
 	virtual void NativeDestruct() override;
 
 public:
+	UPROPERTY()
+	class UKeroroGameInstance* KRGI;
+
+	UFUNCTION()
+	void OnButtonHoverd();
+
+public:
 	int32 ChatID;
 	int32 ImageID;
 	int32 NextChatID1;

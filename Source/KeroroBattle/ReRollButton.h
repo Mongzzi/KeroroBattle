@@ -27,6 +27,14 @@ public:
 	void PlayFadeInAnim();
 	void PlayFadeOutAnim();
 
+public:
+	UPROPERTY()
+	class UKeroroGameInstance* KRGI;
+
+	UFUNCTION()
+	void OnButtonHoverd();
+
+
 private:
 	UPROPERTY(meta = (BindWidgetAnim),Transient)
 	UWidgetAnimation* FadeIn;
