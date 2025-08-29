@@ -15,7 +15,7 @@
 AViperCharacter::AViperCharacter(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
 	EnemyType = EEnemyType::Viper;
-	GetCapsuleComponent()->SetWorldScale3D(FVector(2.5f));
+	GetCapsuleComponent()->SetWorldScale3D(FVector(2.0f));
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>SKMESH(TEXT("/Game/Keroro_Model/Viper/Viper.Viper"));
 	if (SKMESH.Succeeded())

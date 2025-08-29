@@ -20,7 +20,7 @@ void AViperSpawner::BeginPlay()
 	GI = GetGameInstance<UKeroroGameInstance>();
 	if (!GI.IsValid() || !GS.IsValid())return;
 
-	SpawnInterval = 5.0f;
+	SpawnInterval = 30.0f;
 	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AViperSpawner::SpawnEnemy, SpawnInterval, true);
 }
 
