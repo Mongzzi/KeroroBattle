@@ -3,6 +3,7 @@
 
 #include "KeroroAnimInstance.h"
 #include "KeroroCharacter.h"
+#include "ViperCharacter.h"
 #include "KeroroPlayerState.h"
 #include "KeroroStatComponent.h"
 #include "GameFramework/Character.h"
@@ -172,7 +173,7 @@ void UKeroroAnimInstance::PlayEnemyAttackMontage(EEnemyType Type)
 		if (!Montage_IsPlaying(NunwawaAttackMontage)) Montage_Play(NunwawaAttackMontage);
 		break;
 	case EEnemyType::Viper:
-		if (!Montage_IsPlaying(SwordAttackMontage))
+		if (!Montage_IsPlaying(ViperAttackMontage))
 		{
 			Montage_Play(ViperAttackMontage);
 			Montage_JumpToSection(GetAttackMontageSectionName(FMath::RandRange(1, 3)), ViperAttackMontage);
