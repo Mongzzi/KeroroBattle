@@ -5,7 +5,9 @@
 #include "KeroroPlayerController.h"
 #include "KeroroGameMode.h"
 #include "KeroroEnemyCharacter.h"
+#include "ViperCharacter.h"
 #include "KeroroStatComponent.h"
+
 
 AKeroroGameState::AKeroroGameState()
 {
@@ -70,12 +72,18 @@ void AKeroroGameState::OnTimeOver()
 
 void AKeroroGameState::SetEnemyLevelFromTime()
 {
-	EnemyLevel = FMath::Clamp(EnemyLevel + 1, 1, 20);
+	EnemyLevel = FMath::Clamp(EnemyLevel + 1, 1, 99);
 	for (auto Enemy : Enemies)
 	{
 		if (IsValid(Enemy) && Enemy->EnemyStat)
 		{
-			Enemy->EnemyStat->SetLevel(EnemyLevel);
+			if (Enemy->IsA(AViperCharacter::StaticClass()))
+			{
+				Enemy->EnemyStat->SetLevel(EnemyLevel + 10);
+			}
+			else {
+				Enemy->EnemyStat->SetLevel(EnemyLevel);
+			}
 		}
 	}
 }
