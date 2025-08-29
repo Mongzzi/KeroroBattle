@@ -8,6 +8,8 @@
 #include "CriticalDamageType.h"
 #include "KeroroCharacter.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
 
 
 AViperCharacter::AViperCharacter(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
@@ -26,9 +28,8 @@ AViperCharacter::AViperCharacter(const FObjectInitializer& ObjectInitializer):Su
 	{
 		GetMesh()->SetAnimInstanceClass(ANIM.Class);
 	}
-
-	AttackRange = 400.0f;
-	AttackRadius = 400.0f;
+	AttackRange = 300.0f;
+	AttackRadius = 300.0f;
 	MaxWalkSpeed = 1200.0f;
 }
 

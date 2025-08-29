@@ -557,7 +557,7 @@ void AKeroroPlayerController::Die()
 		if (CharacterMap.Contains(NextType))
 		{
 			AKeroroCharacter* NextCharacter = CharacterMap[NextType].KeroroCharacter;
-			if (IsValid(NextCharacter))
+			if (IsValid(NextCharacter) && IsValid(NextCharacter->KRStat))
 			{
 				Possess(NextCharacter);
 				KRPlayerState->SetCurrentCharacterType(NextType);

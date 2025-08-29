@@ -51,7 +51,6 @@ void AMineWeapon::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 {
 	if (!OtherActor || OtherActor == this) return;
 
-
 	if (OtherActor->IsA(AKeroroEnemyCharacter::StaticClass()))
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NSEffect, GetActorLocation(), GetActorRotation());
@@ -90,9 +89,9 @@ void AMineWeapon::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 			AKeroroEnemyCharacter* Enemy = Cast<AKeroroEnemyCharacter>(Hit.GetActor());
 			if (Enemy)
 			{
-				Enemy->TakeDamage(FinalDamage*5, DamageEvent,GetInstigatorController(), GetInstigator());
+				Enemy->TakeDamage(FinalDamage * 3, DamageEvent, GetInstigatorController(), GetInstigator());
 			}
-			
+
 		}
 		if (UltiHitSound)
 		{
