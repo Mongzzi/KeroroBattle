@@ -87,6 +87,7 @@ void AKREnemySpawner::SpawnEnemy()
 	if (Enemy->EnemyStat)
 	{
 		Enemy->EnemyStat->SetLevel(GS->EnemyLevel);
+		Enemy->EnemyStat->SetHP(Enemy->EnemyStat->MaxHp);
 	}
 
 	GS->Enemies.Add(Enemy);

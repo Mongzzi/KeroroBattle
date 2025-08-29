@@ -24,7 +24,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	void SpawnEnemy();
+	virtual void SpawnEnemy();
 
 protected:
 	UPROPERTY()
