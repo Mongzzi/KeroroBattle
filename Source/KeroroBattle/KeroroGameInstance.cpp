@@ -41,7 +41,7 @@ UKeroroGameInstance::UKeroroGameInstance()
 	static ConstructorHelpers::FObjectFinder<USoundBase> BGM5(TEXT("/Game/Etc/BGMAsset/Boss.Boss"));
 	if (BGM5.Succeeded())MapBGMMap.Add(BGM5.Object);
 
-	//UnlockCharacter(EKeroroType::Keroro);
+	UnlockCharacter(EKeroroType::Keroro);
 	//UnlockCharacter(EKeroroType::Tamama);
 	//UnlockCharacter(EKeroroType::Giroro);
 	//UnlockCharacter(EKeroroType::Dororo);

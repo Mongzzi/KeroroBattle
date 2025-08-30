@@ -38,15 +38,15 @@ UKeroroStatComponent::UKeroroStatComponent()
 	ProjectileScale = 1.0f;
 	ProjectileScale_Default = 1.0f;
 
-	InvincibilityTime = 1.5f;
-	InvincibilityTime_Default = 1.5f;
+	InvincibilityTime = 0.5f;
+	InvincibilityTime_Default = 0.5f;
 
 	CritDamageRate = 1.5f;
 	CritDamageRate_Default = 1.5f;
 
 	// 테스트용 시간 3~4초 정도 적당한듯 추후 변경해줘야함
-	GuardCoolTime = 3.0f;
-	GuardCollTime_Default = 3.0f;
+	GuardCoolTime = 7.0f;
+	GuardCollTime_Default = 7.0f;
 
 	GuardTime = 0.5f;
 	GuardTime_Default = 0.5f;
