@@ -7,6 +7,7 @@
 #include "Sound/SoundBase.h"
 #include "Components/AudioComponent.h"
 #include "UISoundManager.h"
+#include "KRSaveGame.h"
 
 
 UKeroroGameInstance::UKeroroGameInstance()
@@ -62,8 +63,10 @@ UKeroroGameInstance::UKeroroGameInstance()
 void UKeroroGameInstance::Init()
 {
 	Super::Init();
-	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UKeroroGameInstance::OnLevelLoaded);
 	UISoundManager = NewObject<UUISoundManager>(this);
+	LoadGameData();
+
+	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UKeroroGameInstance::OnLevelLoaded);
 }
 
 // 행 이름을 레벨과 같게하여 FindRow함수에 행이름과 같은 레벨을 넣어서 행을 가져옴
@@ -212,6 +215,63 @@ void UKeroroGameInstance::PlayUISound(EUISoundType Type)
 	{
 		UISoundManager->PlayUISound(Type);
 	}
+}
+
+void UKeroroGameInstance::SaveGameData()
+{
+	UKRSaveGame* Save = Cast<UKRSaveGame>(UGameplayStatics::CreateSaveGameObject(UKRSaveGame::StaticClass()));
+	if (!Save) return;
+
+	Save->bIsEntraceAnimPlayed = bIsEntraceAnimPlayed;
+	Save->bIsManualChatPlayed = bIsManualChatPlayed;
+	Save->UnlockedChattings = UnlockedChattings;
+	Save->UnlockedCharacters = UnlockedCharacters;
+
+	UGameplayStatics::SaveGameToSlot(Save, TEXT("KeroroSaveSlot"), 0);
+	UE_LOG(LogTemp, Error, TEXT("Game Save"));
+}
+
+void UKeroroGameInstance::LoadGameData()
+{
+	if (UGameplayStatics::DoesSaveGameExist(TEXT("KeroroSaveSlot"), 0))
+	{
+		UKRSaveGame* Load = Cast<UKRSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("KeroroSaveSlot"), 0));
+
+		if (Load)
+		{
+			bIsEntraceAnimPlayed = Load->bIsEntraceAnimPlayed;
+			bIsManualChatPlayed = Load->bIsManualChatPlayed;
+			UnlockedChattings = Load->UnlockedChattings;
+			UnlockedCharacters = Load->UnlockedCharacters;
+
+			UE_LOG(LogTemp, Error, TEXT("Game Loade"));
+		}
+	}
+}
+
+void UKeroroGameInstance::ResetGameData()
+{
+	if (UGameplayStatics::DoesSaveGameExist(TEXT("KeroroSaveSlot"), 0))
+	{
+		UGameplayStatics::DeleteGameInSlot(TEXT("KeroroSaveSlot"), 0);
+		UE_LOG(LogTemp, Error, TEXT("Save file delete"));
+	}
+
+	bIsEntraceAnimPlayed = false;
+	bIsManualChatPlayed = false;
+
+	UnlockedCharacters.Empty();
+	UnlockedCharacters.Add(EKeroroType::Keroro, true);
+	UnlockedCharacters.Add(EKeroroType::Tamama, false);
+	UnlockedCharacters.Add(EKeroroType::Giroro, false);
+	UnlockedCharacters.Add(EKeroroType::Dororo, false);
+	UnlockedCharacters.Add(EKeroroType::Kururu, false);
+	
+	UnlockedChattings.Empty();
+	UnlockedChattings.Add(EKeroroType::Tamama, false);
+	UnlockedChattings.Add(EKeroroType::Giroro, false);
+	UnlockedChattings.Add(EKeroroType::Dororo, false);
+	UnlockedChattings.Add(EKeroroType::Kururu, false);
 }
 
 void UKeroroGameInstance::OnLevelLoaded(UWorld* LoadedWorld)

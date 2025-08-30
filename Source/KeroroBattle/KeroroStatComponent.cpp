@@ -38,8 +38,8 @@ UKeroroStatComponent::UKeroroStatComponent()
 	ProjectileScale = 1.0f;
 	ProjectileScale_Default = 1.0f;
 
-	InvincibilityTime = 0.5f;
-	InvincibilityTime_Default = 0.5f;
+	InvincibilityTime = 0.8f;
+	InvincibilityTime_Default = 0.8f;
 
 	CritDamageRate = 1.5f;
 	CritDamageRate_Default = 1.5f;

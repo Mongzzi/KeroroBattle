@@ -165,6 +165,10 @@ public:
 	void StopBGM();
 	void PlayUISound(EUISoundType Type);
 
+	void SaveGameData();
+	void LoadGameData();
+	void ResetGameData();
+
 private:
 	UFUNCTION()
 	void OnLevelLoaded(UWorld* LoadedWorld);
