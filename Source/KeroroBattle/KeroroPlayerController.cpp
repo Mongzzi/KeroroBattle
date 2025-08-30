@@ -426,26 +426,22 @@ void AKeroroPlayerController::TagCharacter(EKeroroType TargetType)
 		return;
 	}
 
-	// 1. 기존 캐릭터 델리게이트 해제
 	AKeroroCharacter* PrevCharacter = Cast<AKeroroCharacter>(GetCharacter());
-	if (PrevCharacter && PrevCharacter->KRStat)
-	{
-		PrevCharacter->KRStat->OnHpIsChanged.RemoveAll(this);
-		PrevCharacter->KRStat->OnMpIsChanged.RemoveAll(this);
-	}
+	if (PrevCharacter == nullptr) return;
 
 	AKeroroCharacter* NewCharacter = nullptr;
 
-	// 2. 이미 존재하는 캐릭터 있는지 확인
+	// 이미 존재하는 캐릭터 있는지 확인
 	if (CharacterMap.Contains(TargetType) && IsValid(CharacterMap[TargetType].KeroroCharacter))
 	{
 		NewCharacter = CharacterMap[TargetType].KeroroCharacter;
 	}
+	// 이미 생성됐었고 죽었으면 더이상 스폰 x
 	else if (CharacterMap.Contains(TargetType) && CharacterMap[TargetType].KeroroCharacter == nullptr && CharacterMap[TargetType].bIsSpawnedOnce == true)
 	{
-		// 이미 생성됐었고 죽었으면 더이상 스폰 x
 		return;
 	}
+	// 새로 생성
 	else
 	{
 		FVector SpawnLoc;
@@ -490,6 +486,13 @@ void AKeroroPlayerController::TagCharacter(EKeroroType TargetType)
 		{
 			AIController->Possess(PrevCharacter);
 		}
+	}
+
+	// 3.5 기존 캐릭터 델리게이트 해제
+	if (PrevCharacter && PrevCharacter->KRStat)
+	{
+		PrevCharacter->KRStat->OnHpIsChanged.RemoveAll(this);
+		PrevCharacter->KRStat->OnMpIsChanged.RemoveAll(this);
 	}
 
 	// 4. 새 캐릭터를 플레이어컨트롤러가 소유

@@ -46,7 +46,7 @@ void AKeroroGameState::BeginPlay()
 	Super::BeginPlay();
 	bIsTimeUp = false;
 
-	GetWorld()->GetTimerManager().SetTimer(EnemyLevelUpHandle, this, &AKeroroGameState::SetEnemyLevelFromTime, 15.0f, true);
+	GetWorld()->GetTimerManager().SetTimer(EnemyLevelUpHandle, this, &AKeroroGameState::SetEnemyLevelFromTime, 20.0f, true);
 }
 
 void AKeroroGameState::EndPlay(const EEndPlayReason::Type EndPlayReason)
