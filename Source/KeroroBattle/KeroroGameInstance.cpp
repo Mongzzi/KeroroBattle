@@ -322,17 +322,32 @@ FKRStatData::FKRStatData()
 FCardData::FCardData()
 {
 	CardID = 1;
+	CardName = FText::FromString("DefaultCard");
+	Description = FText::FromString("DefaultDescription");
+	CardType = ECardType::Armor;
+	CardValue = 0.f;
+	ImagePath = FSoftObjectPath();
 }
 
 FKRFaceAssetData::FKRFaceAssetData()
 {
-
+	KeroroType = EKeroroType::Keroro;
+	FaceType = EFaceType::Default;
+	AssetPath = FSoftObjectPath();
 }
 
 FKRSoundAssetData::FKRSoundAssetData()
 {
+	KeroroType = EKeroroType::Keroro;
+	SoundType = EKRSoundType::ComboAttack;
+	AssetPath = FSoftObjectPath();
 }
 
 FKRChatData::FKRChatData()
 {
+	ChatID = 0;
+	ImageID = 0;
+	ChatText = "";
+	SelectChatTexts = "";
+	NextChatIDs = "";
 }
