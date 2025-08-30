@@ -5,6 +5,7 @@
 #include "KeroroEnemyCharacter.h"
 #include "RoboboCharacter.h"
 #include "NunwawaCharacter.h"
+#include "ViperCharacter.h"
 #include "Components/BoxComponent.h"
 #include "KeroroGameInstance.h"
 #include "KeroroGameState.h"
@@ -40,7 +41,7 @@ void AKREnemySpawner::BeginPlay()
 	{
 		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AKREnemySpawner::SpawnEnemy, SpawnInterval, true);
 	}
-	
+
 	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
 	if (CurrentLevelName == TEXT("MainLevel1"))
 	{
@@ -84,12 +85,17 @@ void AKREnemySpawner::SpawnEnemy()
 	int32 RandInt = FMath::RandRange(0, EnemyClasses.Num() - 1);
 
 	AKeroroEnemyCharacter* Enemy = GetWorld()->SpawnActor<AKeroroEnemyCharacter>(EnemyClasses[RandInt], SpawnLocation, SpawnRotation, SpawnParams);
-	if (Enemy->EnemyStat)
+	if (Enemy && Enemy->EnemyStat)
 	{
-		Enemy->EnemyStat->SetLevel(GS->EnemyLevel);
+		if (Enemy->IsA(AViperCharacter::StaticClass()))
+		{
+			Enemy->EnemyStat->SetLevel(GS->EnemyLevel + 10);
+		}
+		else {
+			Enemy->EnemyStat->SetLevel(GS->EnemyLevel);
+		}
 		Enemy->EnemyStat->SetHP(Enemy->EnemyStat->MaxHp);
 	}
-
 	GS->Enemies.Add(Enemy);
 }
 

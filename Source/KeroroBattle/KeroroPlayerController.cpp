@@ -742,7 +742,7 @@ void AKeroroPlayerController::Move(const FInputActionValue& Value)
 {
 	if (IsMagicCircleActivated) {
 		AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter());
-		if (kero->WeaponType == EWeaponType::NOTEBOOK) return;
+		if (kero&&kero->WeaponType == EWeaponType::NOTEBOOK) return;
 	}
 
 	if (AKeroroCharacter* kero = Cast<AKeroroCharacter>(GetCharacter()))

@@ -29,30 +29,40 @@ AKeroroGameMode::AKeroroGameMode()
 void AKeroroGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UKeroroGameInstance* GI = GetGameInstance<UKeroroGameInstance>();
+	if (!GI) return;
+
 	KeroroGameState = GetGameState<AKeroroGameState>();
-	if (KeroroGameState)
+	if (!KeroroGameState) return;
+
+	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
+	if (CurrentLevelName == TEXT("MainLevel1"))
 	{
-		FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
-		if (CurrentLevelName == TEXT("MainLevel1"))
-		{
-			SurvivalTime = 160.0f;
-		}
-		else if (CurrentLevelName == TEXT("MainLevel2"))
-		{
-			SurvivalTime = 160.0f;
-		}
-		else if (CurrentLevelName == TEXT("MainLevel3"))
-		{
-			SurvivalTime = 160.0f;
-		}
-		else
-		{
-			KeroroGameState->bIsMainMap = false;
-			return;
-		}
-		KeroroGameState->RemainingTime = SurvivalTime;
-		KeroroGameState->bIsMainMap = true;
+		SurvivalTime = 160.0f;
 	}
+	else if (CurrentLevelName == TEXT("MainLevel2"))
+	{
+		SurvivalTime = 160.0f;
+	}
+	else if (CurrentLevelName == TEXT("MainLevel3"))
+	{
+		if (GI->NextMissionRound == EKeroroType::Keroro)
+		{
+			SurvivalTime = 320.0f;
+		}
+		else {
+
+			SurvivalTime = 160.0f;
+		}
+	}
+	else
+	{
+		KeroroGameState->bIsMainMap = false;
+		return;
+	}
+	KeroroGameState->RemainingTime = SurvivalTime;
+	KeroroGameState->bIsMainMap = true;
 }
 
 AActor* AKeroroGameMode::ChoosePlayerStart_Implementation(AController* Player)

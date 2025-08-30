@@ -41,16 +41,16 @@ UKeroroGameInstance::UKeroroGameInstance()
 	static ConstructorHelpers::FObjectFinder<USoundBase> BGM5(TEXT("/Game/Etc/BGMAsset/Boss.Boss"));
 	if (BGM5.Succeeded())MapBGMMap.Add(BGM5.Object);
 
-	UnlockCharacter(EKeroroType::Keroro);
-	UnlockCharacter(EKeroroType::Tamama);
-	UnlockCharacter(EKeroroType::Giroro);
-	UnlockCharacter(EKeroroType::Dororo);
-	UnlockCharacter(EKeroroType::Kururu);
+	//UnlockCharacter(EKeroroType::Keroro);
+	//UnlockCharacter(EKeroroType::Tamama);
+	//UnlockCharacter(EKeroroType::Giroro);
+	//UnlockCharacter(EKeroroType::Dororo);
+	//UnlockCharacter(EKeroroType::Kururu);
 
-	//UnlockedCharacters.Add(EKeroroType::Tamama, false);
-	//UnlockedCharacters.Add(EKeroroType::Giroro, false);
-	//UnlockedCharacters.Add(EKeroroType::Dororo, false);
-	//UnlockedCharacters.Add(EKeroroType::Kururu, false);
+	UnlockedCharacters.Add(EKeroroType::Tamama, false);
+	UnlockedCharacters.Add(EKeroroType::Giroro, false);
+	UnlockedCharacters.Add(EKeroroType::Dororo, false);
+	UnlockedCharacters.Add(EKeroroType::Kururu, false);
 
 	UnlockedChattings.Add(EKeroroType::Tamama, false);
 	UnlockedChattings.Add(EKeroroType::Giroro, false);

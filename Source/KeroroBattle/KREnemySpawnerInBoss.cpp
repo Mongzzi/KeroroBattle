@@ -5,6 +5,7 @@
 #include "KeroroEnemyCharacter.h"
 #include "RoboboCharacter.h"
 #include "NunwawaCharacter.h"
+#include "ViperCharacter.h"
 #include "Components/BoxComponent.h"
 #include "KeroroGameInstance.h"
 #include "KeroroGameState.h"
@@ -21,7 +22,7 @@ void AKREnemySpawnerInBoss::BeginPlay()
 	GS = GetWorld()->GetGameState<AKeroroGameState>();
 	GI = GetGameInstance<UKeroroGameInstance>();
 	if (!GI.IsValid() || !GS.IsValid())return;
-	
+
 	if (GI->NextMissionRound == EKeroroType::Keroro)
 	{
 		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AKREnemySpawner::SpawnEnemy, SpawnInterval, true);
@@ -42,6 +43,9 @@ void AKREnemySpawnerInBoss::BeginPlay()
 		EnemyClasses.Add(AKeroroEnemyCharacter::StaticClass());
 		EnemyClasses.Add(ANunwawaCharacter::StaticClass());
 		EnemyClasses.Add(ARoboboCharacter::StaticClass());
+		if (GI->NextMissionRound == EKeroroType::Keroro) {
+			EnemyClasses.Add(AViperCharacter::StaticClass());
+		}
 	}
 }
 

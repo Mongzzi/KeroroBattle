@@ -20,8 +20,11 @@ void AViperSpawner::BeginPlay()
 	GI = GetGameInstance<UKeroroGameInstance>();
 	if (!GI.IsValid() || !GS.IsValid())return;
 
-	SpawnInterval = 30.0f;
-	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AViperSpawner::SpawnEnemy, SpawnInterval, true);
+	if (GI->NextMissionRound != EKeroroType::Keroro)
+	{
+		SpawnInterval = 30.0f;
+		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AViperSpawner::SpawnEnemy, SpawnInterval, true);
+	}
 }
 
 void AViperSpawner::EndPlay(const EEndPlayReason::Type EndPlayReason)
