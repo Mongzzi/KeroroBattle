@@ -33,6 +33,14 @@ void UTitleWidget::NativeConstruct()
 		StartButton->OnReleased.AddDynamic(this, &UTitleWidget::OnStartReleased);
 	}
 
+	if (LoadButton)
+	{
+		LoadButton->OnHovered.AddDynamic(this, &UTitleWidget::OnLoadHovered);
+		LoadButton->OnUnhovered.AddDynamic(this, &UTitleWidget::OnLoadUnhovered);
+		LoadButton->OnPressed.AddDynamic(this, &UTitleWidget::OnLoadPressed);
+		LoadButton->OnReleased.AddDynamic(this, &UTitleWidget::OnLoadReleased);
+	}
+
 	if (ExitButton)
 	{
 		ExitButton->OnHovered.AddDynamic(this, &UTitleWidget::OnExitHovered);
@@ -51,6 +59,14 @@ void UTitleWidget::NativeDestruct()
 		StartButton->OnUnhovered.RemoveAll(this);
 		StartButton->OnPressed.RemoveAll(this);
 		StartButton->OnReleased.RemoveAll(this);
+	}
+
+	if (LoadButton)
+	{
+		LoadButton->OnHovered.RemoveAll(this);
+		LoadButton->OnUnhovered.RemoveAll(this);
+		LoadButton->OnPressed.RemoveAll(this);
+		LoadButton->OnReleased.RemoveAll(this);
 	}
 
 	if (ExitButton)
@@ -115,7 +131,49 @@ void UTitleWidget::OnStartPressed()
 
 void UTitleWidget::OnStartReleased()
 {
-	OnStartHovered();
+	KRGI->ResetGameData();
+
+	APlayerController* PC = GetOwningPlayer();
+	if (PC)
+	{
+		PC->bShowMouseCursor = false;
+		PC->SetInputMode(FInputModeGameOnly());
+	}
+
+	KRGI->LoadLevelWithLoadingScreen(TEXT("Robby1Level"));
+}
+
+void UTitleWidget::OnLoadHovered()
+{
+	if (LoadText)
+	{
+		LoadText->SetColorAndOpacity(FSlateColor(FLinearColor(0.6f, 1.0f, 0.6f)));
+		LoadText->SetRenderTranslation(FVector2D(0.0f, -5.0f));
+		KRGI->PlayUISound(EUISoundType::Hover);
+	}
+}
+
+void UTitleWidget::OnLoadUnhovered()
+{
+	if (LoadText)
+	{
+		LoadText->SetColorAndOpacity(FSlateColor(FLinearColor(1.0f, 1.0f, 1.0f)));
+		LoadText->SetRenderTranslation(FVector2D(0.0f, 0.0f));
+	}
+}
+
+void UTitleWidget::OnLoadPressed()
+{
+	if (LoadText)
+	{
+		LoadText->SetColorAndOpacity(FSlateColor(FLinearColor(0.3f, 0.5f, 0.3f)));
+		LoadText->SetRenderTranslation(FVector2D(0.0f, 5.0f));
+	}
+}
+
+void UTitleWidget::OnLoadReleased()
+{
+	OnLoadHovered();
 
 	// 로비씬으로 이동
 	//1. UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("/Game/EnglishCollege/Maps/SampleScene.SampleScene")), true, TEXT("?game=/Script/KeroroBattle.KeroroGameMode"));
@@ -123,7 +181,6 @@ void UTitleWidget::OnStartReleased()
 	//2. UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("SampleScene")), true, TEXT("?game=/Script/KeroroBattle.KeroroGameMode"));
 	// 1번처럼 경로로 여는경우 게임모드가 잘안열리는 오류있음, 두번째 경우에는 잘됨 마지막인자 option으로 게임모드 설정가능
 	// 현재 사용 중인 코드는 에디터에서 게임모드 미리 설정해둔 상태라 잘 작동됨
-
 
 	APlayerController* PC = GetOwningPlayer();
 	if (PC)

@@ -43,7 +43,13 @@ protected:
 	class UButton* StartButton;
 
 	UPROPERTY(meta = (BindWidget))
+	class UButton* LoadButton;
+
+	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* StartText;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* LoadText;
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* ExitButton;
@@ -62,6 +68,18 @@ protected:
 
 	UFUNCTION()
 	void OnStartReleased();
+
+	UFUNCTION()
+	void OnLoadHovered();
+
+	UFUNCTION()
+	void OnLoadUnhovered();
+
+	UFUNCTION()
+	void OnLoadPressed();
+
+	UFUNCTION()
+	void OnLoadReleased();
 
 	UFUNCTION()
 	void OnExitHovered();
