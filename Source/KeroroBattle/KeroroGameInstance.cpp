@@ -317,15 +317,25 @@ void UKeroroGameInstance::OnLevelLoaded(UWorld* LoadedWorld)
 FKRStatData::FKRStatData()
 {
 	Level = 1;
+	MaxHp = 100.0f;
+	MaxMP = 100.0f;
+	AttackPower = 10.0f;
+	DropExp = 5;
+	NextExp = 10;
+	MaxMoveSpeed = 600.f;
+	CritChanceRate = 0.1f;
+	SkillCooldownRate = 0.1f;
+	EvasionRate = 0.1f;
+	DefenseRate = 0.1f;
 }
 
 FCardData::FCardData()
 {
 	CardID = 1;
-	CardName = FText::FromString("DefaultCard");
-	Description = FText::FromString("DefaultDescription");
+	CardName = FText::FromString("");
+	Description = FText::FromString("");
 	CardType = ECardType::Armor;
-	CardValue = 0.f;
+	CardValue = 0.0f;
 	ImagePath = FSoftObjectPath();
 }
 

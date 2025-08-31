@@ -38,14 +38,8 @@ ADropGold::ADropGold()
 	{
 		Gold->SetStaticMesh(GOLDOBJ.Object);
 		Gold->SetRelativeScale3D(FVector(10.0f, 10.0f, 10.0f));
-		Gold->SetCollisionProfileName(TEXT("ItemBox"));
+		Gold->SetSimulatePhysics(true);
 	}
-
-	//static ConstructorHelpers::FObjectFinder<UNiagaraSystem>NS(TEXT("/Game/sA_PickupSet_1/Fx/NiagaraSystems/NS_CoinBurst.NS_CoinBurst"));
-	//if (NS.Succeeded())
-	//{
-	//	NSEffect = NS.Object;
-	//}
 }
 
 // 에디터에서 트리거박스 크기 직접 수정하기 위함

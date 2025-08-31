@@ -144,6 +144,7 @@ public:
 	void TagDororo();
 	void TagKururu();
 
+	void LoadLevelSequenceIfNotLoaded(TSoftObjectPtr<class ULevelSequence>& SequenceAsset, class ULevelSequence*& Sequence);
 	void PlayKRLevelSequence(class ULevelSequence* Sequence);
 	void StartChat(int32 ChatID);
 	void PlayUnlockChat();
@@ -231,17 +232,33 @@ private:
 	class ALevelSequenceActor* SequenceActor;
 
 	UPROPERTY()
-	class ULevelSequence* RobbyScene1;
+	TSoftObjectPtr<ULevelSequence> RobbyScene1Asset;
 
 	UPROPERTY()
-	class ULevelSequence* MainEntraceScene1;
+	TSoftObjectPtr<ULevelSequence> MainEntraceScene1Asset;
 
 	UPROPERTY()
-	class ULevelSequence* MainEntraceScene2;
+	TSoftObjectPtr<ULevelSequence> MainEntraceScene2Asset;
 
 	UPROPERTY()
-	class ULevelSequence* MainEntraceScene3;
+	TSoftObjectPtr<ULevelSequence> MainEntraceScene3Asset;
 
 	UPROPERTY()
-	class ULevelSequence* MainEntraceScene4;
+	TSoftObjectPtr<ULevelSequence> MainEntraceScene4Asset;
+
+	UPROPERTY()
+	ULevelSequence* RobbyScene1;
+
+	UPROPERTY()
+	ULevelSequence* MainEntraceScene1;
+
+	UPROPERTY()
+	ULevelSequence* MainEntraceScene2;
+
+	UPROPERTY()
+	ULevelSequence* MainEntraceScene3;
+
+	UPROPERTY()
+	ULevelSequence* MainEntraceScene4;
+
 };

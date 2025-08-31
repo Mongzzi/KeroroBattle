@@ -1,12 +1,12 @@
 {
 	"TargetName": "KeroroBattle",
 	"Platform": "Win64",
-	"Configuration": "Development",
+	"Configuration": "Shipping",
 	"TargetType": "Game",
 	"IsTestTarget": false,
 	"Architecture": "x64",
 	"Project": "../../KeroroBattle.uproject",
-	"Launch": "$(ProjectDir)/Binaries/Win64/KeroroBattle.exe",
+	"Launch": "$(ProjectDir)/Binaries/Win64/KeroroBattle-Win64-Shipping.exe",
 	"Version": 
 	{
 		"MajorVersion": 5,
@@ -21,6 +21,10 @@
 	},
 	"BuildProducts": [
 		{
+			"Path": "$(EngineDir)/Binaries/Win64/EOSSDK-Win64-Shipping.dll",
+			"Type": "DynamicLibrary"
+		},
+		{
 			"Path": "$(ProjectDir)/Binaries/Win64/D3D12/D3D12Core.dll",
 			"Type": "DynamicLibrary"
 		},
@@ -29,11 +33,11 @@
 			"Type": "DynamicLibrary"
 		},
 		{
-			"Path": "$(ProjectDir)/Binaries/Win64/KeroroBattle.exe",
+			"Path": "$(ProjectDir)/Binaries/Win64/KeroroBattle-Win64-Shipping.exe",
 			"Type": "Executable"
 		},
 		{
-			"Path": "$(ProjectDir)/Binaries/Win64/KeroroBattle.pdb",
+			"Path": "$(ProjectDir)/Binaries/Win64/KeroroBattle-Win64-Shipping.pdb",
 			"Type": "SymbolFile"
 		},
 		{
@@ -87,11 +91,11 @@
 			"Type": "NonUFS"
 		},
 		{
-			"Path": "$(EngineDir)/Binaries/ThirdParty/Windows/WinPixEventRuntime/x64/WinPixEventRuntime.dll",
+			"Path": "$(EngineDir)/Binaries/ThirdParty/Windows/XAudio2_9/x64/xaudio2_9redist.dll",
 			"Type": "NonUFS"
 		},
 		{
-			"Path": "$(EngineDir)/Binaries/ThirdParty/Windows/XAudio2_9/x64/xaudio2_9redist.dll",
+			"Path": "$(EngineDir)/Binaries/Win64/EOSSDK-Win64-Shipping.dll",
 			"Type": "NonUFS"
 		},
 		{
@@ -2931,18 +2935,6 @@
 			"Type": "UFS"
 		},
 		{
-			"Path": "$(EngineDir)/Extras/GPUDumpViewer/GPUDumpViewer.html",
-			"Type": "DebugNonUFS"
-		},
-		{
-			"Path": "$(EngineDir)/Extras/GPUDumpViewer/OpenGPUDumpViewer.bat",
-			"Type": "DebugNonUFS"
-		},
-		{
-			"Path": "$(EngineDir)/Extras/GPUDumpViewer/OpenGPUDumpViewer.sh",
-			"Type": "DebugNonUFS"
-		},
-		{
 			"Path": "$(EngineDir)/Plugins/2D/Paper2D/Paper2D.uplugin",
 			"Type": "UFS"
 		},
@@ -3007,19 +2999,7 @@
 			"Type": "UFS"
 		},
 		{
-			"Path": "$(EngineDir)/Plugins/Developer/DumpGPUServices/DumpGPUServices.uplugin",
-			"Type": "UFS"
-		},
-		{
-			"Path": "$(EngineDir)/Plugins/Developer/PixWinPlugin/PixWinPlugin.uplugin",
-			"Type": "UFS"
-		},
-		{
 			"Path": "$(EngineDir)/Plugins/Developer/PluginUtils/PluginUtils.uplugin",
-			"Type": "UFS"
-		},
-		{
-			"Path": "$(EngineDir)/Plugins/Developer/RenderDocPlugin/RenderDocPlugin.uplugin",
 			"Type": "UFS"
 		},
 		{
@@ -3187,6 +3167,10 @@
 			"Type": "UFS"
 		},
 		{
+			"Path": "$(EngineDir)/Plugins/Fab/Fab.uplugin",
+			"Type": "UFS"
+		},
+		{
 			"Path": "$(EngineDir)/Plugins/Importers/AlembicImporter/AlembicImporter.uplugin",
 			"Type": "UFS"
 		},
@@ -3248,6 +3232,10 @@
 		},
 		{
 			"Path": "$(EngineDir)/Plugins/MovieScene/TemplateSequence/TemplateSequence.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Online/EOSShared/EOSShared.uplugin",
 			"Type": "UFS"
 		},
 		{
@@ -3336,10 +3324,6 @@
 		},
 		{
 			"Path": "$(EngineDir)/Plugins/Runtime/GooglePAD/GooglePAD.uplugin",
-			"Type": "UFS"
-		},
-		{
-			"Path": "$(EngineDir)/Plugins/Runtime/InputDebugging/InputDebugging.uplugin",
 			"Type": "UFS"
 		},
 		{
@@ -3522,12 +3506,14 @@
 		"Dataflow",
 		"DatasmithContent",
 		"DumpGPUServices",
+		"EOSShared",
 		"EditorDebugTools",
 		"EditorScriptingUtilities",
 		"EngineAssetDefinitions",
 		"EnhancedInput",
 		"EnvironmentQueryEditor",
 		"ExampleDeviceProfileSelector",
+		"Fab",
 		"FacialAnimation",
 		"FastBuildController",
 		"Fracture",

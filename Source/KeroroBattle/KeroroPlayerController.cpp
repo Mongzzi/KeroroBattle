@@ -87,36 +87,17 @@ AKeroroPlayerController::AKeroroPlayerController()
 		KRChatWidgetClass = CHATWIDGET.Class;
 	}
 
-	static ConstructorHelpers::FObjectFinder<ULevelSequence> LEVELSEQUENCE1(TEXT("/Game/KeroroLevel/RobbyLevelSequence.RobbyLevelSequence"));
-	if (LEVELSEQUENCE1.Succeeded())
-	{
-		RobbyScene1 = LEVELSEQUENCE1.Object;
-	}
+	RobbyScene1Asset = TSoftObjectPtr<ULevelSequence>(FSoftObjectPath("/Game/KeroroLevel/RobbyLevelSequence.RobbyLevelSequence"));
+	MainEntraceScene1Asset = TSoftObjectPtr<ULevelSequence>(FSoftObjectPath("/Game/KeroroLevel/MainLevel1Sequence.MainLevel1Sequence"));
+	MainEntraceScene2Asset = TSoftObjectPtr<ULevelSequence>(FSoftObjectPath("/Game/KeroroLevel/MainLevel2Sequence.MainLevel2Sequence"));
+	MainEntraceScene3Asset = TSoftObjectPtr<ULevelSequence>(FSoftObjectPath("/Game/KeroroLevel/MainLevel3Sequence.MainLevel3Sequence"));
+	MainEntraceScene4Asset = TSoftObjectPtr<ULevelSequence>(FSoftObjectPath("/Game/KeroroLevel/MainLevel3BossSequence.MainLevel3BossSequence"));
 
-	static ConstructorHelpers::FObjectFinder<ULevelSequence> LEVELSEQUENCE2(TEXT("/Game/KeroroLevel/MainLevel1Sequence.MainLevel1Sequence"));
-	if (LEVELSEQUENCE2.Succeeded())
-	{
-		MainEntraceScene1 = LEVELSEQUENCE2.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<ULevelSequence> LEVELSEQUENCE3(TEXT("/Game/KeroroLevel/MainLevel2Sequence.MainLevel2Sequence"));
-	if (LEVELSEQUENCE3.Succeeded())
-	{
-		MainEntraceScene2 = LEVELSEQUENCE3.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<ULevelSequence> LEVELSEQUENCE4(TEXT("/Game/KeroroLevel/MainLevel3Sequence.MainLevel3Sequence"));
-	if (LEVELSEQUENCE4.Succeeded())
-	{
-		MainEntraceScene3 = LEVELSEQUENCE4.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<ULevelSequence> LEVELSEQUENCE5(TEXT("/Game/KeroroLevel/MainLevel3BossSequence.MainLevel3BossSequence"));
-	if (LEVELSEQUENCE5.Succeeded())
-	{
-		MainEntraceScene4 = LEVELSEQUENCE5.Object;
-	}
-
+	RobbyScene1 = nullptr;
+	MainEntraceScene1 = nullptr;
+	MainEntraceScene2 = nullptr;
+	MainEntraceScene3 = nullptr;
+	MainEntraceScene4 = nullptr;
 	IsMagicCircleActivated = false;
 }
 
@@ -134,7 +115,11 @@ void AKeroroPlayerController::PostInitializeComponents()
 void AKeroroPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
+	LoadLevelSequenceIfNotLoaded(RobbyScene1Asset, RobbyScene1);
+	LoadLevelSequenceIfNotLoaded(MainEntraceScene1Asset, MainEntraceScene1);
+	LoadLevelSequenceIfNotLoaded(MainEntraceScene2Asset, MainEntraceScene2);
+	LoadLevelSequenceIfNotLoaded(MainEntraceScene3Asset, MainEntraceScene3);
+	LoadLevelSequenceIfNotLoaded(MainEntraceScene4Asset, MainEntraceScene4);
 	UKeroroGameInstance* GI = GetGameInstance<UKeroroGameInstance>();
 	if (!GI)return;
 
@@ -192,8 +177,14 @@ void AKeroroPlayerController::BeginPlay()
 	//¸ÞÀÎ¸Ê
 	else
 	{
-		if (CurrentLevelName == TEXT("MainLevel1")) PlayKRLevelSequence(MainEntraceScene1);
-		else if (CurrentLevelName == TEXT("MainLevel2")) PlayKRLevelSequence(MainEntraceScene2);
+		if (CurrentLevelName == TEXT("MainLevel1"))
+		{
+			PlayKRLevelSequence(MainEntraceScene1);
+		}
+		else if (CurrentLevelName == TEXT("MainLevel2"))
+		{
+			PlayKRLevelSequence(MainEntraceScene2);
+		}
 		else if (CurrentLevelName == TEXT("MainLevel3"))
 		{
 			if (GI->NextMissionRound == EKeroroType::Dororo)
@@ -877,10 +868,25 @@ void AKeroroPlayerController::TagKururu()
 	TagCharacter(EKeroroType::Kururu);
 }
 
+void AKeroroPlayerController::LoadLevelSequenceIfNotLoaded(TSoftObjectPtr<class ULevelSequence>& SequenceAsset, ULevelSequence*& Sequence)
+{
+	if (Sequence) return;
+
+	if (SequenceAsset.IsValid())
+	{
+		Sequence = SequenceAsset.Get();
+	}
+	else if (!SequenceAsset.IsNull())
+	{
+		Sequence = SequenceAsset.LoadSynchronous();
+	}
+}
+
 void AKeroroPlayerController::PlayKRLevelSequence(ULevelSequence* Sequence)
 {
 	if (!Sequence)
 	{
+		UE_LOG(LogTemp, Error, TEXT("nullllll"));
 		return;
 	}
 	FMovieSceneSequencePlaybackSettings PlaySettings;
@@ -1008,5 +1014,3 @@ void AKeroroPlayerController::OnRobbyLevelSequenceEnd()
 	}
 
 }
-
-

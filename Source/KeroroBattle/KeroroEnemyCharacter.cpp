@@ -242,7 +242,7 @@ void AKeroroEnemyCharacter::Die()
 			FTransform SpawnTransform = FTransform(FRotator::ZeroRotator, GetActorLocation());
 
 			// 골드 오브젝트 생성 // 확률 50퍼
-			if (FMath::FRand() < 0.5f)
+			if (FMath::FRand() < 0.05f)
 			{
 				ADropGold* GoldObj = GetWorld()->SpawnActorDeferred<ADropGold>(ADropGold::StaticClass(), SpawnTransform);
 				GoldObj->SetGoldMount(EnemyStat->GetDropGold());

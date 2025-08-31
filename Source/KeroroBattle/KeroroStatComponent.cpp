@@ -38,18 +38,18 @@ UKeroroStatComponent::UKeroroStatComponent()
 	ProjectileScale = 1.0f;
 	ProjectileScale_Default = 1.0f;
 
-	InvincibilityTime = 0.8f;
-	InvincibilityTime_Default = 0.8f;
+	InvincibilityTime = 1.3f;
+	InvincibilityTime_Default = 1.3f;
 
 	CritDamageRate = 1.5f;
 	CritDamageRate_Default = 1.5f;
 
 	// 테스트용 시간 3~4초 정도 적당한듯 추후 변경해줘야함
-	GuardCoolTime = 7.0f;
-	GuardCollTime_Default = 7.0f;
+	GuardCoolTime = 6.0f;
+	GuardCollTime_Default = 6.0f;
 
-	GuardTime = 0.5f;
-	GuardTime_Default = 0.5f;
+	GuardTime = 0.6f;
+	GuardTime_Default = 0.6f;
 
 	ParryTime = 0.15f;	//0.15가 맞음
 	ParryTime_Default = 0.15f;
@@ -319,11 +319,11 @@ int32 UKeroroStatComponent::GetDropGold()
 {
 	if (Level >= 1 && Level < 10)
 	{
-		return 10;
+		return 100;
 	}
 	else if (Level >= 10 && Level < 21)
 	{
-		return 30;
+		return 300;
 	}
 	return 0;
 }
